@@ -40,8 +40,8 @@ Claude TUI is an intelligent AI-powered Terminal User Interface tool that revolu
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/your-org/claude-tui.git
+cd claude-tui
 
 # Install dependencies
 pip install -r requirements.txt
@@ -63,7 +63,7 @@ export CLAUDE_API_KEY="your_claude_api_key"
 python -m claude_tiu
 
 # Create a new project
-claude-tiu create --template react-typescript --name my-project
+claude-tui create --template react-typescript --name my-project
 
 # Run SPARC workflow
 npx claude-flow sparc tdd "user authentication system"
@@ -75,7 +75,7 @@ npx claude-flow@alpha hive-mind status
 ## 🏗️ Project Structure
 
 ```
-claude-tiu/
+claude-tui/
 ├── src/                     # Source code
 │   ├── core/               # Core application modules
 │   ├── integrations/       # AI service integrations
@@ -272,8 +272,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 - **Documentation**: Comprehensive docs in `/docs`
-- **Issues**: [GitHub Issues](https://github.com/your-org/claude-tiu/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/claude-tiu/discussions)
+- **Issues**: [GitHub Issues](https://github.com/your-org/claude-tui/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/claude-tui/discussions)
 
 ## 🙏 Acknowledgments
 
