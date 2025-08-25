@@ -1,0 +1,159 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: claude-tiu-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+  - name: claude-tiu.availability
+    rules:
+    - alert: ClaudeTIUDown
+      expr: up{job="claude-tiu"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: claude-tiu
+      annotations:
+        summary: "Claude-TIU service is down"
+        description: "Claude-TIU service has been down for more than 1 minute."
+        
+    - alert: ClaudeTIUHighErrorRate
+      expr: rate(claude_tiu_http_requests_total{status=~"5.."}[5m]) / rate(claude_tiu_http_requests_total[5m]) * 100 > 5
+      for: 2m
+      labels:
+        severity: critical
+        service: claude-tiu
+      annotations:
+        summary: "High error rate detected"
+        description: "Claude-TIU error rate is {{ $value }}% for more than 2 minutes."
+        
+    - alert: ClaudeTIUSlowResponse
+      expr: histogram_quantile(0.95, rate(claude_tiu_http_request_duration_seconds_bucket[5m])) > 0.5
+      for: 3m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "Slow response times detected"
+        description: "95th percentile response time is {{ $value }}s for more than 3 minutes."
+
+  - name: claude-tiu.resources
+    rules:
+    - alert: ClaudeTIUHighMemoryUsage
+      expr: container_memory_usage_bytes{pod=~"claude-tiu-.*"} / container_spec_memory_limit_bytes * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "High memory usage"
+        description: "Pod {{ $labels.pod }} memory usage is {{ $value }}% of limit."
+        
+    - alert: ClaudeTIUHighCPUUsage
+      expr: rate(container_cpu_usage_seconds_total{pod=~"claude-tiu-.*"}[5m]) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "High CPU usage"
+        description: "Pod {{ $labels.pod }} CPU usage is {{ $value }}%."
+        
+    - alert: ClaudeTIUMemoryLeak
+      expr: increase(container_memory_usage_bytes{pod=~"claude-tiu-.*"}[1h]) > 50000000
+      for: 0m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "Potential memory leak detected"
+        description: "Pod {{ $labels.pod }} memory increased by {{ $value | humanize }}B in the last hour."
+
+  - name: claude-tiu.scaling
+    rules:
+    - alert: ClaudeTIUPodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total{pod=~"claude-tiu-.*"}[15m]) > 0
+      for: 0m
+      labels:
+        severity: critical
+        service: claude-tiu
+      annotations:
+        summary: "Pod is crash looping"
+        description: "Pod {{ $labels.pod }} is restarting frequently."
+        
+    - alert: ClaudeTIUDeploymentReplicasMismatch
+      expr: kube_deployment_spec_replicas{deployment="claude-tiu-app"} != kube_deployment_status_replicas_available{deployment="claude-tiu-app"}
+      for: 5m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "Deployment replicas mismatch"
+        description: "Deployment {{ $labels.deployment }} has {{ $value }} available replicas, expected {{ $labels.replicas_desired }}."
+        
+    - alert: ClaudeTIUHPAMaxReplicasReached
+      expr: kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="claude-tiu-hpa"} >= kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="claude-tiu-hpa"}
+      for: 10m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "HPA at maximum replicas"
+        description: "HPA has reached maximum replicas ({{ $value }}). Consider increasing limits."
+
+  - name: claude-tiu.business
+    rules:
+    - alert: ClaudeTIULowThroughput
+      expr: rate(claude_tiu_requests_total[5m]) < 10
+      for: 10m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "Low request throughput"
+        description: "Claude-TIU is processing only {{ $value }} requests/second."
+        
+    - alert: ClaudeTIUAIServiceDown
+      expr: claude_tiu_ai_service_up == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: claude-tiu
+      annotations:
+        summary: "AI service unavailable"
+        description: "Claude AI service is not responding."
+        
+    - alert: ClaudeTIUSwarmCoordinationFailure
+      expr: claude_tiu_swarm_coordination_errors_total > 0
+      for: 2m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "Swarm coordination failures"
+        description: "{{ $value }} swarm coordination errors detected."
+
+  - name: claude-tiu.infrastructure
+    rules:
+    - alert: ClaudeTIUPersistentVolumeUsage
+      expr: kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"claude-tiu-.*"} / kubelet_volume_stats_capacity_bytes * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        service: claude-tiu
+      annotations:
+        summary: "High persistent volume usage"
+        description: "PVC {{ $labels.persistentvolumeclaim }} is {{ $value }}% full."
+        
+    - alert: ClaudeTIUDatabaseConnectionFailure
+      expr: claude_tiu_database_connections_active / claude_tiu_database_connections_max * 100 > 90
+      for: 2m
+      labels:
+        severity: critical
+        service: claude-tiu
+      annotations:
+        summary: "Database connection pool exhausted"
+        description: "Database connection usage is {{ $value }}% of maximum."

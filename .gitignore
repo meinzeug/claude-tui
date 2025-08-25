@@ -1,9 +1,11 @@
 # Claude-Flow directories
 .claude/
+.claude-flow/
 .swarm/
 .hive-mind/
 .roo/
 .roomodes
+.gitlogin
 
 # Node.js
 node_modules/

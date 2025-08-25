@@ -16,10 +16,11 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 from claude_tiu import __version__
-from ..core.config_manager import ConfigManager
-from ..ui.main_app import ClaudeTIUApp
-from ..core.logger import setup_logging
-from ..utils.system_check import SystemChecker
+from .core.config_manager import ConfigManager
+from .ui.main_app import ClaudeTIUApp
+from .core.logger import setup_logging
+from .utils.system_check import SystemChecker
+from .cli.main import cli as cli_main
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -348,8 +349,11 @@ async def _run_workflow_cli(
 def main() -> None:
     """
     Main entry point for the claude-tiu application.
+    
+    Uses the new comprehensive CLI system with enhanced commands
+    and intelligent completion.
     """
-    cli()
+    cli_main()
 
 
 if __name__ == "__main__":

@@ -48,6 +48,11 @@ class ProjectDefaults(BaseModel):
 class UIPreferences(BaseModel):
     """User interface preferences."""
     theme: str = "dark"
+    font_size: int = Field(default=12, ge=8, le=24)
+    show_line_numbers: bool = True
+    auto_save: bool = True
+    vim_mode: bool = False
+    animations_enabled: bool = True
     terminal_size_min: tuple[int, int] = (80, 24)
     update_interval_seconds: int = Field(default=10, ge=1, le=60)
     show_progress_details: bool = True

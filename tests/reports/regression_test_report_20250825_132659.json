@@ -1,0 +1,82 @@
+{
+  "timestamp": "2025-08-25T13:26:59.944949",
+  "summary": {
+    "total_tests": 5,
+    "regressions": 0,
+    "improvements": 0,
+    "passes": 0,
+    "unknowns": 5
+  },
+  "results": [
+    {
+      "test_name": "memory_test",
+      "status": "UNKNOWN",
+      "regression_detected": false,
+      "current_metrics": {
+        "duration_ms": 78.58991622924805,
+        "memory_peak_mb": 9.392476081848145,
+        "memory_final_mb": 34.2109375,
+        "cpu_usage_percent": 50.0,
+        "throughput_ops_per_sec": 12.724278736765465,
+        "error_rate_percent": 0.0
+      },
+      "performance_changes": {}
+    },
+    {
+      "test_name": "api_simulation",
+      "status": "UNKNOWN",
+      "regression_detected": false,
+      "current_metrics": {
+        "duration_ms": 15.399694442749023,
+        "memory_peak_mb": 0.10433006286621094,
+        "memory_final_mb": 34.21875,
+        "cpu_usage_percent": 40.9,
+        "throughput_ops_per_sec": 64.9363533619235,
+        "error_rate_percent": 0.0
+      },
+      "performance_changes": {}
+    },
+    {
+      "test_name": "file_processing",
+      "status": "UNKNOWN",
+      "regression_detected": false,
+      "current_metrics": {
+        "duration_ms": 34.82365608215332,
+        "memory_peak_mb": 0.4710969924926758,
+        "memory_final_mb": 34.21875,
+        "cpu_usage_percent": 19.0,
+        "throughput_ops_per_sec": 28.716111761524296,
+        "error_rate_percent": 0.0
+      },
+      "performance_changes": {}
+    },
+    {
+      "test_name": "concurrent_processing",
+      "status": "UNKNOWN",
+      "regression_detected": false,
+      "current_metrics": {
+        "duration_ms": 46.356201171875,
+        "memory_peak_mb": 0.14092254638671875,
+        "memory_final_mb": 34.2734375,
+        "cpu_usage_percent": 23.8,
+        "throughput_ops_per_sec": 21.57208689927584,
+        "error_rate_percent": 0.0
+      },
+      "performance_changes": {}
+    },
+    {
+      "test_name": "memory_leak_detection",
+      "status": "UNKNOWN",
+      "regression_detected": false,
+      "current_metrics": {
+        "duration_ms": 68.9244270324707,
+        "memory_peak_mb": 3.0198354721069336,
+        "memory_final_mb": 35.26171875,
+        "cpu_usage_percent": 28.6,
+        "throughput_ops_per_sec": 14.508644366806186,
+        "error_rate_percent": 0.0
+      },
+      "performance_changes": {}
+    }
+  ]
+}

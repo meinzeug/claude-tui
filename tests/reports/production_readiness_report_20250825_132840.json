@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-08-25T13:28:40.544998",
+  "overall_score": 75.96602223697312,
+  "readiness_level": "NEEDS_IMPROVEMENT",
+  "summary": {
+    "total_criteria": 6,
+    "passed_criteria": 4,
+    "failed_criteria": 2,
+    "high_priority_failures": 1,
+    "average_score": 75.96602223697312,
+    "weighted_score": 75.96602223697312
+  },
+  "criteria_results": [
+    {
+      "name": "test_coverage",
+      "weight": 0.2,
+      "min_score": 85.0,
+      "current_score": 31.15942028985507,
+      "passed": false,
+      "details": {
+        "test_files_count": 86,
+        "source_files_count": 276,
+        "test_to_source_ratio": 0.3115942028985507,
+        "estimated_coverage_percent": 31.15942028985507
+      },
+      "recommendations": [
+        "Increase test coverage to at least 85.0%",
+        "Add more unit tests for core components"
+      ]
+    },
+    {
+      "name": "performance_requirements",
+      "weight": 0.25,
+      "min_score": 80.0,
+      "current_score": 91.66666666666667,
+      "passed": true,
+      "details": {
+        "memory_score": 100,
+        "api_score": 85,
+        "scalability_score": 90,
+        "current_memory_mb": 32.546875,
+        "latest_report": "/home/tekkadmin/claude-tiu/tests/reports/performance_validation_20250825_132658.json"
+      },
+      "recommendations": []
+    },
+    {
+      "name": "security_measures",
+      "weight": 0.2,
+      "min_score": 90.0,
+      "current_score": 100,
+      "passed": true,
+      "details": {
+        "security_score": 100,
+        "security_checks": [
+          "Security tests present",
+          "Authentication modules present",
+          "Input validation modules present",
+          "Encryption/hashing implementation found",
+          "Secure configuration handling found"
+        ],
+        "security_test_files": 6,
+        "auth_files": 7,
+        "validation_files": 5
+      },
+      "recommendations": []
+    },
+    {
+      "name": "error_handling",
+      "weight": 0.15,
+      "min_score": 75.0,
+      "current_score": 45.44981008223624,
+      "passed": false,
+      "details": {
+        "try_except_blocks": 1570,
+        "total_functions": 4716,
+        "files_with_logging": 159,
+        "error_coverage_percent": 33.29092451229856,
+        "logging_coverage_percent": 57.608695652173914
+      },
+      "recommendations": [
+        "Add comprehensive error handling with try-except blocks",
+        "Implement proper logging for errors and warnings",
+        "Add graceful error recovery mechanisms",
+        "Create error handling documentation"
+      ]
+    },
+    {
+      "name": "documentation_quality",
+      "weight": 0.1,
+      "min_score": 70.0,
+      "current_score": 100,
+      "passed": true,
+      "details": {
+        "documentation_score": 100,
+        "documentation_checks": [
+          "README file present",
+          "Documentation directory with 66 files",
+          "API documentation present",
+          "Docstring coverage: 98.6%"
+        ],
+        "readme_files": 1,
+        "doc_files": 66,
+        "api_docs": 7,
+        "docstring_coverage_percent": 98.62726098191214
+      },
+      "recommendations": []
+    },
+    {
+      "name": "deployment_readiness",
+      "weight": 0.1,
+      "min_score": 80.0,
+      "current_score": 100,
+      "passed": true,
+      "details": {
+        "deployment_score": 100,
+        "deployment_checks": [
+          "Docker configuration present",
+          "Kubernetes configuration with 17 files",
+          "Dependency management present",
+          "Configuration management present",
+          "CI/CD configuration present"
+        ],
+        "docker_files": 3,
+        "k8s_files": 17,
+        "requirement_files": 3,
+        "config_files": 2
+      },
+      "recommendations": []
+    }
+  ],
+  "recommendations": [
+    "Add graceful error recovery mechanisms",
+    "Add more unit tests for core components",
+    "Create error handling documentation",
+    "Add comprehensive error handling with try-except blocks",
+    "Implement proper logging for errors and warnings",
+    "Increase test coverage to at least 85.0%"
+  ],
+  "blocking_issues": [
+    "test_coverage: Score 31.2% < Required 85.0%"
+  ]
+}

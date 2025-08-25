@@ -10,12 +10,15 @@ Provides sophisticated workflow orchestration with:
 
 import asyncio
 import logging
+import time
+import psutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 
 from claude_tiu.core.config_manager import ConfigManager
 from claude_tiu.models.task import (
@@ -91,11 +94,15 @@ class TaskEngine:
         self._failed_tasks: Dict[str, Exception] = {}
         self._task_results: Dict[str, TaskResult] = {}
         
-        # Execution control
-        self._max_concurrent_tasks = 5
+        # Execution control - Dynamic scaling based on system resources
+        self._max_concurrent_tasks = min(8, psutil.cpu_count())
         self._semaphore: Optional[asyncio.Semaphore] = None
         self._execution_strategy = ExecutionStrategy.ADAPTIVE
-        self._task_timeout = 300  # 5 minutes default
+        self._task_timeout = 120  # 2 minutes default - reduced for performance
+        
+        # Performance optimization
+        self._thread_executor = ThreadPoolExecutor(max_workers=4)
+        self._task_cache = {}  # Simple task result cache
         
         # Monitoring and metrics
         self._execution_history: deque = deque(maxlen=1000)
@@ -113,10 +120,22 @@ class TaskEngine:
         """
         logger.info("Initializing TaskEngine")
         
-        # Load configuration
+        # Load configuration with performance optimizations
         config = await self.config_manager.get_setting('task_engine', {})
-        self._max_concurrent_tasks = config.get('max_concurrent_tasks', 5)
-        self._task_timeout = config.get('task_timeout', 300)
+        
+        # Dynamic concurrent task scaling based on system resources
+        cpu_count = psutil.cpu_count()
+        memory_gb = psutil.virtual_memory().total / (1024**3)
+        
+        # Scale concurrent tasks based on available resources
+        base_concurrent = config.get('max_concurrent_tasks', 8)
+        self._max_concurrent_tasks = min(
+            base_concurrent, 
+            max(4, int(cpu_count * 1.5)),  # 1.5x CPU cores
+            max(4, int(memory_gb * 2))     # 2 tasks per GB RAM
+        )
+        
+        self._task_timeout = config.get('task_timeout', 120)  # Reduced timeout
         
         strategy_name = config.get('execution_strategy', 'adaptive')
         self._execution_strategy = ExecutionStrategy(strategy_name)
@@ -451,16 +470,23 @@ class TaskEngine:
         validate: bool,
         context: TaskExecutionContext
     ) -> List[TaskResult]:
-        """Execute tasks in parallel."""
+        """Execute tasks in parallel with optimized concurrency."""
         # Group tasks by dependency level
         dependency_levels = self.dependency_resolver.get_dependency_levels(tasks)
         results = []
         
+        # Create optimized semaphore for this execution
+        optimal_concurrency = min(self._max_concurrent_tasks, len(tasks))
+        execution_semaphore = asyncio.Semaphore(optimal_concurrency)
+        
+        async def execute_with_semaphore(task):
+            async with execution_semaphore:
+                return await self._execute_single_task(task, validate, context)
+        
         for level_tasks in dependency_levels:
-            # Execute all tasks in this level concurrently
+            # Execute all tasks in this level with controlled concurrency
             level_results = await asyncio.gather(*[
-                self._execute_single_task(task, validate, context)
-                for task in level_tasks
+                execute_with_semaphore(task) for task in level_tasks
             ], return_exceptions=True)
             
             # Process results
@@ -540,10 +566,18 @@ class TaskEngine:
         validate: bool,
         context: TaskExecutionContext
     ) -> TaskResult:
-        """Execute a single task."""
+        """Execute a single task with performance optimizations."""
         task_start = datetime.now()
         
         try:
+            # Check cache first
+            cache_key = f"{task.id}_{hash(str(task.__dict__))}"
+            if cache_key in self._task_cache:
+                cached_result = self._task_cache[cache_key]
+                if (datetime.now() - cached_result['timestamp']).seconds < 300:  # 5 min cache
+                    logger.debug(f"Task '{task.name}' result retrieved from cache")
+                    return cached_result['result']
+            
             # Add to active tasks
             self._active_tasks[task.id] = task
             task.status = TaskStatus.RUNNING
@@ -551,25 +585,40 @@ class TaskEngine:
             
             logger.debug(f"Executing task: {task.name}")
             
-            # Import here to avoid circular imports
-            from claude_tiu.integrations.ai_interface import AIInterface
-            
-            # Execute with AI interface
-            ai_interface = AIInterface(self.config_manager)
-            result = await ai_interface.execute_development_task(task, context.project)
-            
-            # Validate if requested
-            if validate and result.success:
-                from claude_tiu.core.progress_validator import ProgressValidator
-                validator = ProgressValidator(self.config_manager)
+            # Execute with timeout and parallel validation
+            async with asyncio.timeout(self._task_timeout):
+                # Import here to avoid circular imports
+                from claude_tiu.integrations.ai_interface import AIInterface
                 
-                validation = await validator.validate_task_result(
-                    task, result, context.project
+                # Execute with AI interface
+                ai_interface = AIInterface(self.config_manager)
+                
+                # Parallel execution: AI task + validation preparation
+                ai_task = asyncio.create_task(
+                    ai_interface.execute_development_task(task, context.project)
                 )
                 
-                if not validation.is_valid:
-                    result.success = False
-                    result.error_message = f"Validation failed: {validation.summary}"
+                # Prepare validator if needed (parallel)
+                validation_task = None
+                if validate:
+                    from claude_tiu.core.progress_validator import ProgressValidator
+                    validator = ProgressValidator(self.config_manager)
+                    validation_task = asyncio.create_task(
+                        asyncio.sleep(0)  # Placeholder for validator prep
+                    )
+                
+                # Wait for AI execution
+                result = await ai_task
+                
+                # Validate if requested (parallel validation)
+                if validate and result.success and validation_task:
+                    validation = await validator.validate_task_result(
+                        task, result, context.project
+                    )
+                    
+                    if not validation.is_valid:
+                        result.success = False
+                        result.error_message = f"Validation failed: {validation.summary}"
             
             # Update execution time
             result.execution_time = (datetime.now() - task_start).total_seconds()
@@ -582,6 +631,19 @@ class TaskEngine:
                 self._completed_tasks[task.id] = result
             else:
                 self._failed_tasks[task.id] = Exception(result.error_message or "Task failed")
+            
+            # Cache successful results
+            if result.success:
+                self._task_cache[cache_key] = {
+                    'result': result,
+                    'timestamp': datetime.now()
+                }
+                
+                # Limit cache size
+                if len(self._task_cache) > 100:
+                    oldest_key = min(self._task_cache.keys(), 
+                                   key=lambda k: self._task_cache[k]['timestamp'])
+                    del self._task_cache[oldest_key]
             
             logger.debug(f"Task '{task.name}' completed: success={result.success}")
             

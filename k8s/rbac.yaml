@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-tiu
+  namespace: claude-tiu-production
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: serviceaccount
+automountServiceAccountToken: true
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: claude-tiu-production
+  name: claude-tiu-role
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: rbac
+rules:
+# Pod management for swarm coordination
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["get"]
+
+# ConfigMap access for dynamic configuration
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+
+# Secret access for credentials (limited)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["claude-tiu-secrets"]
+
+# Service discovery
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+
+# Event logging
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+# Metrics access
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: claude-tiu-rolebinding
+  namespace: claude-tiu-production
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: claude-tiu
+  namespace: claude-tiu-production
+roleRef:
+  kind: Role
+  name: claude-tiu-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRole for cluster-wide monitoring (optional, for advanced monitoring)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: claude-tiu-cluster-monitoring
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: rbac
+rules:
+# Node metrics for performance monitoring
+- apiGroups: [""]
+  resources: ["nodes", "nodes/metrics"]
+  verbs: ["get", "list", "watch"]
+
+# Cluster-level metrics
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes", "pods"]
+  verbs: ["get", "list"]
+
+---
+# Optional: ClusterRoleBinding for monitoring (use with caution)
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: claude-tiu-cluster-monitoring
+#   labels:
+#     app.kubernetes.io/name: claude-tiu
+#     app.kubernetes.io/instance: production
+#     app.kubernetes.io/component: rbac
+# subjects:
+# - kind: ServiceAccount
+#   name: claude-tiu
+#   namespace: claude-tiu-production
+# roleRef:
+#   kind: ClusterRole
+#   name: claude-tiu-cluster-monitoring
+#   apiGroup: rbac.authorization.k8s.io
+
+---
+# Network Policy for additional security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-tiu-network-policy
+  namespace: claude-tiu-production
+  labels:
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/component: security
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: claude-tiu
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+  # Allow ingress from monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8000
+  # Allow ingress within namespace (pod-to-pod communication)
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: claude-tiu
+    ports:
+    - protocol: TCP
+      port: 8000
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow HTTPS outbound (for Claude API, external services)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+  # Allow database connections
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis connections (if using)
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: redis
+    ports:
+    - protocol: TCP
+      port: 6379

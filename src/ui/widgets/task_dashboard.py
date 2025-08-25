@@ -238,13 +238,14 @@ class TaskDashboard(Vertical):
     
     tasks: reactive[List[ProjectTask]] = reactive([])
     
-    def __init__(self, project_manager) -> None:
+    def __init__(self, backend_bridge) -> None:
         super().__init__()
-        self.project_manager = project_manager
+        self.backend_bridge = backend_bridge
         self.task_list: Optional[TaskList] = None
         self.stats_widget: Optional[Static] = None
         self.filter_buttons: Dict[str, Button] = {}
         self.current_filter: Optional[TaskStatus] = None
+        self.current_project = None
         
     def compose(self):
         """Compose task dashboard"""
@@ -291,44 +292,146 @@ class TaskDashboard(Vertical):
     
     @work(exclusive=True)
     async def start_task_monitoring(self) -> None:
-        """Start continuous task monitoring and updates"""
+        """Start real-time task monitoring via backend bridge"""
         while True:
             try:
-                # Get latest tasks from project manager
-                if self.project_manager.current_project:
-                    updated_tasks = await self.project_manager.get_project_tasks()
+                # Get latest tasks from backend bridge
+                if self.backend_bridge and self.current_project:
+                    backend_tasks = await self.backend_bridge.get_project_tasks(self.current_project)
                     
-                    # Update progress and validation for active tasks
-                    for task in updated_tasks:
-                        if task.status == TaskStatus.IN_PROGRESS:
-                            await self._update_task_progress(task)
+                    # Convert backend task data to ProjectTask objects
+                    updated_tasks = []
+                    for task_data in backend_tasks:
+                        project_task = self._convert_backend_task(task_data)
+                        if project_task:
+                            updated_tasks.append(project_task)
                     
-                    # Update reactive property
+                    # Update reactive property with real data
                     self.tasks = updated_tasks
                 
                 await asyncio.sleep(10)  # Update every 10 seconds
                 
             except Exception as e:
-                # Handle errors gracefully
+                # Handle errors gracefully - continue in offline mode
                 await asyncio.sleep(30)
     
-    async def _update_task_progress(self, task: ProjectTask) -> None:
-        """Update progress for an active task"""
+    def _convert_backend_task(self, task_data: Dict[str, Any]) -> Optional[ProjectTask]:
+        """Convert backend task data to ProjectTask object"""
         try:
-            # Get validation results from validation engine
-            if hasattr(self.project_manager, 'validation_engine'):
-                validation = await self.project_manager.validation_engine.validate_task_progress(
-                    task.id
-                )
-                
-                # Update task with validation results
-                task.real_progress = validation.get('real_progress', task.real_progress)
-                task.fake_progress = validation.get('fake_progress', task.fake_progress)
-                task.quality_score = validation.get('quality_score', task.quality_score)
-                task.validation_results = validation
-                
+            # Convert backend task format to ProjectTask
+            task_id = task_data.get('task_id') or task_data.get('id', '')
+            name = task_data.get('name', 'Unknown Task')
+            description = task_data.get('description', '')
+            status_str = task_data.get('status', 'pending')
+            priority_str = task_data.get('priority', 'medium')
+            
+            # Map backend status to TaskStatus enum
+            status_mapping = {
+                'pending': TaskStatus.PENDING,
+                'in_progress': TaskStatus.IN_PROGRESS,
+                'running': TaskStatus.IN_PROGRESS,
+                'validating': TaskStatus.VALIDATING,
+                'completed': TaskStatus.COMPLETED,
+                'failed': TaskStatus.FAILED,
+                'blocked': TaskStatus.BLOCKED
+            }
+            status = status_mapping.get(status_str, TaskStatus.PENDING)
+            
+            # Map backend priority to TaskPriority enum
+            priority_mapping = {
+                'low': TaskPriority.LOW,
+                'medium': TaskPriority.MEDIUM,
+                'high': TaskPriority.HIGH,
+                'critical': TaskPriority.CRITICAL
+            }
+            priority = priority_mapping.get(priority_str, TaskPriority.MEDIUM)
+            
+            # Extract progress and quality data from backend
+            progress = task_data.get('progress_percentage', 0.0) / 100.0
+            real_progress = task_data.get('real_progress', progress)
+            quality_score = task_data.get('quality_score', 0.0)
+            authenticity_score = task_data.get('authenticity_score', 100.0) / 100.0
+            
+            # Calculate fake progress
+            fake_progress = max(0, progress - real_progress)
+            
+            # Parse timestamps
+            created_at = datetime.now()
+            if task_data.get('created_at'):
+                try:
+                    created_at = datetime.fromisoformat(task_data['created_at'].replace('Z', '+00:00')).replace(tzinfo=None)
+                except:
+                    pass
+            
+            started_at = None
+            if task_data.get('started_at'):
+                try:
+                    started_at = datetime.fromisoformat(task_data['started_at'].replace('Z', '+00:00')).replace(tzinfo=None)
+                except:
+                    pass
+            
+            completed_at = None
+            if task_data.get('completed_at'):
+                try:
+                    completed_at = datetime.fromisoformat(task_data['completed_at'].replace('Z', '+00:00')).replace(tzinfo=None)
+                except:
+                    pass
+            
+            # Create ProjectTask with real backend data
+            project_task = ProjectTask(
+                id=task_id,
+                name=name,
+                description=description,
+                status=status,
+                priority=priority,
+                progress=progress,
+                real_progress=real_progress,
+                fake_progress=fake_progress,
+                quality_score=quality_score,
+                estimated_hours=task_data.get('estimated_duration', 0.0) / 60.0,  # Convert minutes to hours
+                actual_hours=task_data.get('execution_time_seconds', 0.0) / 3600.0,  # Convert seconds to hours
+                created_at=created_at,
+                started_at=started_at,
+                completed_at=completed_at,
+                dependencies=task_data.get('dependencies', []),
+                assigned_agent=task_data.get('assigned_agent'),
+                validation_results=task_data.get('validation_results')
+            )
+            
+            # Override authenticity score property calculation
+            project_task._authenticity_score = authenticity_score
+            
+            return project_task
+            
         except Exception as e:
-            # Log error but continue
+            # Log conversion error but continue
+            return None
+    
+    async def update_task_from_backend(self, task_data: Dict[str, Any]) -> None:
+        """Update specific task from real-time backend data"""
+        try:
+            task_id = task_data.get('task_id')
+            if not task_id:
+                return
+            
+            # Find and update existing task
+            for i, task in enumerate(self.tasks):
+                if task.id == task_id:
+                    updated_task = self._convert_backend_task(task_data)
+                    if updated_task:
+                        # Update the task in place
+                        tasks_copy = list(self.tasks)
+                        tasks_copy[i] = updated_task
+                        self.tasks = tasks_copy
+                    break
+            else:
+                # Task not found, add it
+                new_task = self._convert_backend_task(task_data)
+                if new_task:
+                    self.tasks = list(self.tasks) + [new_task]
+                    
+        except Exception as e:
+            # Handle update errors gracefully
             pass
     
     def _generate_stats(self) -> Text:
@@ -394,9 +497,31 @@ class TaskDashboard(Vertical):
     
     @on(Button.Pressed, "#add-task")
     def add_new_task(self) -> None:
-        """Handle add task button"""
-        # Emit message for parent to handle
-        self.post_message(AddTaskMessage())
+        """Handle add task button with real backend integration"""
+        if self.backend_bridge:
+            # Create task via backend bridge
+            asyncio.create_task(self._create_new_task())
+        else:
+            # Emit message for parent to handle if no backend
+            self.post_message(AddTaskMessage())
+    
+    async def _create_new_task(self) -> None:
+        """Create new task via backend"""
+        try:
+            # Basic task creation - in a real app, this would show a dialog
+            task_id = await self.backend_bridge.create_task(
+                name=f"New Task {datetime.now().strftime('%H:%M')}",
+                description="Task created from TUI",
+                task_type="general",
+                priority="medium"
+            )
+            
+            if task_id:
+                # Refresh to show new task
+                await self._force_refresh()
+        except Exception:
+            # Handle creation errors gracefully
+            pass
     
     @on(Button.Pressed, "#refresh-tasks")
     def refresh_tasks(self) -> None:
@@ -409,11 +534,31 @@ class TaskDashboard(Vertical):
         self.post_message(ShowAnalyticsMessage())
     
     def refresh(self) -> None:
-        """Refresh the dashboard"""
-        # Force update of tasks
-        if self.project_manager.current_project:
-            # This will trigger task monitoring to update
+        """Refresh the dashboard with latest backend data"""
+        # Force update of tasks from backend
+        if self.backend_bridge:
+            # This will trigger the monitoring loop to fetch fresh data
+            asyncio.create_task(self._force_refresh())
+    
+    async def _force_refresh(self) -> None:
+        """Force refresh from backend"""
+        try:
+            if self.backend_bridge and self.current_project:
+                backend_tasks = await self.backend_bridge.get_project_tasks(self.current_project)
+                updated_tasks = []
+                for task_data in backend_tasks:
+                    project_task = self._convert_backend_task(task_data)
+                    if project_task:
+                        updated_tasks.append(project_task)
+                self.tasks = updated_tasks
+        except Exception:
+            # Ignore refresh errors
             pass
+    
+    def set_project(self, project_id: str) -> None:
+        """Set the current project for task monitoring"""
+        self.current_project = project_id
+        self.refresh()
 
 
 class AddTaskMessage(Message):

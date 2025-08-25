@@ -1,0 +1,51 @@
+{
+  "timestamp": 1756125231,
+  "baseline": {
+    "timestamp": 1756125229.185615,
+    "average_memory_mb": 15.159375,
+    "average_objects": 14943,
+    "peak_memory_mb": 15.34375,
+    "snapshots_count": 5,
+    "target_memory_mb": 100
+  },
+  "deployment": {
+    "start_time": 1756125229.1857796,
+    "optimizations_applied": [
+      {
+        "strategy": "import_optimization",
+        "lazy_modules_setup": 7,
+        "heavy_modules_unloaded": 0,
+        "actions": [
+          "setup_lazy_loading",
+          "unload_heavy_modules",
+          "force_gc"
+        ],
+        "memory_before_mb": 15.65625,
+        "memory_after_mb": 16.34375,
+        "reduction_mb": -0.6875,
+        "improvement_pct": -4.39121756487026
+      }
+    ],
+    "success": true,
+    "final_memory_mb": 16.29296875,
+    "reduction_achieved_mb": -1.1335937499999993,
+    "monitoring_started": true,
+    "end_time": 1756125230.8613412,
+    "duration_seconds": 1.6755616664886475
+  },
+  "validation": {
+    "timestamp": 1756125230.8613503,
+    "tests_passed": 3,
+    "tests_failed": 0,
+    "performance_metrics": {
+      "current_memory_mb": 16.578125,
+      "response_time_ms": 18.497705459594727,
+      "target_memory_mb": 100,
+      "memory_efficiency": 603.2045240339303,
+      "stability_score": 100
+    },
+    "issues": [],
+    "overall_success": true
+  },
+  "target_memory_mb": 100
+}

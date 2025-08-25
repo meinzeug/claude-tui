@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tiu
+  namespace: production
+  labels:
+    app: claude-tiu
+    environment: production
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 8000  # Metrics endpoint on same port
+    protocol: TCP
+  selector:
+    app: claude-tiu
+    environment: production
+    # color: blue/green (dynamically switched during deployment)
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tiu-blue
+  namespace: production
+  labels:
+    app: claude-tiu
+    environment: production
+    color: blue
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: claude-tiu
+    environment: production
+    color: blue
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tiu-green
+  namespace: production
+  labels:
+    app: claude-tiu
+    environment: production
+    color: green
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: claude-tiu
+    environment: production
+    color: green
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tiu-headless
+  namespace: production
+  labels:
+    app: claude-tiu
+    environment: production
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: claude-tiu
+    environment: production

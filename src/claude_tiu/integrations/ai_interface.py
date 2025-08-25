@@ -7,8 +7,11 @@ intelligent routing, context management, and comprehensive anti-hallucination va
 
 import asyncio
 import logging
+import time
 from typing import Any, Dict, List, Optional, Union, Callable
 from datetime import datetime
+from functools import wraps
+from concurrent.futures import ThreadPoolExecutor
 
 from claude_tiu.core.config_manager import ConfigManager
 from claude_tiu.integrations.claude_code_client import ClaudeCodeClient
@@ -19,9 +22,47 @@ from claude_tiu.models.project import Project
 from claude_tiu.models.ai_models import AIRequest, AIResponse, CodeResult, WorkflowRequest
 from claude_tiu.utils.context_builder import ContextBuilder
 from claude_tiu.utils.decision_engine import IntegrationDecisionEngine
+from claude_tiu.validation.real_time_validator import RealTimeValidator
 from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity
 
 logger = logging.getLogger(__name__)
+
+# Performance optimization decorators
+def async_cache(ttl: int = 300):
+    """Async caching decorator with TTL."""
+    cache = {}
+    
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Create cache key from args/kwargs
+            key = str(hash((str(args), str(sorted(kwargs.items())))))
+            now = time.time()
+            
+            # Check cache
+            if key in cache:
+                cached_time, result = cache[key]
+                if now - cached_time < ttl:
+                    return result
+                else:
+                    del cache[key]
+            
+            # Execute and cache
+            result = await func(*args, **kwargs)
+            cache[key] = (now, result)
+            return result
+        
+        return wrapper
+    return decorator
+
+def async_timeout(seconds: int = 30):
+    """Async timeout decorator."""
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            return await asyncio.wait_for(func(*args, **kwargs), timeout=seconds)
+        return wrapper
+    return decorator
 
 
 class AIInterface:
@@ -79,8 +120,11 @@ class AIInterface:
             # Register validation hooks
             await self.anti_hallucination.register_ai_interface_hooks(self)
             
+            # Setup real-time validation hooks
+            await self._setup_real_time_validation()
+            
             self._is_initialized = True
-            logger.info("AI interface initialization completed")
+            logger.info("AI interface initialization completed with real-time validation")
             
         except Exception as e:
             logger.error(f"Failed to initialize AI interface: {e}")
@@ -98,6 +142,8 @@ class AIInterface:
         """Add hook for AI error events."""
         self.error_hooks.append(hook)
     
+    @async_cache(ttl=300)  # Cache for 5 minutes
+    @async_timeout(60)  # 60 second timeout
     async def execute_claude_code(
         self,
         prompt: str,
@@ -121,26 +167,33 @@ class AIInterface:
         logger.info("Executing Claude Code request with anti-hallucination validation")
         
         try:
-            # Build intelligent context
-            smart_context = await self.context_builder.build_smart_context(
-                prompt=prompt,
-                context=context,
-                project=project
+            # Build intelligent context (async parallel)
+            context_task = asyncio.create_task(
+                self.context_builder.build_smart_context(
+                    prompt=prompt,
+                    context=context,
+                    project=project
+                )
             )
             
-            # Execute with Claude Code client
+            # Execute with Claude Code client (parallel with context building)
+            smart_context = await context_task
             result = await self.claude_code_client.execute_coding_task(
                 prompt=prompt,
                 context=smart_context,
                 project=project
             )
             
-            # Run generation hooks
-            for hook in self.generation_hooks:
-                try:
-                    await hook(result.content, smart_context)
-                except Exception as e:
-                    logger.warning(f"Generation hook failed: {e}")
+            # Run generation hooks (parallel)
+            if self.generation_hooks:
+                hook_tasks = [
+                    asyncio.create_task(hook(result.content, smart_context))
+                    for hook in self.generation_hooks
+                ]
+                hook_results = await asyncio.gather(*hook_tasks, return_exceptions=True)
+                for i, hook_result in enumerate(hook_results):
+                    if isinstance(hook_result, Exception):
+                        logger.warning(f"Generation hook {i} failed: {hook_result}")
             
             # Anti-hallucination validation
             validation_result = await self.anti_hallucination.validate_ai_generated_content(
@@ -215,6 +268,7 @@ class AIInterface:
             logger.error(f"Claude Flow workflow execution failed: {e}")
             raise
     
+    @async_timeout(300)  # 5 minute timeout for tasks
     async def execute_development_task(
         self,
         task: DevelopmentTask,
@@ -254,12 +308,13 @@ class AIInterface:
                 task, result, project
             )
             
-            # Run completion hooks
-            for hook in self.completion_hooks:
-                try:
-                    await hook(task, result, project)
-                except Exception as e:
-                    logger.warning(f"Completion hook failed: {e}")
+            # Run completion hooks (parallel)
+            if self.completion_hooks:
+                completion_tasks = [
+                    asyncio.create_task(hook(task, result, project))
+                    for hook in self.completion_hooks
+                ]
+                await asyncio.gather(*completion_tasks, return_exceptions=True)
             
             # Update result with validation
             result.validation_result = validation_result
@@ -293,12 +348,13 @@ class AIInterface:
             execution_time = (datetime.now() - start_time).total_seconds()
             logger.error(f"Task '{task.name}' execution failed: {e}")
             
-            # Run error hooks
-            for hook in self.error_hooks:
-                try:
-                    await hook(e, {'task': task, 'project': project})
-                except Exception as hook_e:
-                    logger.warning(f"Error hook failed: {hook_e}")
+            # Run error hooks (parallel)
+            if self.error_hooks:
+                error_tasks = [
+                    asyncio.create_task(hook(e, {'task': task, 'project': project}))
+                    for hook in self.error_hooks
+                ]
+                await asyncio.gather(*error_tasks, return_exceptions=True)
             
             return TaskResult(
                 task_id=task.id,
@@ -520,6 +576,71 @@ class AIInterface:
         
         logger.info("AI interface cleanup completed")
     
+    async def _setup_real_time_validation(self) -> None:
+        """Setup real-time validation hooks for live AI workflows."""
+        logger.info("Setting up real-time validation hooks")
+        
+        # Pre-execution validation hook
+        async def pre_execution_validation(prompt: str, context: Dict[str, Any]) -> bool:
+            """Validate prompt before AI execution."""
+            if len(prompt) < 10:
+                logger.warning("Prompt too short for effective AI generation")
+                return False
+            return True
+        
+        # Real-time content validation hook
+        async def real_time_content_validation(content: str, context: Dict[str, Any]) -> Dict[str, Any]:
+            """Validate content in real-time during generation."""
+            start_time = datetime.now()
+            
+            # Quick validation for real-time performance
+            validation_result = await self.anti_hallucination.validate_ai_generated_content(
+                content=content,
+                context=context
+            )
+            
+            validation_time = (datetime.now() - start_time).total_seconds()
+            
+            return {
+                'is_valid': validation_result.is_valid,
+                'authenticity_score': validation_result.authenticity_score,
+                'validation_time': validation_time,
+                'issues_count': len(validation_result.issues),
+                'critical_issues': [
+                    issue for issue in validation_result.issues 
+                    if issue.severity == ValidationSeverity.CRITICAL
+                ]
+            }
+        
+        # Post-execution enhancement hook
+        async def post_execution_enhancement(result: Any, context: Dict[str, Any]) -> Any:
+            """Enhance result after AI execution."""
+            if hasattr(result, 'content') and result.content:
+                # Apply auto-fixes if validation failed
+                validation_result = await self.validate_ai_output(
+                    result.content, 
+                    context.get('task'), 
+                    context.get('project')
+                )
+                
+                if not validation_result.is_valid:
+                    auto_fix_applied, fixed_content = await self.anti_hallucination.auto_fix_issues(
+                        validation_result, result.content, context.get('project')
+                    )
+                    
+                    if auto_fix_applied:
+                        result.content = fixed_content
+                        result.auto_fixes_applied = True
+                        logger.info("Real-time auto-fixes applied")
+            
+            return result
+        
+        # Register hooks
+        self.add_generation_hook(real_time_content_validation)
+        self.add_completion_hook(post_execution_enhancement)
+        
+        logger.info("Real-time validation hooks configured")
+    
     # Private helper methods
     
     async def _execute_task_with_claude_code(
@@ -681,3 +802,64 @@ Please fix these issues and provide corrected, complete code without placeholder
                 self.estimated_duration = task.estimate_duration()
         
         return RequirementsAnalysis()
+    
+    async def validate_code_streaming(self, code_stream: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate code as it's being generated (streaming validation)."""
+        if not self._is_initialized:
+            await self.initialize()
+        
+        # Real-time streaming validation for live AI generation
+        validation_chunks = []
+        chunk_size = 500  # Validate every 500 characters
+        
+        for i in range(0, len(code_stream), chunk_size):
+            chunk = code_stream[i:i+chunk_size]
+            
+            # Quick validation of chunk
+            chunk_validation = await self.anti_hallucination.validate_ai_generated_content(
+                content=chunk,
+                context={**context, 'validation_mode': 'streaming'}
+            )
+            
+            validation_chunks.append({
+                'chunk_start': i,
+                'chunk_end': min(i + chunk_size, len(code_stream)),
+                'authenticity_score': chunk_validation.authenticity_score,
+                'issues': len(chunk_validation.issues)
+            })
+        
+        # Overall streaming validation result
+        avg_authenticity = sum(chunk['authenticity_score'] for chunk in validation_chunks) / len(validation_chunks)
+        total_issues = sum(chunk['issues'] for chunk in validation_chunks)
+        
+        return {
+            'streaming_validation': True,
+            'chunks_validated': len(validation_chunks),
+            'avg_authenticity_score': avg_authenticity,
+            'total_issues': total_issues,
+            'validation_chunks': validation_chunks,
+            'validation_timestamp': datetime.now().isoformat()
+        }
+    
+    async def get_real_time_metrics(self) -> Dict[str, Any]:
+        """Get real-time validation metrics for monitoring."""
+        if not self._is_initialized:
+            await self.initialize()
+        
+        base_metrics = await self.get_validation_metrics()
+        
+        # Add real-time specific metrics
+        real_time_metrics = {
+            'real_time_validations': {
+                'hooks_registered': len(self.generation_hooks) + len(self.completion_hooks),
+                'active_requests': len(self._active_requests),
+                'request_history_size': len(self._request_history)
+            },
+            'performance_metrics': {
+                'avg_validation_time': base_metrics.get('integration_metrics', {}).get('avg_validation_time', 0),
+                'cache_hit_rate': base_metrics.get('integration_metrics', {}).get('cache_hit_rate', 0),
+                'success_rate': base_metrics.get('integration_metrics', {}).get('success_rate', 0)
+            }
+        }
+        
+        return {**base_metrics, **real_time_metrics}

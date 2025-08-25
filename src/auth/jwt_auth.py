@@ -283,20 +283,80 @@ class JWTAuthenticator:
             New token response
         """
         try:
-            # Find session by refresh token
-            # Note: In a real implementation, you'd have a method to find by refresh token
-            # For now, we'll implement a basic version
-            
             # Validate refresh token format
             if not refresh_token or len(refresh_token) < 32:
                 raise AuthenticationError("Invalid refresh token format")
             
-            # In a production system, you'd store refresh tokens securely
-            # and implement proper refresh token validation
+            # Find session by refresh token
+            session = await session_repo.find_by_refresh_token(refresh_token)
             
-            # For this implementation, we'll decode the access token to get user info
-            # and create new tokens (simplified approach)
-            raise NotImplementedError("Refresh token implementation requires session lookup by refresh token")
+            if not session:
+                raise AuthenticationError("Invalid refresh token")
+            
+            # Check if session is expired or inactive
+            if not session.is_active or session.is_expired():
+                await session_repo.invalidate_session(session.session_token)
+                raise AuthenticationError("Session expired")
+            
+            # Get user data
+            user = await user_repo.get_user_by_id(session.user_id)
+            if not user or not user.is_active:
+                await session_repo.invalidate_session(session.session_token)
+                raise AuthenticationError("User not found or inactive")
+            
+            # Generate new tokens
+            new_jti = self._generate_jti()
+            new_refresh_token = self._generate_refresh_token()
+            
+            # Calculate expiration times
+            access_exp = datetime.now(timezone.utc) + timedelta(minutes=self.access_token_expire_minutes)
+            refresh_exp = datetime.now(timezone.utc) + timedelta(days=self.refresh_token_expire_days)
+            
+            # Extract user roles
+            roles = []
+            if hasattr(user, 'roles') and user.roles:
+                roles = [role.role.name for role in user.roles if not role.is_expired()]
+            
+            # Update session with new tokens
+            await session_repo.update_session_tokens(
+                session.id,
+                session_token=new_jti,
+                refresh_token=new_refresh_token,
+                expires_at=refresh_exp
+            )
+            
+            # Prepare new token payload
+            token_payload = {
+                "user_id": str(user.id),
+                "username": user.username,
+                "email": user.email,
+                "roles": roles,
+                "permissions": [],  # Could be fetched from user roles
+                "session_id": str(session.id),
+                "iat": int(datetime.now(timezone.utc).timestamp()),
+                "exp": int(access_exp.timestamp()),
+                "iss": self.issuer,
+                "aud": self.audience,
+                "jti": new_jti
+            }
+            
+            # Generate new access token
+            access_token = jwt.encode(
+                token_payload,
+                self.secret_key,
+                algorithm=self.algorithm
+            )
+            
+            # Update session last activity
+            session.last_activity = datetime.now(timezone.utc)
+            
+            return TokenResponse(
+                access_token=access_token,
+                refresh_token=new_refresh_token,
+                expires_in=self.access_token_expire_minutes * 60,
+                user_id=str(user.id),
+                permissions=[]
+            )
             
         except Exception as e:
             raise AuthenticationError(f"Token refresh failed: {str(e)}")
@@ -375,6 +435,7 @@ class JWTAuthenticator:
     async def change_password(
         self,
         user_repo: UserRepository,
+        session_repo: SessionRepository,
         user_id: UUID,
         current_password: str,
         new_password: str,
@@ -385,6 +446,7 @@ class JWTAuthenticator:
         
         Args:
             user_repo: User repository
+            session_repo: Session repository
             user_id: User ID
             current_password: Current password
             new_password: New password
@@ -402,7 +464,7 @@ class JWTAuthenticator:
             
             if success and revoke_sessions:
                 # Revoke all existing sessions to force re-authentication
-                await self.revoke_user_sessions(user_id, SessionRepository)
+                await self.revoke_user_sessions(user_id, session_repo)
             
             return success
             

@@ -1,0 +1,500 @@
+name: 🔍 Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+concurrency:
+  group: pr-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  # ==================== PR ANALYSIS & PLANNING ====================
+  pr-analysis:
+    name: 🔍 PR Analysis & Impact Assessment
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    outputs:
+      changed-files: ${{ steps.changes.outputs.changed-files }}
+      test-impact: ${{ steps.impact.outputs.test-impact }}
+      security-impact: ${{ steps.impact.outputs.security-impact }}
+      performance-impact: ${{ steps.impact.outputs.performance-impact }}
+      requires-manual-review: ${{ steps.impact.outputs.requires-manual-review }}
+      estimated-risk: ${{ steps.impact.outputs.estimated-risk }}
+    steps:
+      - name: 📥 Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Analyze Changed Files
+        id: changes
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | jq -R -s -c 'split("\n")[:-1]')
+          echo "changed-files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          
+          # Output summary
+          echo "📋 Changed files:"
+          git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | head -10
+          echo "Total changed files: $(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | wc -l)"
+
+      - name: 🎯 Impact Assessment
+        id: impact
+        run: |
+          # Initialize impact flags
+          TEST_IMPACT="low"
+          SECURITY_IMPACT="low"
+          PERFORMANCE_IMPACT="low"
+          MANUAL_REVIEW="false"
+          RISK_LEVEL="low"
+          
+          # Analyze changed files for impact
+          CHANGED_FILES='${{ steps.changes.outputs.changed-files }}'
+          
+          # Check for high-impact file changes
+          if echo "$CHANGED_FILES" | grep -E "(auth|security|middleware)" > /dev/null; then
+            SECURITY_IMPACT="high"
+            MANUAL_REVIEW="true"
+            RISK_LEVEL="high"
+          fi
+          
+          if echo "$CHANGED_FILES" | grep -E "(api|database|models)" > /dev/null; then
+            TEST_IMPACT="high"
+            if [[ "$RISK_LEVEL" == "low" ]]; then
+              RISK_LEVEL="medium"
+            fi
+          fi
+          
+          if echo "$CHANGED_FILES" | grep -E "(performance|cache|async)" > /dev/null; then
+            PERFORMANCE_IMPACT="high"
+            if [[ "$RISK_LEVEL" == "low" ]]; then
+              RISK_LEVEL="medium"
+            fi
+          fi
+          
+          # Check for configuration changes
+          if echo "$CHANGED_FILES" | grep -E "(config|docker|k8s|deployment)" > /dev/null; then
+            MANUAL_REVIEW="true"
+            RISK_LEVEL="high"
+          fi
+          
+          # Output results
+          echo "test-impact=$TEST_IMPACT" >> $GITHUB_OUTPUT
+          echo "security-impact=$SECURITY_IMPACT" >> $GITHUB_OUTPUT
+          echo "performance-impact=$PERFORMANCE_IMPACT" >> $GITHUB_OUTPUT
+          echo "requires-manual-review=$MANUAL_REVIEW" >> $GITHUB_OUTPUT
+          echo "estimated-risk=$RISK_LEVEL" >> $GITHUB_OUTPUT
+          
+          # Create PR comment with analysis
+          cat > pr-analysis.md << EOF
+          ## 🔍 PR Impact Analysis
+          
+          | Category | Impact Level | Details |
+          |----------|-------------|---------|
+          | **Testing** | $TEST_IMPACT | Automated test coverage assessment |
+          | **Security** | $SECURITY_IMPACT | Security-related changes detected |
+          | **Performance** | $PERFORMANCE_IMPACT | Performance impact evaluation |
+          | **Manual Review** | $MANUAL_REVIEW | Requires human review |
+          | **Risk Level** | $RISK_LEVEL | Overall change risk assessment |
+          
+          ### 📊 Test Strategy
+          - **Unit Tests**: $([ "$TEST_IMPACT" == "high" ] && echo "Extended coverage required" || echo "Standard coverage")
+          - **Integration Tests**: $([ "$TEST_IMPACT" == "high" ] && echo "Full suite execution" || echo "Targeted tests")
+          - **Security Tests**: $([ "$SECURITY_IMPACT" == "high" ] && echo "Comprehensive security scan" || echo "Basic security checks")
+          - **Performance Tests**: $([ "$PERFORMANCE_IMPACT" == "high" ] && echo "Load testing required" || echo "Basic performance validation")
+          EOF
+          
+          echo "📋 Impact Assessment Complete"
+          echo "  - Test Impact: $TEST_IMPACT"
+          echo "  - Security Impact: $SECURITY_IMPACT" 
+          echo "  - Performance Impact: $PERFORMANCE_IMPACT"
+          echo "  - Manual Review: $MANUAL_REVIEW"
+          echo "  - Risk Level: $RISK_LEVEL"
+
+      - name: 📊 Upload PR Analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-analysis
+          path: pr-analysis.md
+
+  # ==================== CODE QUALITY VALIDATION ====================
+  code-quality-validation:
+    name: 📋 Code Quality Validation
+    runs-on: ubuntu-latest
+    needs: pr-analysis
+    steps:
+      - name: 📥 Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: 📝 Code Formatting Check
+        run: |
+          echo "📝 Checking code formatting..."
+          black --check --diff src/ tests/ || (echo "❌ Code formatting issues found. Run 'black src/ tests/' to fix." && exit 1)
+          
+      - name: 📐 Import Sorting Check
+        run: |
+          echo "📐 Checking import sorting..."
+          isort --check-only --diff src/ tests/ || (echo "❌ Import sorting issues found. Run 'isort src/ tests/' to fix." && exit 1)
+
+      - name: 🔍 Linting Check
+        run: |
+          echo "🔍 Running linting checks..."
+          flake8 src/ tests/ --count --statistics
+          
+      - name: 🎯 Type Checking
+        run: |
+          echo "🎯 Running type checks..."
+          mypy src/ --ignore-missing-imports --show-error-codes
+
+      - name: 📊 Code Complexity Analysis
+        run: |
+          echo "📊 Analyzing code complexity..."
+          pip install radon
+          radon cc src/ -a -nb
+          radon mi src/ -nb
+
+  # ==================== SECURITY VALIDATION ====================
+  security-validation:
+    name: 🔒 Security Validation
+    runs-on: ubuntu-latest
+    needs: pr-analysis
+    if: needs.pr-analysis.outputs.security-impact != 'low'
+    steps:
+      - name: 📥 Checkout PR
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 🔒 Security Scan with Bandit
+        run: |
+          pip install bandit[toml]
+          bandit -r src/ -f json -o bandit-results.json
+          bandit -r src/ --severity-level medium
+
+      - name: 🛡️ Dependency Security Scan
+        run: |
+          pip install safety pip-audit
+          pip install -r requirements.txt
+          safety check --json --output safety-results.json
+          pip-audit --format=json --output=pip-audit-results.json
+
+      - name: 🔍 Secret Detection
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 Upload Security Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-validation-results
+          path: |
+            bandit-results.json
+            safety-results.json
+            pip-audit-results.json
+
+  # ==================== TARGETED TESTING ====================
+  targeted-testing:
+    name: 🧪 Targeted Test Execution
+    runs-on: ubuntu-latest
+    needs: [pr-analysis, code-quality-validation]
+    if: needs.code-quality-validation.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        test-type: [unit, integration, api]
+        python-version: ['3.11']
+        include:
+          - test-type: unit
+            coverage: true
+          - test-type: performance
+            python-version: '3.11'
+            condition: ${{ needs.pr-analysis.outputs.performance-impact == 'high' }}
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: claude_tiu_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+      - name: 📥 Checkout PR
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install -e .
+
+      - name: 🧪 Run Tests - ${{ matrix.test-type }}
+        env:
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tiu_test
+          REDIS_URL: redis://localhost:6379/0
+          CLAUDE_TIU_ENV: testing
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          case "${{ matrix.test-type }}" in
+            "unit")
+              pytest tests/unit/ \
+                --cov=src/claude_tiu \
+                --cov-report=xml:coverage-pr-unit.xml \
+                --cov-report=html:htmlcov-pr-unit \
+                --junit-xml=junit-pr-unit.xml \
+                -v --tb=short --maxfail=5
+              ;;
+            "integration")
+              pytest tests/integration/ \
+                --junit-xml=junit-pr-integration.xml \
+                -v --tb=short --timeout=300 --maxfail=3
+              ;;
+            "api")
+              pytest tests/integration/test_api_comprehensive.py \
+                --junit-xml=junit-pr-api.xml \
+                -v --tb=short --timeout=180
+              ;;
+            "performance")
+              if [[ "${{ needs.pr-analysis.outputs.performance-impact }}" == "high" ]]; then
+                pytest tests/performance/ \
+                  --benchmark-json=benchmark-pr.json \
+                  --junit-xml=junit-pr-performance.xml \
+                  -v --tb=short --timeout=600
+              fi
+              ;;
+          esac
+
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-pr-${{ matrix.test-type }}-${{ matrix.python-version }}
+          path: |
+            junit-*.xml
+            coverage-*.xml
+            htmlcov-*/
+            benchmark-*.json
+
+  # ==================== PR BUILD VALIDATION ====================
+  build-validation:
+    name: 🏗️ Build Validation
+    runs-on: ubuntu-latest
+    needs: targeted-testing
+    steps:
+      - name: 📥 Checkout PR
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: claude-tiu:pr-${{ github.event.number }}
+          cache-from: type=gha,scope=build-pr
+          cache-to: type=gha,mode=max,scope=build-pr
+          target: testing
+
+      - name: 🧪 Test Docker Image
+        run: |
+          # Test that the image runs correctly
+          docker run --rm claude-tiu:pr-${{ github.event.number }} python -c "import claude_tiu; print('✅ Image build successful')"
+
+  # ==================== PR VALIDATION SUMMARY ====================
+  pr-validation-summary:
+    name: 📋 PR Validation Summary
+    runs-on: ubuntu-latest
+    needs: [pr-analysis, code-quality-validation, security-validation, targeted-testing, build-validation]
+    if: always()
+    steps:
+      - name: 📥 Download PR Analysis
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-analysis
+
+      - name: 📥 Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'test-results-pr-*'
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: 📊 Generate Validation Summary
+        run: |
+          echo "# 🔍 Pull Request Validation Summary" > pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          echo "**PR #${{ github.event.number }}**: ${{ github.event.pull_request.title }}" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          
+          # Job results
+          echo "## 📊 Validation Results" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          echo "| Check | Status | Details |" >> pr-validation-summary.md
+          echo "|-------|--------|---------|" >> pr-validation-summary.md
+          echo "| **Code Quality** | ${{ needs.code-quality-validation.result == 'success' && '✅ PASS' || '❌ FAIL' }} | Formatting, linting, type checking |" >> pr-validation-summary.md
+          echo "| **Security Scan** | ${{ needs.security-validation.result == 'success' && '✅ PASS' || needs.security-validation.result == 'skipped' && '⏭️ SKIP' || '❌ FAIL' }} | Security vulnerabilities and secrets |" >> pr-validation-summary.md
+          echo "| **Tests** | ${{ needs.targeted-testing.result == 'success' && '✅ PASS' || '❌ FAIL' }} | Unit, integration, and API tests |" >> pr-validation-summary.md
+          echo "| **Build** | ${{ needs.build-validation.result == 'success' && '✅ PASS' || '❌ FAIL' }} | Docker image build validation |" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          
+          # Risk assessment
+          echo "## 🎯 Risk Assessment" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          echo "- **Overall Risk**: ${{ needs.pr-analysis.outputs.estimated-risk }}" >> pr-validation-summary.md
+          echo "- **Manual Review Required**: ${{ needs.pr-analysis.outputs.requires-manual-review }}" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          
+          # Test statistics
+          if ls junit-*.xml 1> /dev/null 2>&1; then
+            TOTAL_TESTS=0
+            FAILED_TESTS=0
+            
+            for junit_file in junit-*.xml; do
+              if [ -f "$junit_file" ]; then
+                tests=$(grep -o 'tests="[0-9]*"' "$junit_file" | cut -d'"' -f2 || echo "0")
+                failures=$(grep -o 'failures="[0-9]*"' "$junit_file" | cut -d'"' -f2 || echo "0")
+                TOTAL_TESTS=$((TOTAL_TESTS + tests))
+                FAILED_TESTS=$((FAILED_TESTS + failures))
+              fi
+            done
+            
+            PASS_RATE=100
+            if [ $TOTAL_TESTS -gt 0 ]; then
+              PASS_RATE=$(echo "scale=1; (($TOTAL_TESTS - $FAILED_TESTS) * 100) / $TOTAL_TESTS" | bc -l || echo "100")
+            fi
+            
+            echo "## 📈 Test Statistics" >> pr-validation-summary.md
+            echo "" >> pr-validation-summary.md
+            echo "- **Total Tests**: $TOTAL_TESTS" >> pr-validation-summary.md
+            echo "- **Passed Tests**: $((TOTAL_TESTS - FAILED_TESTS))" >> pr-validation-summary.md
+            echo "- **Failed Tests**: $FAILED_TESTS" >> pr-validation-summary.md
+            echo "- **Pass Rate**: $PASS_RATE%" >> pr-validation-summary.md
+          fi
+          
+          echo "" >> pr-validation-summary.md
+          
+          # Recommendations
+          echo "## 📝 Recommendations" >> pr-validation-summary.md
+          echo "" >> pr-validation-summary.md
+          
+          if [[ "${{ needs.code-quality-validation.result }}" != "success" ]]; then
+            echo "- ❌ Fix code quality issues before merging" >> pr-validation-summary.md
+          fi
+          
+          if [[ "${{ needs.security-validation.result }}" == "failure" ]]; then
+            echo "- 🔒 Address security vulnerabilities" >> pr-validation-summary.md
+          fi
+          
+          if [[ "${{ needs.targeted-testing.result }}" != "success" ]]; then
+            echo "- 🧪 Fix failing tests" >> pr-validation-summary.md
+          fi
+          
+          if [[ "${{ needs.pr-analysis.outputs.requires-manual-review }}" == "true" ]]; then
+            echo "- 👥 Manual review required due to high-impact changes" >> pr-validation-summary.md
+          fi
+          
+          # Overall status
+          ALL_PASSED=true
+          if [[ "${{ needs.code-quality-validation.result }}" != "success" ]] || \
+             [[ "${{ needs.security-validation.result }}" == "failure" ]] || \
+             [[ "${{ needs.targeted-testing.result }}" != "success" ]] || \
+             [[ "${{ needs.build-validation.result }}" != "success" ]]; then
+            ALL_PASSED=false
+          fi
+          
+          echo "" >> pr-validation-summary.md
+          if [[ "$ALL_PASSED" == "true" ]]; then
+            echo "✅ **All validations passed! This PR is ready for review.**" >> pr-validation-summary.md
+          else
+            echo "❌ **Some validations failed. Please address the issues before requesting review.**" >> pr-validation-summary.md
+          fi
+
+      - name: 📊 Add PR Analysis to Summary
+        run: |
+          if [ -f pr-analysis.md ]; then
+            echo "" >> pr-validation-summary.md
+            cat pr-analysis.md >> pr-validation-summary.md
+          fi
+
+      - name: 💬 Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('pr-validation-summary.md', 'utf8');
+            
+            // Find existing comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('Pull Request Validation Summary')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: summary
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: summary
+              });
+            }

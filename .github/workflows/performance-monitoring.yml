@@ -1,0 +1,478 @@
+name: ⚡ Performance Monitoring & Alerting
+
+on:
+  schedule:
+    # Run every 4 hours
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment for monitoring'
+        required: true
+        default: 'production'
+        type: choice
+        options: ['production', 'staging']
+      test_duration:
+        description: 'Test duration in minutes'
+        required: false
+        default: 10
+        type: number
+      alert_threshold:
+        description: 'Alert threshold (% degradation)'
+        required: false
+        default: 20
+        type: number
+
+env:
+  BASELINE_DATA_PATH: 'performance/baselines'
+  RESULTS_PATH: 'performance/results'
+
+jobs:
+  # ==================== PERFORMANCE BASELINE COLLECTION ====================
+  performance-monitoring:
+    name: ⚡ Performance Monitoring
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        environment: [production, staging]
+        exclude:
+          - environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment != 'production' && 'production' || 'null' }}
+          - environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment != 'staging' && 'staging' || 'null' }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Performance Testing Tools
+        run: |
+          # Install k6 for load testing
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+          
+          # Install additional monitoring tools
+          pip install psutil requests matplotlib pandas
+
+      - name: 🌐 Get Target Environment URL
+        id: env-url
+        run: |
+          case "${{ matrix.environment }}" in
+            "production")
+              echo "url=https://claude-tiu.dev" >> $GITHUB_OUTPUT
+              ;;
+            "staging")
+              echo "url=https://staging.claude-tiu.dev" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: 🏃 Run Performance Tests
+        id: performance-tests
+        env:
+          BASE_URL: ${{ steps.env-url.outputs.url }}
+          TEST_DURATION: ${{ inputs.test_duration || 10 }}
+        run: |
+          # Create performance test script
+          cat > performance-test.js << 'EOF'
+          import http from 'k6/http';
+          import { check, group } from 'k6';
+          import { Rate, Trend } from 'k6/metrics';
+          
+          // Custom metrics
+          const errorRate = new Rate('error_rate');
+          const responseTime = new Trend('response_time', true);
+          
+          export let options = {
+            stages: [
+              { duration: '2m', target: 10 },  // Ramp up
+              { duration: `${__ENV.TEST_DURATION || 5}m`, target: 50 }, // Stay at load
+              { duration: '2m', target: 0 },   // Ramp down
+            ],
+            thresholds: {
+              'http_req_duration': ['p(95)<2000', 'p(99)<5000'],
+              'http_req_failed': ['rate<0.05'],
+              'error_rate': ['rate<0.05'],
+            },
+          };
+          
+          const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000';
+          
+          export default function() {
+            group('Health Check', function() {
+              let response = http.get(`${BASE_URL}/health`);
+              let success = check(response, {
+                'health check status is 200': (r) => r.status === 200,
+                'health check response time < 1000ms': (r) => r.timings.duration < 1000,
+              });
+              errorRate.add(!success);
+              responseTime.add(response.timings.duration);
+            });
+            
+            group('API Endpoints', function() {
+              let endpoints = [
+                '/api/v1/health',
+                '/api/v1/version',
+                '/api/v1/status'
+              ];
+              
+              endpoints.forEach(endpoint => {
+                let response = http.get(`${BASE_URL}${endpoint}`);
+                let success = check(response, {
+                  [`${endpoint} status is 200 or 401`]: (r) => r.status === 200 || r.status === 401,
+                  [`${endpoint} response time < 2000ms`]: (r) => r.timings.duration < 2000,
+                });
+                errorRate.add(!success);
+                responseTime.add(response.timings.duration);
+              });
+            });
+          }
+          EOF
+          
+          # Run k6 test
+          k6 run performance-test.js \
+            --out json=performance-results-${{ matrix.environment }}.json \
+            --env BASE_URL="$BASE_URL" \
+            --env TEST_DURATION="$TEST_DURATION"
+
+      - name: 📊 Process Performance Results
+        id: process-results
+        run: |
+          # Create Python script to process k6 results
+          cat > process_results.py << 'EOF'
+          import json
+          import sys
+          from datetime import datetime
+          import statistics
+          
+          def process_k6_results(filename):
+              with open(filename, 'r') as f:
+                  lines = f.readlines()
+              
+              metrics = {
+                  'response_times': [],
+                  'error_rate': 0,
+                  'total_requests': 0,
+                  'failed_requests': 0,
+                  'throughput': 0
+              }
+              
+              for line in lines:
+                  try:
+                      data = json.loads(line.strip())
+                      if data.get('type') == 'Point':
+                          metric_name = data.get('metric')
+                          value = data.get('data', {}).get('value', 0)
+                          
+                          if metric_name == 'http_req_duration':
+                              metrics['response_times'].append(value)
+                          elif metric_name == 'http_reqs':
+                              metrics['total_requests'] += value
+                          elif metric_name == 'http_req_failed' and value == 1:
+                              metrics['failed_requests'] += 1
+                  except json.JSONDecodeError:
+                      continue
+              
+              # Calculate statistics
+              if metrics['response_times']:
+                  metrics['avg_response_time'] = statistics.mean(metrics['response_times'])
+                  metrics['p95_response_time'] = statistics.quantiles(metrics['response_times'], n=20)[18]  # 95th percentile
+                  metrics['p99_response_time'] = statistics.quantiles(metrics['response_times'], n=100)[98]  # 99th percentile
+              
+              if metrics['total_requests'] > 0:
+                  metrics['error_rate'] = (metrics['failed_requests'] / metrics['total_requests']) * 100
+              
+              return metrics
+          
+          if __name__ == "__main__":
+              environment = sys.argv[1]
+              results = process_k6_results(f'performance-results-{environment}.json')
+              
+              # Output results
+              print(f"avg_response_time={results.get('avg_response_time', 0):.2f}")
+              print(f"p95_response_time={results.get('p95_response_time', 0):.2f}")
+              print(f"p99_response_time={results.get('p99_response_time', 0):.2f}")
+              print(f"error_rate={results.get('error_rate', 0):.2f}")
+              print(f"total_requests={results.get('total_requests', 0)}")
+              
+              # Save detailed results
+              with open(f'performance-summary-{environment}.json', 'w') as f:
+                  json.dump({
+                      'timestamp': datetime.utcnow().isoformat(),
+                      'environment': environment,
+                      'metrics': results
+                  }, f, indent=2)
+          EOF
+          
+          python process_results.py ${{ matrix.environment }} >> $GITHUB_OUTPUT
+
+      - name: 📈 Load Historical Baseline
+        id: load-baseline
+        run: |
+          # Create baseline if it doesn't exist
+          BASELINE_FILE="${{ env.BASELINE_DATA_PATH }}/baseline-${{ matrix.environment }}.json"
+          
+          if [ ! -f "$BASELINE_FILE" ]; then
+            mkdir -p "${{ env.BASELINE_DATA_PATH }}"
+            cp "performance-summary-${{ matrix.environment }}.json" "$BASELINE_FILE"
+            echo "baseline_exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "baseline_exists=true" >> $GITHUB_OUTPUT
+            
+            # Extract baseline metrics
+            BASELINE_AVG=$(jq -r '.metrics.avg_response_time // 0' "$BASELINE_FILE")
+            BASELINE_P95=$(jq -r '.metrics.p95_response_time // 0' "$BASELINE_FILE")
+            BASELINE_ERROR_RATE=$(jq -r '.metrics.error_rate // 0' "$BASELINE_FILE")
+            
+            echo "baseline_avg_response_time=$BASELINE_AVG" >> $GITHUB_OUTPUT
+            echo "baseline_p95_response_time=$BASELINE_P95" >> $GITHUB_OUTPUT
+            echo "baseline_error_rate=$BASELINE_ERROR_RATE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🚨 Performance Regression Detection
+        id: regression-check
+        if: steps.load-baseline.outputs.baseline_exists == 'true'
+        run: |
+          # Compare current results with baseline
+          CURRENT_AVG="${{ steps.process-results.outputs.avg_response_time }}"
+          CURRENT_P95="${{ steps.process-results.outputs.p95_response_time }}"
+          CURRENT_ERROR_RATE="${{ steps.process-results.outputs.error_rate }}"
+          
+          BASELINE_AVG="${{ steps.load-baseline.outputs.baseline_avg_response_time }}"
+          BASELINE_P95="${{ steps.load-baseline.outputs.baseline_p95_response_time }}"
+          BASELINE_ERROR_RATE="${{ steps.load-baseline.outputs.baseline_error_rate }}"
+          
+          ALERT_THRESHOLD="${{ inputs.alert_threshold || 20 }}"
+          
+          # Calculate percentage changes
+          if (( $(echo "$BASELINE_AVG > 0" | bc -l) )); then
+            AVG_CHANGE=$(echo "scale=2; (($CURRENT_AVG - $BASELINE_AVG) / $BASELINE_AVG) * 100" | bc -l)
+          else
+            AVG_CHANGE=0
+          fi
+          
+          if (( $(echo "$BASELINE_P95 > 0" | bc -l) )); then
+            P95_CHANGE=$(echo "scale=2; (($CURRENT_P95 - $BASELINE_P95) / $BASELINE_P95) * 100" | bc -l)
+          else
+            P95_CHANGE=0
+          fi
+          
+          ERROR_RATE_CHANGE=$(echo "scale=2; $CURRENT_ERROR_RATE - $BASELINE_ERROR_RATE" | bc -l)
+          
+          echo "avg_response_time_change=$AVG_CHANGE" >> $GITHUB_OUTPUT
+          echo "p95_response_time_change=$P95_CHANGE" >> $GITHUB_OUTPUT
+          echo "error_rate_change=$ERROR_RATE_CHANGE" >> $GITHUB_OUTPUT
+          
+          # Check if any metric exceeds threshold
+          ALERT_NEEDED="false"
+          ALERT_MESSAGES=""
+          
+          if (( $(echo "$AVG_CHANGE > $ALERT_THRESHOLD" | bc -l) )); then
+            ALERT_NEEDED="true"
+            ALERT_MESSAGES="$ALERT_MESSAGES\n- Average response time increased by ${AVG_CHANGE}%"
+          fi
+          
+          if (( $(echo "$P95_CHANGE > $ALERT_THRESHOLD" | bc -l) )); then
+            ALERT_NEEDED="true"
+            ALERT_MESSAGES="$ALERT_MESSAGES\n- P95 response time increased by ${P95_CHANGE}%"
+          fi
+          
+          if (( $(echo "$ERROR_RATE_CHANGE > 2" | bc -l) )); then
+            ALERT_NEEDED="true"
+            ALERT_MESSAGES="$ALERT_MESSAGES\n- Error rate increased by ${ERROR_RATE_CHANGE}%"
+          fi
+          
+          echo "alert_needed=$ALERT_NEEDED" >> $GITHUB_OUTPUT
+          echo "alert_messages<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$ALERT_MESSAGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "📊 Performance Comparison (${{ matrix.environment }}):"
+          echo "  Average Response Time: ${CURRENT_AVG}ms (${AVG_CHANGE:+${AVG_CHANGE}%})"
+          echo "  P95 Response Time: ${CURRENT_P95}ms (${P95_CHANGE:+${P95_CHANGE}%})"
+          echo "  Error Rate: ${CURRENT_ERROR_RATE}% (${ERROR_RATE_CHANGE:+${ERROR_RATE_CHANGE}%})"
+
+      - name: 📊 Generate Performance Report
+        run: |
+          # Create detailed performance report
+          cat > performance-report-${{ matrix.environment }}.md << EOF
+          # ⚡ Performance Report - ${{ matrix.environment }}
+          
+          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Environment**: ${{ matrix.environment }}
+          **URL**: ${{ steps.env-url.outputs.url }}
+          
+          ## 📈 Current Metrics
+          
+          | Metric | Value | Status |
+          |--------|-------|--------|
+          | Average Response Time | ${{ steps.process-results.outputs.avg_response_time }}ms | $([ "${{ steps.regression-check.outputs.avg_response_time_change || 0 }}" -gt "20" ] && echo "⚠️ DEGRADED" || echo "✅ GOOD") |
+          | P95 Response Time | ${{ steps.process-results.outputs.p95_response_time }}ms | $([ "${{ steps.regression-check.outputs.p95_response_time_change || 0 }}" -gt "20" ] && echo "⚠️ DEGRADED" || echo "✅ GOOD") |
+          | P99 Response Time | ${{ steps.process-results.outputs.p99_response_time }}ms | - |
+          | Error Rate | ${{ steps.process-results.outputs.error_rate }}% | $([ "${{ steps.process-results.outputs.error_rate || 0 }}" -gt "5" ] && echo "❌ HIGH" || echo "✅ LOW") |
+          | Total Requests | ${{ steps.process-results.outputs.total_requests }} | - |
+          EOF
+          
+          # Add baseline comparison if available
+          if [[ "${{ steps.load-baseline.outputs.baseline_exists }}" == "true" ]]; then
+            cat >> performance-report-${{ matrix.environment }}.md << EOF
+          
+          ## 📊 Baseline Comparison
+          
+          | Metric | Current | Baseline | Change |
+          |--------|---------|----------|--------|
+          | Average Response Time | ${{ steps.process-results.outputs.avg_response_time }}ms | ${{ steps.load-baseline.outputs.baseline_avg_response_time }}ms | ${{ steps.regression-check.outputs.avg_response_time_change || 'N/A' }}% |
+          | P95 Response Time | ${{ steps.process-results.outputs.p95_response_time }}ms | ${{ steps.load-baseline.outputs.baseline_p95_response_time }}ms | ${{ steps.regression-check.outputs.p95_response_time_change || 'N/A' }}% |
+          | Error Rate | ${{ steps.process-results.outputs.error_rate }}% | ${{ steps.load-baseline.outputs.baseline_error_rate }}% | ${{ steps.regression-check.outputs.error_rate_change || 'N/A' }}% |
+          EOF
+          fi
+          
+          # Add alerts if needed
+          if [[ "${{ steps.regression-check.outputs.alert_needed }}" == "true" ]]; then
+            cat >> performance-report-${{ matrix.environment }}.md << EOF
+          
+          ## 🚨 Performance Alerts
+          
+          The following performance issues were detected:
+          ${{ steps.regression-check.outputs.alert_messages }}
+          
+          **Action Required**: Performance degradation detected. Investigation recommended.
+          EOF
+          fi
+
+      - name: 📤 Upload Performance Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results-${{ matrix.environment }}
+          path: |
+            performance-results-${{ matrix.environment }}.json
+            performance-summary-${{ matrix.environment }}.json
+            performance-report-${{ matrix.environment }}.md
+
+      - name: 🚨 Performance Alert
+        if: steps.regression-check.outputs.alert_needed == 'true'
+        run: |
+          echo "🚨 Performance Alert for ${{ matrix.environment }}!"
+          echo "${{ steps.regression-check.outputs.alert_messages }}"
+          
+          # Here you would typically send notifications to Slack, email, etc.
+          # For demo purposes, we'll create an issue
+          echo "Creating performance alert issue..."
+
+  # ==================== ALERT CONSOLIDATION ====================
+  alert-consolidation:
+    name: 🚨 Alert Consolidation & Notification
+    runs-on: ubuntu-latest
+    needs: performance-monitoring
+    if: always() && contains(needs.performance-monitoring.outputs.*, 'true')
+    steps:
+      - name: 📥 Download Performance Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'performance-results-*'
+          merge-multiple: true
+
+      - name: 📧 Consolidate Alerts
+        run: |
+          echo "📊 Consolidating performance alerts..."
+          
+          # Create consolidated alert summary
+          cat > consolidated-alert.md << 'EOF'
+          # 🚨 Performance Alert Summary
+          
+          **Timestamp**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Trigger**: Scheduled performance monitoring
+          
+          ## Environments Affected
+          
+          EOF
+          
+          # Add environment-specific reports
+          for report in performance-report-*.md; do
+            if [ -f "$report" ]; then
+              cat "$report" >> consolidated-alert.md
+              echo "" >> consolidated-alert.md
+            fi
+          done
+          
+          echo "Consolidated alert summary created"
+
+      - name: 🔔 Create Performance Alert Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Check if consolidated alert file exists
+            if (!fs.existsSync('consolidated-alert.md')) {
+              console.log('No consolidated alert found');
+              return;
+            }
+            
+            const alertContent = fs.readFileSync('consolidated-alert.md', 'utf8');
+            
+            // Create issue
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Performance Alert - ${new Date().toISOString().split('T')[0]}`,
+              body: alertContent,
+              labels: ['performance', 'alert', 'monitoring']
+            });
+            
+            console.log(`Created performance alert issue: #${issue.data.number}`);
+
+      - name: 📧 Send Slack Notification
+        if: always()
+        run: |
+          echo "📧 Sending Slack notification..."
+          # Here you would integrate with Slack webhook
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"Performance monitoring completed"}' \
+          #   "${{ secrets.SLACK_WEBHOOK_URL }}"
+
+  # ==================== BASELINE UPDATE ====================
+  baseline-update:
+    name: 📊 Update Performance Baseline
+    runs-on: ubuntu-latest
+    needs: performance-monitoring
+    if: github.event_name == 'schedule' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Performance Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'performance-results-*'
+          merge-multiple: true
+
+      - name: 📊 Update Baselines
+        run: |
+          # Update baselines with current results if no major regressions
+          mkdir -p "${{ env.BASELINE_DATA_PATH }}"
+          
+          for summary in performance-summary-*.json; do
+            if [ -f "$summary" ]; then
+              environment=$(basename "$summary" .json | cut -d'-' -f3)
+              echo "Updating baseline for $environment"
+              
+              # Only update if performance is stable (no major regressions)
+              # This would typically include more sophisticated logic
+              cp "$summary" "${{ env.BASELINE_DATA_PATH }}/baseline-$environment.json"
+            fi
+          done
+
+      - name: 📤 Commit Updated Baselines
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Performance Monitor"
+          
+          git add "${{ env.BASELINE_DATA_PATH }}/"
+          
+          if git diff --staged --quiet; then
+            echo "No baseline changes to commit"
+          else
+            git commit -m "📊 Update performance baselines - $(date -u +"%Y-%m-%d")"
+            git push
+          fi

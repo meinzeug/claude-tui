@@ -17,6 +17,8 @@ from api.routes import auth, users, commands, plugins, themes
 from api.v1 import projects, tasks, validation, ai, community, ai_advanced, workflows, analytics, websocket
 from api.middleware.security import SecurityMiddleware
 from api.middleware.logging import LoggingMiddleware
+from api.middleware.caching import setup_cache_middleware
+from api.middleware.compression import setup_compression_middleware
 from api.dependencies.database import get_database
 from api.models.base import init_database
 
@@ -63,8 +65,28 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Custom Middleware
+    # High-Performance Middleware Stack (order matters!)
+    
+    # 1. Compression (first to compress all responses)
+    setup_compression_middleware(
+        app, 
+        minimum_size=500,
+        gzip_level=6,
+        brotli_level=4,
+        enable_streaming=True
+    )
+    
+    # 2. Caching (before security to cache public responses)
+    setup_cache_middleware(
+        app,
+        redis_url="redis://localhost:6379",
+        default_ttl=300  # 5 minutes default
+    )
+    
+    # 3. Security middleware
     app.add_middleware(SecurityMiddleware)
+    
+    # 4. Logging (last to log final response)
     app.add_middleware(LoggingMiddleware)
 
     # Include Routers
@@ -84,6 +106,10 @@ def create_app() -> FastAPI:
     app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Integration"])
     app.include_router(ai_advanced.router, prefix="/api/v1", tags=["AI Advanced Services"])
     app.include_router(community.router, prefix="/api/v1", tags=["Community"])
+    
+    # High-Performance Endpoints
+    from api.v1 import performance
+    app.include_router(performance.router, prefix="/api/v1/performance", tags=["High Performance"])
 
     # Health Check Endpoint
     @app.get("/health", tags=["Health"])
