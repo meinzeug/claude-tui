@@ -234,7 +234,14 @@ class PlaceholderAlertModal(ModalScreen):
         for severity, count in severity_counts.items():
             if count > 0:
                 color, description = severity_info[severity]
-                icon = PlaceholderIssue("", 0, 0, PlaceholderType.TODO_COMMENT, severity, "").get_severity_icon()
+                # Get icon based on severity level
+                icon_map = {
+                    PlaceholderSeverity.CRITICAL: "🔴",
+                    PlaceholderSeverity.HIGH: "🟡", 
+                    PlaceholderSeverity.MEDIUM: "🟠",
+                    PlaceholderSeverity.LOW: "🔵"
+                }
+                icon = icon_map.get(severity, "❓")
                 
                 table.add_row(
                     f"{icon} {severity.value.title()}",

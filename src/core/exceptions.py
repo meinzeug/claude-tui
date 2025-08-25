@@ -59,7 +59,7 @@ class RecoveryStrategy(Enum):
     ESCALATE = "escalate"
 
 
-class ClaudeTIUException(Exception):
+class ClaudeTUIException(Exception):
     """
     Base exception class for all claude-tui specific errors.
     
@@ -171,7 +171,7 @@ class ClaudeTIUException(Exception):
 
 # Configuration and Setup Exceptions
 
-class ConfigurationError(ClaudeTIUException):
+class ConfigurationError(ClaudeTUIException):
     """Configuration-related errors."""
     
     def __init__(
@@ -220,7 +220,7 @@ class MissingConfigurationError(ConfigurationError):
 
 # Validation and Input Exceptions
 
-class ValidationError(ClaudeTIUException):
+class ValidationError(ClaudeTUIException):
     """Input validation errors."""
     
     def __init__(
@@ -293,7 +293,7 @@ class SemanticValidationError(ValidationError):
 
 # Authentication and Authorization Exceptions
 
-class AuthenticationError(ClaudeTIUException):
+class AuthenticationError(ClaudeTUIException):
     """Authentication-related errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -317,7 +317,7 @@ class InvalidAPIKeyError(AuthenticationError):
         )
 
 
-class AuthorizationError(ClaudeTIUException):
+class AuthorizationError(ClaudeTUIException):
     """Authorization-related errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -332,7 +332,7 @@ class AuthorizationError(ClaudeTIUException):
 
 # AI Service Exceptions
 
-class AIServiceError(ClaudeTIUException):
+class AIServiceError(ClaudeTUIException):
     """AI service integration errors."""
     
     def __init__(
@@ -410,7 +410,7 @@ class AIServiceTimeoutError(AIServiceError):
 
 # Network and Connectivity Exceptions
 
-class NetworkError(ClaudeTIUException):
+class NetworkError(ClaudeTUIException):
     """Network connectivity errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -440,7 +440,7 @@ class TimeoutError(NetworkError):
 
 # File System Exceptions
 
-class FileSystemError(ClaudeTIUException):
+class FileSystemError(ClaudeTUIException):
     """File system operation errors."""
     
     def __init__(
@@ -503,7 +503,7 @@ class ProjectDirectoryError(FileSystemError):
 
 # Security Exceptions
 
-class SecurityError(ClaudeTIUException):
+class SecurityError(ClaudeTUIException):
     """Security-related errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -561,7 +561,7 @@ class MaliciousCodeDetectionError(SecurityError):
 
 # Performance Exceptions
 
-class PerformanceError(ClaudeTIUException):
+class PerformanceError(ClaudeTUIException):
     """Performance-related errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -619,7 +619,7 @@ class TaskExecutionTimeoutError(PerformanceError):
 
 # Integration Exceptions
 
-class IntegrationError(ClaudeTIUException):
+class IntegrationError(ClaudeTUIException):
     """External integration errors."""
     
     def __init__(
@@ -689,7 +689,7 @@ class ModelError(NeuralTrainingError):
     pass
 
 
-class OrchestrationError(ClaudeTIUException):
+class OrchestrationError(ClaudeTUIException):
     """Orchestration system errors."""
     
     def __init__(self, message: str, **kwargs):
@@ -738,7 +738,7 @@ def handle_exception(
     exception: Exception,
     logger: Optional[Any] = None,
     context: Optional[Dict[str, Any]] = None
-) -> ClaudeTIUException:
+) -> ClaudeTUIException:
     """
     Convert generic exceptions to structured ClaudeTIU exceptions.
     
@@ -748,9 +748,9 @@ def handle_exception(
         context: Additional context information
         
     Returns:
-        Structured ClaudeTIUException
+        Structured ClaudeTUIException
     """
-    if isinstance(exception, ClaudeTIUException):
+    if isinstance(exception, ClaudeTUIException):
         return exception
     
     # Map common exception types
@@ -763,7 +763,7 @@ def handle_exception(
         ConnectionError: NetworkError,
     }
     
-    exception_class = exception_mapping.get(type(exception), ClaudeTIUException)
+    exception_class = exception_mapping.get(type(exception), ClaudeTUIException)
     
     structured_exception = exception_class(
         str(exception),
@@ -778,7 +778,7 @@ def handle_exception(
 
 
 def create_error_response(
-    exception: ClaudeTIUException,
+    exception: ClaudeTUIException,
     include_stack_trace: bool = False
 ) -> Dict[str, Any]:
     """
@@ -831,7 +831,7 @@ def log_exception(
         except ImportError:
             return  # Logger not available
     
-    if isinstance(exception, ClaudeTIUException):
+    if isinstance(exception, ClaudeTUIException):
         logger.error(
             f"{exception.error_code}: {exception.message}",
             extra={

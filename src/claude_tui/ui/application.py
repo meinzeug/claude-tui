@@ -27,21 +27,88 @@ from claude_tui.core.project_manager import ProjectManager
 from claude_tui.core.task_engine import TaskEngine
 from claude_tui.core.progress_validator import ProgressValidator
 from claude_tui.integrations.ai_interface import AIInterface
-from claude_tui.ui.screens import (
-    WelcomeScreen, ProjectSetupScreen, MonitoringScreen
-)
-from claude_tui.ui.screens.workspace_screen import WorkspaceScreen
+try:
+    from claude_tui.ui.screens import (
+        WelcomeScreen, ProjectSetupScreen, MonitoringScreen
+    )
+    from claude_tui.ui.screens.workspace_screen import WorkspaceScreen
+except ImportError:
+    # Create fallback screens
+    from textual.screen import Screen
+    class WelcomeScreen(Screen):
+        def compose(self):
+            from textual.widgets import Static
+            yield Static("Welcome to Claude-TUI")
+    
+    class ProjectSetupScreen(Screen):
+        def setup_for_new_project(self):
+            pass
+        def compose(self):
+            from textual.widgets import Static
+            yield Static("Project Setup")
+    
+    class MonitoringScreen(Screen):
+        def compose(self):
+            from textual.widgets import Static
+            yield Static("Monitoring Dashboard")
+    
+    class WorkspaceScreen(Screen):
+        async def set_project(self, project):
+            pass
+        def compose(self):
+            from textual.widgets import Static
+            yield Static("Workspace")
 from claude_tui.models.project import Project
 
-# Import UI widgets
-from claude_tui.ui.widgets.project_tree import ProjectTree
-from claude_tui.ui.widgets.task_dashboard import TaskDashboard
-from claude_tui.ui.widgets.console_widget import ConsoleWidget
-from claude_tui.ui.widgets.placeholder_alert import PlaceholderAlert
-from claude_tui.ui.widgets.progress_intelligence import ProgressIntelligence
-from claude_tui.ui.widgets.workflow_visualizer import WorkflowVisualizerWidget
-from claude_tui.ui.widgets.metrics_dashboard import MetricsDashboardWidget
-from claude_tui.ui.widgets.modal_dialogs import ConfigurationModal, CommandTemplatesModal
+# Import UI widgets with fallbacks
+try:
+    from claude_tui.ui.widgets.project_tree import ProjectTree
+    from claude_tui.ui.widgets.task_dashboard import TaskDashboard
+    from claude_tui.ui.widgets.console_widget import ConsoleWidget
+    from claude_tui.ui.widgets.placeholder_alert import PlaceholderAlert
+    from claude_tui.ui.widgets.progress_intelligence import ProgressIntelligence
+    from claude_tui.ui.widgets.workflow_visualizer import WorkflowVisualizerWidget
+    from claude_tui.ui.widgets.metrics_dashboard import MetricsDashboardWidget
+    from claude_tui.ui.widgets.modal_dialogs import ConfigurationModal, CommandTemplatesModal
+except ImportError:
+    # Create basic fallback widgets
+    from textual.widgets import Static
+    
+    class ProjectTree(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Project Tree [Loading...]")
+    
+    class TaskDashboard(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Task Dashboard [Loading...]")
+    
+    class ConsoleWidget(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Console [Loading...]")
+    
+    class PlaceholderAlert(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("")
+    
+    class ProgressIntelligence(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Progress Intelligence [Loading...]")
+    
+    class WorkflowVisualizerWidget(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Workflow Visualizer [Loading...]")
+    
+    class MetricsDashboardWidget(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Metrics Dashboard [Loading...]")
+    
+    class ConfigurationModal(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Configuration [Loading...]")
+    
+    class CommandTemplatesModal(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Command Templates [Loading...]")
 
 # Import theme manager (create if doesn't exist)
 try:

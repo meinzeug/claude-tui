@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Help Screen - Comprehensive keyboard shortcuts and usage documentation
-for the Claude-TIU application.
+for the Claude-TUI application.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ class HelpScreen(Screen):
     def compose(self):
         """Compose help screen"""
         with Container(id="help-container"):
-            yield Label("🔧 Claude-TIU Help & Documentation", classes="header")
+            yield Label("🔧 Claude-TUI Help & Documentation", classes="header")
             
             with TabbedContent():
                 # Keyboard Shortcuts Tab
@@ -63,7 +63,7 @@ class HelpScreen(Screen):
         """Load keyboard shortcut data organized by category"""
         return {
             "Navigation": [
-                ("Ctrl+Q", "Quit Application", "Exit Claude-TIU safely"),
+                ("Ctrl+Q", "Quit Application", "Exit Claude-TUI safely"),
                 ("Ctrl+H", "Show Help", "Display this help screen"),
                 ("F1", "Quick Help", "Alternative help shortcut"),
                 ("Escape", "Close Modal", "Close current modal dialog"),
@@ -208,7 +208,7 @@ class HelpScreen(Screen):
             yield Label("📖 User Guide", classes="section-header")
             
             user_guide = """
-# Getting Started with Claude-TIU
+# Getting Started with Claude-TUI
 
 ## First Steps
 1. **Create or Open Project**: Use Ctrl+N for new or Ctrl+O to open existing
@@ -268,7 +268,7 @@ class HelpScreen(Screen):
             yield Label("💡 Tips & Tricks", classes="section-header")
             
             tips = """
-# Pro Tips for Claude-TIU
+# Pro Tips for Claude-TUI
 
 ## Productivity Boosters
 - **Vim Navigation**: Use hjkl keys for faster navigation
@@ -320,10 +320,10 @@ class HelpScreen(Screen):
     def _create_about_section(self) -> Container:
         """Create about section"""
         with Container():
-            yield Label("ℹ️ About Claude-TIU", classes="section-header")
+            yield Label("ℹ️ About Claude-TUI", classes="section-header")
             
             about_text = """
-# Claude-TIU: Intelligent AI-powered Terminal User Interface
+# Claude-TUI: Intelligent AI-powered Terminal User Interface
 
 ## Overview
 Claude-TIU is an advanced software development assistant that combines the power of AI with intelligent terminal user interface design. Built with Textual and integrated with Claude AI capabilities, it provides a comprehensive development environment focused on quality, authenticity, and productivity.

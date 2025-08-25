@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Any
 from datetime import datetime
+import asyncio
 
 from textual import on, work
 from textual.containers import Vertical
@@ -48,7 +49,7 @@ class ProjectFileTree(DirectoryTree):
             'unknown': '❓',
         }
     
-    def render_tree_label(self, node, path: Path, is_dir: bool) -> Text:
+    def render_label(self, node, path: Path, is_dir: bool) -> Text:
         """Render tree label with validation status indicators"""
         text = Text()
         
@@ -142,9 +143,15 @@ class ProjectTree(Vertical):
             self.tree_widget.remove()
             self.tree_widget = None
         
-        # Add placeholder back
-        placeholder = Static("Select a project to view files", id="tree_placeholder")
-        self.mount(placeholder)
+        # Only add placeholder if it doesn't exist
+        try:
+            existing_placeholder = self.query_one("#tree_placeholder", Static)
+            # Placeholder already exists, just update its content
+            existing_placeholder.update("Select a project to view files")
+        except:
+            # No placeholder exists, create and mount it
+            placeholder = Static("Select a project to view files", id="tree_placeholder")
+            self.mount(placeholder)
     
     @work(exclusive=True)
     async def start_status_monitoring(self) -> None:
@@ -234,7 +241,7 @@ class ProjectTree(Vertical):
         return False
     
     @on(Button.Pressed, "#refresh_tree")
-    def refresh_tree(self) -> None:
+    def handle_refresh_tree(self) -> None:
         """Handle refresh button press"""
         self.refresh()
         if self.current_project_path:
@@ -246,10 +253,13 @@ class ProjectTree(Vertical):
         # Emit custom message for file selection
         self.post_message(FileSelectedMessage(str(event.path)))
     
-    def refresh(self) -> None:
+    def refresh(self, layout: bool = False, repaint: bool = True) -> None:
         """Refresh the project tree"""
         if self.tree_widget:
             self.tree_widget.reload()
+        # Call parent refresh if it exists
+        if hasattr(super(), 'refresh'):
+            super().refresh()
         
     def set_project(self, project_path: str) -> None:
         """Set the current project path"""

@@ -533,12 +533,15 @@ class TaskDashboard(Vertical):
         """Show task analytics"""
         self.post_message(ShowAnalyticsMessage())
     
-    def refresh(self) -> None:
+    def refresh(self, layout: bool = False) -> None:
         """Refresh the dashboard with latest backend data"""
         # Force update of tasks from backend
         if self.backend_bridge:
             # This will trigger the monitoring loop to fetch fresh data
             asyncio.create_task(self._force_refresh())
+        # Call parent refresh if it exists
+        if hasattr(super(), 'refresh'):
+            super().refresh()
     
     async def _force_refresh(self) -> None:
         """Force refresh from backend"""

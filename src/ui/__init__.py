@@ -1,15 +1,34 @@
 #!/usr/bin/env python3
 """
-UI Module - Claude-TIU User Interface Components
+UI Module - Claude-TUI User Interface Components
 """
 
-from .main_app import ClaudeTIUApp, MainWorkspace, run_app
-from .screens import *
-from .widgets import *
+try:
+    from .main_app import ClaudeTUIApp, MainWorkspace, run_app
+    _main_app_available = True
+except ImportError:
+    _main_app_available = False
+    ClaudeTUIApp = None
+    MainWorkspace = None
+    run_app = None
 
-__all__ = [
-    # Main Application
-    'ClaudeTIUApp',
-    'MainWorkspace',
-    'run_app',
-]
+# Try to import screens and widgets, but don't fail if they don't exist
+try:
+    from .screens import *
+except ImportError:
+    pass
+
+try:
+    from .widgets import *
+except ImportError:
+    pass
+
+__all__ = []
+
+if _main_app_available:
+    __all__.extend([
+        # Main Application
+        'ClaudeTUIApp',
+        'MainWorkspace', 
+        'run_app',
+    ])

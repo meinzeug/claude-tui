@@ -106,7 +106,7 @@ __description__ = 'Core business logic for claude-tui AI-powered project managem
 
 # Initialize default logging
 _logger = setup_logging()
-_logger.info("Claude-TIU core modules initialized successfully")
+_logger.info("Claude-TUI core modules initialized successfully")
 
 # Module-level configuration
 DEFAULT_CONFIG = {

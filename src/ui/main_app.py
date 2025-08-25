@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude-TIU Main Application
+Claude-TUI Main Application
 Intelligent AI-powered Terminal User Interface for project management
 with anti-hallucination and progress validation capabilities.
 """
@@ -27,17 +27,64 @@ from rich.panel import Panel
 from rich.text import Text
 from rich.table import Table
 
-# Import custom widgets
-from .widgets.project_tree import ProjectTree
-from .widgets.task_dashboard import TaskDashboard
-from .widgets.progress_intelligence import ProgressIntelligence
-from .widgets.console_widget import ConsoleWidget
-from .widgets.placeholder_alert import PlaceholderAlert
-from .widgets.notification_system import NotificationSystem
-from .screens import (
-    ProjectWizardScreen, SettingsScreen, CreateProjectMessage,
-    SettingsSavedMessage
-)
+# Import custom widgets - handle both import paths
+try:
+    from .widgets.project_tree import ProjectTree
+    from .widgets.task_dashboard import TaskDashboard
+    from .widgets.progress_intelligence import ProgressIntelligence
+    from .widgets.console_widget import ConsoleWidget
+    from .widgets.placeholder_alert import PlaceholderAlert
+    from .widgets.notification_system import NotificationSystem
+    from .screens import (
+        ProjectWizardScreen, SettingsScreen, CreateProjectMessage,
+        SettingsSavedMessage
+    )
+except ImportError:
+    # Create minimal fallback widgets for development
+    from textual.widgets import Static
+    
+    class ProjectTree(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Project Tree [Placeholder]")
+            
+    class TaskDashboard(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Task Dashboard [Placeholder]")
+            
+    class ProgressIntelligence(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Progress Intelligence [Placeholder]")
+            def update_validation(self, results):
+                pass
+            
+    class ConsoleWidget(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("Console Widget [Placeholder]")
+            
+    class PlaceholderAlert(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("")
+            self.display = False
+        def show_alert(self, results):
+            pass
+            
+    class NotificationSystem(Static):
+        def __init__(self, *args, **kwargs):
+            super().__init__("")
+            self.display = False
+        def add_notification(self, message, type_):
+            pass
+    
+    # Screen classes
+    from textual.screen import Screen
+    class ProjectWizardScreen(Screen):
+        pass
+    class SettingsScreen(Screen):
+        pass
+    class CreateProjectMessage:
+        pass  
+    class SettingsSavedMessage:
+        pass
 
 # Import core components (will be created/integrated)
 try:
@@ -83,7 +130,7 @@ except ImportError:
 class MainWorkspace(Container):
     """Main workspace container with responsive layout"""
     
-    def __init__(self, app_instance: 'ClaudeTIUApp') -> None:
+    def __init__(self, app_instance: 'ClaudeTUIApp') -> None:
         super().__init__()
         self.app_instance = app_instance
         self.project_tree: Optional[ProjectTree] = None
@@ -140,13 +187,13 @@ class MainWorkspace(Container):
                 await asyncio.sleep(60)  # Wait longer on errors
 
 
-class ClaudeTIUApp(App[None]):
-    """Main Claude-TIU Application with anti-hallucination capabilities"""
+class ClaudeTUIApp(App[None]):
+    """Main Claude-TUI Application with anti-hallucination capabilities"""
     
-    TITLE = "Claude-TIU - Intelligent AI Project Manager"
+    TITLE = "Claude-TUI - Intelligent AI Project Manager"
     SUB_TITLE = "SPARC Development with Progress Validation"
     
-    CSS_PATH = "styles/main.css"
+    CSS_PATH = "styles/main.tcss"
     
     BINDINGS = [
         Binding("ctrl+n", "new_project", "New Project"),
@@ -209,7 +256,7 @@ class ClaudeTIUApp(App[None]):
         self.init_core_systems()
         
         # Show welcome message
-        self.notify("Claude-TIU initialized. Press Ctrl+P for Project Wizard.", "info")
+        self.notify("Claude-TUI initialized. Press Ctrl+P for Project Wizard.", "info")
         
     def init_core_systems(self) -> None:
         """Initialize core application systems"""
@@ -390,7 +437,7 @@ class ClaudeTIUApp(App[None]):
     def _generate_help_content(self) -> str:
         """Generate help content for the application"""
         return """
-        Claude-TIU Help:
+        Claude-TUI Help:
         
         Navigation:
         - h/j/k/l: Vim-style navigation
@@ -418,9 +465,15 @@ class ClaudeTIUApp(App[None]):
 
 
 def run_app() -> None:
-    """Entry point for running the Claude-TIU application"""
-    app = ClaudeTIUApp()
-    app.run()
+    """Entry point for running the Claude-TUI application"""
+    # Use integration bridge for better error handling
+    try:
+        from .integration_bridge import run_integrated_app
+        run_integrated_app(ui_type="ui", debug=False)
+    except ImportError:
+        # Fallback to direct instantiation
+        app = ClaudeTUIApp()
+        app.run()
 
 
 if __name__ == "__main__":

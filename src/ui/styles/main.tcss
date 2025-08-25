@@ -139,13 +139,13 @@ Screen {
 
 .filter-bar {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin: 1;
 }
 
 .control-bar {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -164,7 +164,7 @@ Screen {
 
 .input-area {
     height: 3;
-    align: center horizontal;
+    align: center middle;
 }
 
 .status-bar {
@@ -203,7 +203,7 @@ Screen {
 
 .notification-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
 }
 
 .dismiss-button {
@@ -229,7 +229,7 @@ Screen {
 
 .history-controls {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin: 1;
 }
 
@@ -266,7 +266,7 @@ Screen {
 
 .alert-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -311,7 +311,7 @@ Screen {
 
 .issue-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -325,7 +325,7 @@ Screen {
 
 .wizard-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -368,7 +368,7 @@ Screen {
 
 .settings-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -478,7 +478,7 @@ ModalScreen > Container {
 
 .modal-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
@@ -498,68 +498,25 @@ ModalScreen > Container {
 
 .report-actions {
     height: 3;
-    align: center horizontal;
+    align: center middle;
     margin-top: 1;
 }
 
-/* Responsive Design */
-@media (max-width: 120) {
-    .left-panel {
-        width: 100%;
-        height: 40%;
-    }
-    
-    .main-panel {
-        width: 100%;
-        height: 60%;
-    }
+/* Responsive Design - Using display variants instead of media queries */
+.left-panel-compact {
+    width: 100%;
+    height: 40%;
 }
 
-@media (max-width: 80) {
-    .left-panel {
-        display: none;
-    }
-    
-    .main-panel {
-        width: 100%;
-    }
+.main-panel-compact {
+    width: 100%;
+    height: 60%;
 }
 
-/* Dark/Light Theme Variables */
-App.-dark-mode {
-    --background: #1e1e2e;
-    --surface: #313244;
-    --overlay: #7f849c;
-    --text: #cdd6f4;
-    --text-muted: #6c7086;
-    --primary: #89b4fa;
-    --secondary: #a6e3a1;
-    --accent: #f9e2af;
-    --success: #a6e3a1;
-    --warning: #fab387;
-    --error: #f38ba8;
-    --border: #45475a;
-    --primary-darken-1: #7c3aed;
-    --success-darken-1: #16a34a;
-    --error-darken-1: #dc2626;
-    --warning-darken-1: #ea580c;
+.left-panel-hidden {
+    display: none;
 }
 
-App.-light-mode {
-    --background: #eff1f5;
-    --surface: #e6e9ef;
-    --overlay: #9ca0b0;
-    --text: #4c4f69;
-    --text-muted: #6c6f85;
-    --primary: #1e66f5;
-    --secondary: #40a02b;
-    --accent: #df8e1d;
-    --success: #40a02b;
-    --warning: #fe640b;
-    --error: #d20f39;
-    --border: #acb0be;
-    --primary-darken-1: #1e40af;
-    --success-darken-1: #15803d;
-    --error-darken-1: #b91c1c;
-    --warning-darken-1: #c2410c;
+.main-panel-full {
+    width: 100%;
 }
