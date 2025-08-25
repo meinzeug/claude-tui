@@ -13,7 +13,7 @@ if [ ! -d ".git" ]; then
     exit 1
 fi
 
-# Check if Python and Claude-TIU are available
+# Check if Python and Claude-TUI are available
 if ! command -v python3 &> /dev/null; then
     echo "❌ Error: Python 3 is required but not installed."
     exit 1
@@ -63,9 +63,9 @@ sys.path.append('src')
 
 async def validate_files():
     try:
-        from claude_tiu.validation.real_time_validator import RealTimeValidator, ValidationMode
-        from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-        from claude_tiu.core.config_manager import ConfigManager
+        from claude_tui.validation.real_time_validator import RealTimeValidator, ValidationMode
+        from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+        from claude_tui.core.config_manager import ConfigManager
         
         config_manager = ConfigManager()
         engine = AntiHallucinationEngine(config_manager)
@@ -177,7 +177,7 @@ if [ -n "$INVALID_FILES" ]; then
     echo ""
     echo "   To proceed:"
     echo "   1. Review and fix the issues manually"
-    echo "   2. Use auto-fix: python3 -m claude_tiu.validation.auto_fix"
+    echo "   2. Use auto-fix: python3 -m claude_tui.validation.auto_fix"
     echo "   3. Override with: git commit --no-verify"
     echo ""
     exit 1
@@ -287,7 +287,7 @@ EOF
 chmod +x .git/hooks/commit-msg
 
 # Create validation configuration
-cat > .claude-tiu/validation-config.json << 'EOF'
+cat > .claude-tui/validation-config.json << 'EOF'
 {
     "pre_commit": {
         "enabled": true,
@@ -332,9 +332,9 @@ sys.path.append('src')
 async def auto_fix_staged_files():
     """Auto-fix issues in staged files."""
     try:
-        from claude_tiu.validation.real_time_validator import RealTimeValidator
-        from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-        from claude_tiu.core.config_manager import ConfigManager
+        from claude_tui.validation.real_time_validator import RealTimeValidator
+        from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+        from claude_tui.core.config_manager import ConfigManager
         
         # Initialize components
         config_manager = ConfigManager()

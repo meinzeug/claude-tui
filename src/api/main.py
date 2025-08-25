@@ -1,5 +1,5 @@
 """
-FastAPI main application for Claude TIU API.
+FastAPI main application for Claude TUI API.
 
 Provides REST API endpoints for AI-powered development operations.
 """
@@ -35,19 +35,19 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     # Startup
-    logger.info("Starting Claude TIU API...")
+    logger.info("Starting Claude TUI API...")
     await init_database()
     logger.info("Database initialized")
     yield
     # Shutdown
-    logger.info("Shutting down Claude TIU API...")
+    logger.info("Shutting down Claude TUI API...")
 
 
 def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
     
     app = FastAPI(
-        title="Claude TIU API",
+        title="Claude TUI API",
         description="AI-Powered Development Tool REST API",
         version="1.0.0",
         docs_url="/docs",
@@ -122,7 +122,7 @@ def create_app() -> FastAPI:
     async def root():
         """Root endpoint with API information."""
         return {
-            "message": "Welcome to Claude TIU API",
+            "message": "Welcome to Claude TUI API",
             "version": "1.0.0",
             "docs": "/docs",
             "redoc": "/redoc"
@@ -134,7 +134,7 @@ def create_app() -> FastAPI:
             return app.openapi_schema
         
         openapi_schema = get_openapi(
-            title="Claude TIU API",
+            title="Claude TUI API",
             version="1.0.0",
             description="""
 AI-Powered Development Tool REST API with comprehensive endpoints for:

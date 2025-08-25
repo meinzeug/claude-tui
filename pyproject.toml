@@ -3,14 +3,14 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "claude-tiu"
+name = "claude-tui"
 version = "0.1.0"
 description = "Intelligent AI-powered Terminal User Interface for advanced software development"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Claude TIU Team", email = "team@claude-tiu.dev"}
+    {name = "Claude TUI Team", email = "team@claude-tui.dev"}
 ]
 keywords = ["ai", "development", "cli", "tui", "claude", "automation"]
 classifiers = [
@@ -61,23 +61,23 @@ performance = [
     "msgpack>=1.0.0",
     "lz4>=4.3.0"
 ]
-all = ["claude-tiu[dev,performance]"]
+all = ["claude-tui[dev,performance]"]
 
 [project.urls]
-"Homepage" = "https://github.com/claude-tiu/claude-tiu"
-"Bug Reports" = "https://github.com/claude-tiu/claude-tiu/issues"
-"Documentation" = "https://claude-tiu.readthedocs.io"
-"Source" = "https://github.com/claude-tiu/claude-tiu"
+"Homepage" = "https://github.com/claude-tui/claude-tui"
+"Bug Reports" = "https://github.com/claude-tui/claude-tui/issues"
+"Documentation" = "https://claude-tui.readthedocs.io"
+"Source" = "https://github.com/claude-tui/claude-tui"
 
 [project.scripts]
-claude-tiu = "claude_tiu.main:main"
-ctiu = "claude_tiu.main:main"
+claude-tui = "claude_tui.main:main"
+ctui = "claude_tui.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-"claude_tiu" = ["templates/**/*", "assets/**/*", "schemas/**/*"]
+"claude_tui" = ["templates/**/*", "assets/**/*", "schemas/**/*"]
 
 [tool.black]
 line-length = 88
@@ -126,7 +126,7 @@ strict_equality = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov=claude_tiu --cov-report=term-missing --cov-report=html"
+addopts = "-ra -q --cov=claude_tui --cov-report=term-missing --cov-report=html"
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
@@ -134,7 +134,7 @@ python_functions = "test_*"
 asyncio_mode = "auto"
 
 [tool.coverage.run]
-source = ["src/claude_tiu"]
+source = ["src/claude_tui"]
 omit = [
     "*/tests/*",
     "*/test_*",

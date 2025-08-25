@@ -60,17 +60,17 @@ The **Anti-Hallucination Engine** has been successfully implemented as the core 
 ## 📁 Implementation Files
 
 ### Core Engine
-- `/src/claude_tiu/validation/anti_hallucination_engine.py` - **Main engine (2,100+ lines)**
-- `/src/claude_tiu/validation/performance_optimizer.py` - **Performance optimization (800+ lines)**
-- `/src/claude_tiu/validation/training_data_generator.py` - **Synthetic data generation (900+ lines)**
+- `/src/claude_tui/validation/anti_hallucination_engine.py` - **Main engine (2,100+ lines)**
+- `/src/claude_tui/validation/performance_optimizer.py` - **Performance optimization (800+ lines)**
+- `/src/claude_tui/validation/training_data_generator.py` - **Synthetic data generation (900+ lines)**
 
 ### Integration Layer
-- `/src/claude_tiu/integrations/anti_hallucination_integration.py` - **Integration module (1,100+ lines)**
-- `/src/claude_tiu/integrations/ai_interface.py` - **Updated with integration (600+ lines)**
+- `/src/claude_tui/integrations/anti_hallucination_integration.py` - **Integration module (1,100+ lines)**
+- `/src/claude_tui/integrations/ai_interface.py` - **Updated with integration (600+ lines)**
 
 ### Testing & Deployment
 - `/tests/test_anti_hallucination_engine.py` - **Comprehensive test suite (800+ lines)**
-- `/src/claude_tiu/validation/deployment_config.py` - **Production deployment (500+ lines)**
+- `/src/claude_tui/validation/deployment_config.py` - **Production deployment (500+ lines)**
 
 ### Enhanced Existing Modules
 - **Updated existing validation modules** with ML integration hooks
@@ -229,8 +229,8 @@ API_KEY_REQUIRED=false
 
 ### **Quick Start**
 ```python
-from claude_tiu.integrations.ai_interface import AIInterface
-from claude_tiu.core.config_manager import ConfigManager
+from claude_tui.integrations.ai_interface import AIInterface
+from claude_tui.core.config_manager import ConfigManager
 
 # Initialize with anti-hallucination validation
 config = ConfigManager()

@@ -1,4 +1,4 @@
-# Claude TIU - API Specification
+# Claude TUI - API Specification
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@
 
 ## API Overview
 
-Claude TIU provides a comprehensive Python API for building AI-powered development tools. The API is designed with async/await patterns and follows modern Python conventions.
+Claude TUI provides a comprehensive Python API for building AI-powered development tools. The API is designed with async/await patterns and follows modern Python conventions.
 
 ### Core Principles
 
@@ -31,20 +31,20 @@ Claude TIU provides a comprehensive Python API for building AI-powered developme
 
 ```python
 # For API usage
-pip install claude-tiu
+pip install claude-tui
 
 # For development
-pip install claude-tiu[dev]
+pip install claude-tui[dev]
 ```
 
 ### Basic Usage
 
 ```python
 import asyncio
-from claude_tiu import ClaudeTIU, ProjectConfig
+from claude_tui import ClaudeTIU, ProjectConfig
 
 async def main():
-    # Initialize Claude TIU
+    # Initialize Claude TUI
     tiu = ClaudeTIU()
     
     # Create a new project
@@ -67,11 +67,11 @@ if __name__ == "__main__":
 
 ### ClaudeTIU
 
-The main entry point for all Claude TIU operations.
+The main entry point for all Claude TUI operations.
 
 ```python
 class ClaudeTIU:
-    """Main Claude TIU interface for AI-powered development"""
+    """Main Claude TUI interface for AI-powered development"""
     
     def __init__(
         self,
@@ -80,7 +80,7 @@ class ClaudeTIU:
         debug: bool = False
     ):
         """
-        Initialize Claude TIU instance
+        Initialize Claude TUI instance
         
         Args:
             config_path: Path to configuration file
@@ -145,7 +145,7 @@ class ClaudeTIU:
 
 ### Project
 
-Represents a software project managed by Claude TIU.
+Represents a software project managed by Claude TUI.
 
 ```python
 class Project:
@@ -788,7 +788,7 @@ Command-line interface implementation.
 @click.option('--debug', '-d', is_flag=True, help='Enable debug mode')
 @click.pass_context
 def cli(ctx, config, debug):
-    """Claude TIU - AI-Powered Development Tool"""
+    """Claude TUI - AI-Powered Development Tool"""
     ctx.ensure_object(dict)
     ctx.obj['config'] = config
     ctx.obj['debug'] = debug
@@ -903,7 +903,7 @@ class Settings(BaseSettings):
 
 ```python
 class ClaudeTIUError(Exception):
-    """Base exception for Claude TIU"""
+    """Base exception for Claude TUI"""
     
     def __init__(self, message: str, details: Optional[Dict] = None):
         super().__init__(message)
@@ -970,10 +970,10 @@ class ErrorContext:
 
 ```python
 import asyncio
-from claude_tiu import ClaudeTIU, ProjectConfig
+from claude_tui import ClaudeTIU, ProjectConfig
 
 async def create_react_app():
-    # Initialize Claude TIU
+    # Initialize Claude TUI
     tiu = ClaudeTIU(claude_api_key="your_api_key")
     
     # Configure project
@@ -1009,7 +1009,7 @@ asyncio.run(create_react_app())
 ### Advanced Feature Development
 
 ```python
-from claude_tiu import ClaudeTIU, FeatureSpec, CodingTask
+from claude_tui import ClaudeTIU, FeatureSpec, CodingTask
 
 async def add_user_authentication():
     tiu = ClaudeTIU()
@@ -1063,7 +1063,7 @@ asyncio.run(add_user_authentication())
 ### Custom Workflow Orchestration
 
 ```python
-from claude_tiu import TaskEngine, WorkflowSpec, CodingTask
+from claude_tui import TaskEngine, WorkflowSpec, CodingTask
 
 async def custom_development_workflow():
     engine = TaskEngine()
@@ -1132,7 +1132,7 @@ asyncio.run(custom_development_workflow())
 ### Anti-Hallucination Validation
 
 ```python
-from claude_tiu import ProgressValidator, ValidationConfig
+from claude_tui import ProgressValidator, ValidationConfig
 
 async def validate_ai_generated_code():
     validator = ProgressValidator()
@@ -1175,4 +1175,4 @@ async def validate_ai_generated_code():
 asyncio.run(validate_ai_generated_code())
 ```
 
-This comprehensive API specification provides developers with everything needed to build on top of Claude TIU's AI-powered development capabilities.
+This comprehensive API specification provides developers with everything needed to build on top of Claude TUI's AI-powered development capabilities.

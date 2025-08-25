@@ -35,7 +35,7 @@ COPY config/ ./config/
 COPY scripts/ ./scripts/
 
 # Build application
-RUN python -m py_compile -q src/claude_tiu/main.py
+RUN python -m py_compile -q src/claude_tui/main.py
 
 # Stage 4: Production runtime
 FROM python:3.11-slim as production
@@ -88,4 +88,4 @@ EXPOSE $PORT
 STOPSIGNAL SIGTERM
 
 # Start command with graceful shutdown
-CMD ["python", "-m", "uvicorn", "claude_tiu.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--timeout-keep-alive", "30"]
+CMD ["python", "-m", "uvicorn", "claude_tui.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--timeout-keep-alive", "30"]

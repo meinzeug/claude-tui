@@ -108,7 +108,7 @@ class CoverageAnalyzer:
             if 'src' in path_parts:
                 src_index = path_parts.index('src')
                 if len(path_parts) > src_index + 2:
-                    module = path_parts[src_index + 2]  # e.g., src/claude_tiu/core -> core
+                    module = path_parts[src_index + 2]  # e.g., src/claude_tui/core -> core
                 else:
                     module = 'root'
             else:

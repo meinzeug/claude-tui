@@ -77,7 +77,7 @@ data:
           action: replace
           target_label: kubernetes_pod_name
       
-      - job_name: 'claude-tiu-staging'
+      - job_name: 'claude-tui-staging'
         kubernetes_sd_configs:
         - role: pod
           namespaces:
@@ -85,7 +85,7 @@ data:
         relabel_configs:
         - source_labels: [__meta_kubernetes_pod_label_app]
           action: keep
-          regex: claude-tiu
+          regex: claude-tui
         - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
           action: keep
           regex: true
@@ -101,7 +101,7 @@ data:
         - action: labelmap
           regex: __meta_kubernetes_pod_label_(.+)
       
-      - job_name: 'claude-tiu-production'
+      - job_name: 'claude-tui-production'
         kubernetes_sd_configs:
         - role: pod
           namespaces:
@@ -109,7 +109,7 @@ data:
         relabel_configs:
         - source_labels: [__meta_kubernetes_pod_label_app]
           action: keep
-          regex: claude-tiu
+          regex: claude-tui
         - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
           action: keep
           regex: true
@@ -127,7 +127,7 @@ data:
 
   alerts.yml: |
     groups:
-    - name: claude-tiu.rules
+    - name: claude-tui.rules
       rules:
       - alert: HighErrorRate
         expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1

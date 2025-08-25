@@ -1,5 +1,5 @@
 """
-JWT Authentication System for claude-tiu.
+JWT Authentication System for claude-tui.
 
 Implements secure JWT-based authentication with comprehensive security features:
 - Token generation and validation
@@ -66,8 +66,8 @@ class JWTAuthenticator:
         algorithm: str = "HS256",
         access_token_expire_minutes: int = 30,
         refresh_token_expire_days: int = 30,
-        issuer: str = "claude-tiu",
-        audience: str = "claude-tiu-api"
+        issuer: str = "claude-tui",
+        audience: str = "claude-tui-api"
     ):
         self.secret_key = secret_key
         self.algorithm = algorithm
@@ -552,8 +552,8 @@ def create_jwt_authenticator(config: Dict[str, Any]) -> JWTAuthenticator:
         algorithm=config.get("jwt_algorithm", "HS256"),
         access_token_expire_minutes=config.get("jwt_access_token_expire_minutes", 30),
         refresh_token_expire_days=config.get("jwt_refresh_token_expire_days", 30),
-        issuer=config.get("jwt_issuer", "claude-tiu"),
-        audience=config.get("jwt_audience", "claude-tiu-api")
+        issuer=config.get("jwt_issuer", "claude-tui"),
+        audience=config.get("jwt_audience", "claude-tui-api")
     )
 
 

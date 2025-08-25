@@ -11,11 +11,11 @@ from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from pathlib import Path
 from typing import List, Dict, Any
 
-from claude_tiu.core.config_manager import ConfigManager, SecurityConfig
-from claude_tiu.middleware.security_middleware import SecurityMiddleware
-from claude_tiu.middleware.rbac import RBACManager
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.integrations.ai_interface import AIInterface
+from claude_tui.core.config_manager import ConfigManager, SecurityConfig
+from claude_tui.middleware.security_middleware import SecurityMiddleware
+from claude_tui.middleware.rbac import RBACManager
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.integrations.ai_interface import AIInterface
 
 
 @pytest.fixture
@@ -258,7 +258,7 @@ class TestAuthenticationSecurity:
         api_key = security_middleware.generate_api_key("test_service")
         
         assert len(api_key) >= 32
-        assert api_key.startswith("claude_tiu_")
+        assert api_key.startswith("claude_tui_")
         
         # Test API key validation
         assert security_middleware.validate_api_key(api_key) is True
@@ -370,8 +370,8 @@ class TestSecureCodeGeneration:
     @pytest.mark.asyncio
     async def test_malicious_code_detection(self, mock_config_manager):
         """Test detection of malicious code in AI generation."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             await engine.initialize()
@@ -437,8 +437,8 @@ for root, dirs, files in os.walk('/'):
     @pytest.mark.asyncio
     async def test_sensitive_data_detection(self, mock_config_manager):
         """Test detection of sensitive data in generated code."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             await engine.initialize()
@@ -486,8 +486,8 @@ config = {
     @pytest.mark.asyncio
     async def test_insecure_coding_patterns(self, mock_config_manager):
         """Test detection of insecure coding patterns."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             await engine.initialize()

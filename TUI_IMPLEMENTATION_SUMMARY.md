@@ -6,7 +6,7 @@ I have successfully built a comprehensive Terminal User Interface (TUI) for the 
 
 ## 📦 Core Components Implemented
 
-### 1. **Main Application Framework** (`src/claude_tiu/ui/application.py`)
+### 1. **Main Application Framework** (`src/claude_tui/ui/application.py`)
 - **ClaudeTIUApp**: Main Textual application class with comprehensive keyboard shortcuts
 - **Enhanced Key Bindings**: 25+ keyboard shortcuts including vim-style navigation
 - **Theme Management**: Professional dark theme with external CSS loading
@@ -182,7 +182,7 @@ I have successfully built a comprehensive Terminal User Interface (TUI) for the 
 6. `src/ui/screens/help_screen.py` - Comprehensive help and documentation
 
 ### **Enhanced Existing Files:**
-1. `src/claude_tiu/ui/application.py` - Added vim navigation and widget integration
+1. `src/claude_tui/ui/application.py` - Added vim navigation and widget integration
 2. `src/ui/widgets/__init__.py` - Updated imports for all new widgets
 3. `src/ui/widgets/project_tree.py` - Enhanced with validation status (already existed)
 4. `src/ui/widgets/task_dashboard.py` - Enhanced with progress intelligence (already existed)

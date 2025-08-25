@@ -1,17 +1,17 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-hpa
-  namespace: claude-tiu
+  name: claude-tui-hpa
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
   annotations:
-    description: "Production HPA with memory-optimized scaling for Claude-TIU"
+    description: "Production HPA with memory-optimized scaling for Claude-TUI"
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu
+    name: claude-tui
   minReplicas: 3
   maxReplicas: 30
   metrics:
@@ -43,7 +43,7 @@ spec:
       describedObject:
         apiVersion: v1
         kind: Service
-        name: claude-tiu
+        name: claude-tui
       target:
         type: Value
         value: "100"  # Scale up when RPS > 100
@@ -73,12 +73,12 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: claude-tiu-pdb
-  namespace: claude-tiu
+  name: claude-tui-pdb
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: claude-tiu
+      app: claude-tui

@@ -5,8 +5,8 @@
 
 set -euo pipefail
 
-NAMESPACE=${NAMESPACE:-claude-tiu-production}
-SERVICE_NAME=${SERVICE_NAME:-claude-tiu-service}
+NAMESPACE=${NAMESPACE:-claude-tui-production}
+SERVICE_NAME=${SERVICE_NAME:-claude-tui-service}
 TIMEOUT=${TIMEOUT:-300}
 RETRY_INTERVAL=${RETRY_INTERVAL:-10}
 
@@ -76,19 +76,19 @@ check_deployment() {
     
     # Wait for deployment to be available
     wait_for_condition \
-        "kubectl get deployment claude-tiu-app -n $NAMESPACE -o jsonpath='{.status.readyReplicas}' | grep -q '[1-9]'" \
+        "kubectl get deployment claude-tui-app -n $NAMESPACE -o jsonpath='{.status.readyReplicas}' | grep -q '[1-9]'" \
         "deployment to have ready replicas" \
         $TIMEOUT
     
     # Check rollout status
-    if ! kubectl rollout status deployment/claude-tiu-app -n "$NAMESPACE" --timeout=300s; then
+    if ! kubectl rollout status deployment/claude-tui-app -n "$NAMESPACE" --timeout=300s; then
         error "Deployment rollout failed"
         return 1
     fi
     
     # Verify minimum replicas
     local ready_replicas
-    ready_replicas=$(kubectl get deployment claude-tiu-app -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}')
+    ready_replicas=$(kubectl get deployment claude-tui-app -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}')
     
     if [ "$ready_replicas" -lt 3 ]; then
         error "Insufficient ready replicas: $ready_replicas (expected: ≥3)"
@@ -104,7 +104,7 @@ check_pods() {
     
     # Get all pods
     local pods
-    pods=$(kubectl get pods -n "$NAMESPACE" -l app.kubernetes.io/name=claude-tiu -o name)
+    pods=$(kubectl get pods -n "$NAMESPACE" -l app.kubernetes.io/name=claude-tui -o name)
     
     if [ -z "$pods" ]; then
         error "No pods found"
@@ -233,14 +233,14 @@ check_performance() {
 check_hpa() {
     log "Checking Horizontal Pod Autoscaler..."
     
-    if ! kubectl get hpa claude-tiu-hpa -n "$NAMESPACE" >/dev/null 2>&1; then
+    if ! kubectl get hpa claude-tui-hpa -n "$NAMESPACE" >/dev/null 2>&1; then
         warn "HPA not found"
         return 0
     fi
     
     # Check HPA is functioning
     local hpa_status
-    hpa_status=$(kubectl get hpa claude-tiu-hpa -n "$NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="AbleToScale")].status}')
+    hpa_status=$(kubectl get hpa claude-tui-hpa -n "$NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="AbleToScale")].status}')
     
     if [ "$hpa_status" != "True" ]; then
         warn "HPA is not able to scale"
@@ -256,7 +256,7 @@ check_resources() {
     
     # Get pods and check resource usage
     local pods
-    pods=$(kubectl get pods -n "$NAMESPACE" -l app.kubernetes.io/name=claude-tiu -o name)
+    pods=$(kubectl get pods -n "$NAMESPACE" -l app.kubernetes.io/name=claude-tui -o name)
     
     for pod in $pods; do
         local pod_name

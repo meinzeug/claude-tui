@@ -1,5 +1,5 @@
 """
-Database Integration Tests for claude-tiu.
+Database Integration Tests for claude-tui.
 
 Comprehensive tests for database operations including:
 - Session management and connection pooling

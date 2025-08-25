@@ -44,7 +44,7 @@ class TestProjectManager:
         """Mock configuration for testing."""
         return Mock(
             default_template="python",
-            project_root="/tmp/claude-tiu-projects",
+            project_root="/tmp/claude-tui-projects",
             ai_validation=True,
             auto_create_structure=True
         )
@@ -52,7 +52,7 @@ class TestProjectManager:
     @pytest.fixture
     def project_manager(self, mock_ai_interface, mock_task_engine, mock_config):
         """Create ProjectManager instance with mocked dependencies."""
-        # Import will be: from claude_tiu.core.project_manager import ProjectManager
+        # Import will be: from claude_tui.core.project_manager import ProjectManager
         # For now, create a mock class that represents the expected interface
         
         class MockProjectManager:

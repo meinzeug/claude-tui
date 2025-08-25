@@ -1,8 +1,8 @@
-# Claude-TIU Troubleshooting Guide & FAQ
+# Claude-TUI Troubleshooting Guide & FAQ
 
 ## 🔧 Complete Problem-Solving Reference
 
-This comprehensive troubleshooting guide provides solutions for common issues, performance problems, and frequently asked questions about Claude-TIU.
+This comprehensive troubleshooting guide provides solutions for common issues, performance problems, and frequently asked questions about Claude-TUI.
 
 ---
 
@@ -28,7 +28,7 @@ This comprehensive troubleshooting guide provides solutions for common issues, p
 ### System Health Check
 ```bash
 # Run comprehensive system diagnostics
-claude-tiu doctor --comprehensive
+claude-tui doctor --comprehensive
 
 # Expected output:
 ✅ System Requirements: All met
@@ -47,35 +47,35 @@ claude-tiu doctor --comprehensive
 
 ### Quick Status Commands
 ```bash
-# Check Claude-TIU status
-claude-tiu status
+# Check Claude-TUI status
+claude-tui status
 
 # Test API connectivity
-claude-tiu test-connection
+claude-tui test-connection
 
 # View active processes
-claude-tiu ps
+claude-tui ps
 
 # Check logs
-claude-tiu logs --tail 50
+claude-tui logs --tail 50
 
 # Memory usage
-claude-tiu memory-usage
+claude-tui memory-usage
 
 # Clear caches
-claude-tiu cache clear
+claude-tui cache clear
 ```
 
 ---
 
 ## Installation Issues
 
-### Issue: "Command not found: claude-tiu"
+### Issue: "Command not found: claude-tui"
 
 **Symptoms:**
 ```bash
-$ claude-tiu --version
-bash: claude-tiu: command not found
+$ claude-tui --version
+bash: claude-tui: command not found
 ```
 
 **Solution:**
@@ -85,24 +85,24 @@ echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
 source ~/.bashrc
 
 # Option 2: Create symlink
-sudo ln -s ~/.local/bin/claude-tiu /usr/local/bin/claude-tiu
+sudo ln -s ~/.local/bin/claude-tui /usr/local/bin/claude-tui
 
 # Option 3: Use python -m
-python -m claude_tiu --version
+python -m claude_tui --version
 
 # Option 4: Reinstall with --user flag
-pip install --user claude-tiu
+pip install --user claude-tui
 
 # Option 5: Install globally (if you have admin rights)
-sudo pip install claude-tiu
+sudo pip install claude-tui
 ```
 
 ### Issue: Permission Denied Errors
 
 **Symptoms:**
 ```bash
-$ claude-tiu create my-project
-PermissionError: [Errno 13] Permission denied: '/usr/local/bin/claude-tiu'
+$ claude-tui create my-project
+PermissionError: [Errno 13] Permission denied: '/usr/local/bin/claude-tui'
 ```
 
 **Solution:**
@@ -111,20 +111,20 @@ PermissionError: [Errno 13] Permission denied: '/usr/local/bin/claude-tiu'
 sudo chown -R $USER:$USER ~/.local/
 
 # Fix permissions
-chmod +x ~/.local/bin/claude-tiu
+chmod +x ~/.local/bin/claude-tui
 
 # Alternative: Use virtual environment
-python -m venv claude-tiu-env
-source claude-tiu-env/bin/activate
-pip install claude-tiu
+python -m venv claude-tui-env
+source claude-tui-env/bin/activate
+pip install claude-tui
 ```
 
 ### Issue: Python Version Conflicts
 
 **Symptoms:**
 ```bash
-$ claude-tiu --version
-ModuleNotFoundError: No module named 'claude_tiu'
+$ claude-tui --version
+ModuleNotFoundError: No module named 'claude_tui'
 ```
 
 **Solution:**
@@ -134,13 +134,13 @@ python --version
 python3 --version
 
 # Use specific Python version
-python3.11 -m pip install claude-tiu
-python3.11 -m claude_tiu --version
+python3.11 -m pip install claude-tui
+python3.11 -m claude_tui --version
 
 # Use pyenv for version management
 pyenv install 3.11.0
 pyenv global 3.11.0
-pip install claude-tiu
+pip install claude-tui
 ```
 
 ### Issue: SSL Certificate Errors
@@ -159,7 +159,7 @@ pip install --upgrade certifi
 /Applications/Python\ 3.11/Install\ Certificates.command
 
 # For corporate networks
-pip install --trusted-host pypi.org --trusted-host pypi.python.org claude-tiu
+pip install --trusted-host pypi.org --trusted-host pypi.python.org claude-tui
 
 # Set certificate bundle
 export SSL_CERT_FILE=$(python -m certifi)
@@ -179,13 +179,13 @@ python -m venv clean-env
 source clean-env/bin/activate
 pip install --upgrade pip setuptools wheel
 
-# Install Claude-TIU
-pip install claude-tiu
+# Install Claude-TUI
+pip install claude-tui
 
 # If conflicts persist, use conda
-conda create -n claude-tiu python=3.11
-conda activate claude-tiu
-pip install claude-tiu
+conda create -n claude-tui python=3.11
+conda activate claude-tui
+pip install claude-tui
 ```
 
 ---
@@ -196,7 +196,7 @@ pip install claude-tiu
 
 **Symptoms:**
 ```bash
-$ claude-tiu test-connection
+$ claude-tui test-connection
 ❌ Authentication failed: Invalid API key
 ```
 
@@ -206,7 +206,7 @@ $ claude-tiu test-connection
 echo $CLAUDE_API_KEY
 
 # Verify key format (should start with 'sk-')
-# Get new key from https://claude-tiu.dev/dashboard
+# Get new key from https://claude-tui.dev/dashboard
 
 # Set API key
 export CLAUDE_API_KEY="sk-your-actual-key-here"
@@ -216,10 +216,10 @@ echo 'export CLAUDE_API_KEY="sk-your-key"' >> ~/.bashrc
 source ~/.bashrc
 
 # Or use config command
-claude-tiu config set api-key sk-your-key
+claude-tui config set api-key sk-your-key
 
 # Test connection
-claude-tiu test-connection
+claude-tui test-connection
 ```
 
 ### Issue: Token Expired
@@ -235,16 +235,16 @@ claude-tiu test-connection
 **Solution:**
 ```bash
 # Refresh authentication
-claude-tiu auth refresh
+claude-tui auth refresh
 
 # Or re-login
-claude-tiu auth login
+claude-tui auth login
 
 # Clear cached tokens
-claude-tiu cache clear --auth-only
+claude-tui cache clear --auth-only
 
 # Check token expiry
-claude-tiu auth status
+claude-tui auth status
 ```
 
 ### Issue: MFA Problems
@@ -260,16 +260,16 @@ claude-tiu auth status
 sudo ntpdate -s time.nist.gov
 
 # Generate backup codes
-claude-tiu auth backup-codes
+claude-tui auth backup-codes
 
 # Disable MFA temporarily (if you have backup codes)
-claude-tiu auth disable-mfa --backup-code YOUR_CODE
+claude-tui auth disable-mfa --backup-code YOUR_CODE
 
 # Re-enable MFA
-claude-tiu auth enable-mfa
+claude-tui auth enable-mfa
 
 # Use different MFA method
-claude-tiu auth mfa --method sms
+claude-tui auth mfa --method sms
 ```
 
 ---
@@ -286,11 +286,11 @@ claude-tiu auth mfa --method sms
 **Solution:**
 ```bash
 # Check network connectivity
-ping api.claude-tiu.dev
-curl -I https://api.claude-tiu.dev/health
+ping api.claude-tui.dev
+curl -I https://api.claude-tui.dev/health
 
 # Increase timeout
-claude-tiu config set request-timeout 60
+claude-tui config set request-timeout 60
 
 # Check for proxy settings
 echo $HTTP_PROXY
@@ -298,7 +298,7 @@ echo $HTTPS_PROXY
 
 # Test with curl
 curl -H "Authorization: Bearer $CLAUDE_API_KEY" \
-     https://api.claude-tiu.dev/v1/health
+     https://api.claude-tui.dev/v1/health
 ```
 
 ### Issue: Rate Limit Exceeded
@@ -314,17 +314,17 @@ curl -H "Authorization: Bearer $CLAUDE_API_KEY" \
 **Solution:**
 ```bash
 # Check rate limit status
-claude-tiu rate-limits
+claude-tui rate-limits
 
 # Wait for reset
 sleep 60
 
 # Enable automatic retry
-claude-tiu config set auto-retry true
-claude-tiu config set retry-delay 5
+claude-tui config set auto-retry true
+claude-tui config set retry-delay 5
 
 # Upgrade plan for higher limits
-claude-tiu billing upgrade
+claude-tui billing upgrade
 ```
 
 ### Issue: SSL/TLS Problems
@@ -337,7 +337,7 @@ SSL handshake failed
 **Solution:**
 ```bash
 # Check SSL certificates
-openssl s_client -connect api.claude-tiu.dev:443 -servername api.claude-tiu.dev
+openssl s_client -connect api.claude-tui.dev:443 -servername api.claude-tui.dev
 
 # Update CA certificates
 sudo apt-get update && sudo apt-get install ca-certificates
@@ -346,7 +346,7 @@ sudo apt-get update && sudo apt-get install ca-certificates
 export REQUESTS_CA_BUNDLE=/path/to/your/certificate.pem
 
 # Disable SSL verification (not recommended)
-claude-tiu config set ssl-verify false
+claude-tui config set ssl-verify false
 ```
 
 ---
@@ -363,37 +363,37 @@ claude-tiu config set ssl-verify false
 **Diagnosis:**
 ```bash
 # Check AI performance metrics
-claude-tiu metrics ai-performance
+claude-tui metrics ai-performance
 
 # Monitor resource usage
-claude-tiu monitor --real-time
+claude-tui monitor --real-time
 
 # Check AI service health
-claude-tiu ai-status
+claude-tui ai-status
 ```
 
 **Solution:**
 ```bash
 # Optimize AI settings
-claude-tiu config set ai-creativity 0.6  # Lower creativity = faster responses
-claude-tiu config set ai-timeout 45      # Reasonable timeout
-claude-tiu config set parallel-requests 3 # Limit concurrent requests
+claude-tui config set ai-creativity 0.6  # Lower creativity = faster responses
+claude-tui config set ai-timeout 45      # Reasonable timeout
+claude-tui config set parallel-requests 3 # Limit concurrent requests
 
 # Clear AI cache
-claude-tiu cache clear --ai-only
+claude-tui cache clear --ai-only
 
 # Use local processing where possible
-claude-tiu config set prefer-local true
+claude-tui config set prefer-local true
 
 # Enable performance mode
-claude-tiu config set performance-mode high
+claude-tui config set performance-mode high
 ```
 
 ### Issue: High Memory Usage
 
 **Symptoms:**
 ```bash
-$ claude-tiu memory-usage
+$ claude-tui memory-usage
 Memory usage: 4.2GB (85% of available)
 ⚠️ High memory usage detected
 ```
@@ -401,19 +401,19 @@ Memory usage: 4.2GB (85% of available)
 **Solution:**
 ```bash
 # Enable memory optimization
-claude-tiu config set memory-optimization true
+claude-tui config set memory-optimization true
 
 # Reduce cache size
-claude-tiu config set cache-size 256MB
+claude-tui config set cache-size 256MB
 
 # Enable garbage collection tuning
-claude-tiu config set gc-optimization true
+claude-tui config set gc-optimization true
 
 # Restart with memory limits
-claude-tiu restart --memory-limit 2GB
+claude-tui restart --memory-limit 2GB
 
 # Monitor memory usage
-claude-tiu monitor memory --duration 300
+claude-tui monitor memory --duration 300
 ```
 
 ### Issue: Database Performance Problems
@@ -426,19 +426,19 @@ claude-tiu monitor memory --duration 300
 **Solution:**
 ```bash
 # Check database performance
-claude-tiu db performance
+claude-tui db performance
 
 # Optimize database
-claude-tiu db optimize
+claude-tui db optimize
 
 # Rebuild indexes
-claude-tiu db reindex
+claude-tui db reindex
 
 # Check connection pool
-claude-tiu config set db-pool-size 20
+claude-tui config set db-pool-size 20
 
 # Enable connection pooling
-claude-tiu config set db-pool-enabled true
+claude-tui config set db-pool-enabled true
 ```
 
 ---
@@ -466,13 +466,13 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # Try different rendering mode
-claude-tiu --render-mode basic
+claude-tui --render-mode basic
 
 # Reset terminal
 reset
 
 # Use safe mode
-claude-tiu --safe-mode
+claude-tui --safe-mode
 ```
 
 ### Issue: Keyboard Shortcuts Not Working
@@ -485,13 +485,13 @@ claude-tiu --safe-mode
 **Solution:**
 ```bash
 # Check terminal key mapping
-claude-tiu test-keys
+claude-tui test-keys
 
 # Reset keyboard shortcuts
-claude-tiu config reset-shortcuts
+claude-tui config reset-shortcuts
 
 # Use alternative shortcuts
-claude-tiu --use-alt-shortcuts
+claude-tui --use-alt-shortcuts
 
 # Check terminal settings
 stty -a
@@ -510,16 +510,16 @@ stty -a
 **Solution:**
 ```bash
 # Adjust interface scale
-claude-tiu config set ui-scale 1.2
+claude-tui config set ui-scale 1.2
 
 # Set font size
-claude-tiu config set font-size 14
+claude-tui config set font-size 14
 
 # Force terminal size
 stty rows 40 cols 120
 
 # Use responsive mode
-claude-tiu --responsive-ui
+claude-tui --responsive-ui
 
 # Check display DPI
 xrandr | grep -E " connected (primary )?[0-9]+"
@@ -540,7 +540,7 @@ ERROR: Container failed to start
 **Solution:**
 ```bash
 # Check container logs
-docker-compose logs claude-tiu
+docker-compose logs claude-tui
 
 # Check resource limits
 docker stats
@@ -548,7 +548,7 @@ docker stats
 # Increase memory limits
 # In docker-compose.yml:
 services:
-  claude-tiu:
+  claude-tui:
     mem_limit: 2g
     mem_reservation: 1g
 
@@ -572,7 +572,7 @@ FATAL: could not connect to server: No such file or directory
 # Wait for database to be ready
 # In docker-compose.yml:
 services:
-  claude-tiu:
+  claude-tui:
     depends_on:
       db:
         condition: service_healthy
@@ -585,10 +585,10 @@ services:
       retries: 5
 
 # Check network connectivity
-docker exec claude-tiu ping db
+docker exec claude-tui ping db
 
 # Verify environment variables
-docker exec claude-tiu env | grep DATABASE_URL
+docker exec claude-tui env | grep DATABASE_URL
 ```
 
 ### Issue: Kubernetes Deployment Problems
@@ -596,30 +596,30 @@ docker exec claude-tiu env | grep DATABASE_URL
 **Symptoms:**
 ```bash
 $ kubectl get pods
-claude-tiu-xxx   0/1   CrashLoopBackOff
+claude-tui-xxx   0/1   CrashLoopBackOff
 ```
 
 **Solution:**
 ```bash
 # Check pod logs
-kubectl logs claude-tiu-xxx -f
+kubectl logs claude-tui-xxx -f
 
 # Describe pod for events
-kubectl describe pod claude-tiu-xxx
+kubectl describe pod claude-tui-xxx
 
 # Check resource limits
-kubectl top pod claude-tiu-xxx
+kubectl top pod claude-tui-xxx
 
 # Verify config maps and secrets
-kubectl get configmap claude-tiu-config -o yaml
-kubectl get secret claude-tiu-secrets -o yaml
+kubectl get configmap claude-tui-config -o yaml
+kubectl get secret claude-tui-secrets -o yaml
 
 # Check service account permissions
-kubectl auth can-i --list --as=system:serviceaccount:default:claude-tiu
+kubectl auth can-i --list --as=system:serviceaccount:default:claude-tui
 
 # Scale down and up
-kubectl scale deployment claude-tiu --replicas=0
-kubectl scale deployment claude-tiu --replicas=3
+kubectl scale deployment claude-tui --replicas=0
+kubectl scale deployment claude-tui --replicas=3
 ```
 
 ---
@@ -630,25 +630,25 @@ kubectl scale deployment claude-tiu --replicas=3
 
 **Symptoms:**
 ```bash
-$ claude-tiu db migrate
+$ claude-tui db migrate
 alembic.util.exc.CommandError: Can't locate revision identified by 'xyz123'
 ```
 
 **Solution:**
 ```bash
 # Check migration history
-claude-tiu db history
+claude-tui db history
 
 # Reset to specific revision
-claude-tiu db downgrade base
-claude-tiu db upgrade head
+claude-tui db downgrade base
+claude-tui db upgrade head
 
 # Force migration
-claude-tiu db stamp head
-claude-tiu db upgrade
+claude-tui db stamp head
+claude-tui db upgrade
 
 # Backup before fixing
-claude-tiu db backup --file backup_before_fix.sql
+claude-tui db backup --file backup_before_fix.sql
 
 # Manual migration repair
 psql $DATABASE_URL -c "SELECT version_num FROM alembic_version;"
@@ -664,17 +664,17 @@ sqlalchemy.exc.TimeoutError: QueuePool limit of size 20 overflow 0 reached
 **Solution:**
 ```bash
 # Increase pool size
-claude-tiu config set db-pool-size 50
-claude-tiu config set db-max-overflow 20
+claude-tui config set db-pool-size 50
+claude-tui config set db-max-overflow 20
 
 # Check for connection leaks
-claude-tiu db connections
+claude-tui db connections
 
 # Enable connection recycling
-claude-tiu config set db-pool-recycle 3600
+claude-tui config set db-pool-recycle 3600
 
 # Restart application
-claude-tiu restart
+claude-tui restart
 ```
 
 ### Issue: Slow Queries
@@ -687,19 +687,19 @@ claude-tiu restart
 **Solution:**
 ```bash
 # Enable query logging
-claude-tiu config set db-log-queries true
+claude-tui config set db-log-queries true
 
 # Analyze slow queries
-claude-tiu db slow-queries
+claude-tui db slow-queries
 
 # Update statistics
-claude-tiu db analyze
+claude-tui db analyze
 
 # Rebuild indexes
-claude-tiu db reindex
+claude-tui db reindex
 
 # Check for missing indexes
-claude-tiu db index-suggestions
+claude-tui db index-suggestions
 ```
 
 ---
@@ -716,20 +716,20 @@ claude-tiu db index-suggestions
 **Solution:**
 ```bash
 # Increase validation strictness
-claude-tiu config set validation-level strict
+claude-tui config set validation-level strict
 
 # Enable auto-fix
-claude-tiu config set auto-fix true
+claude-tui config set auto-fix true
 
 # Use better prompting
-claude-tiu config set ai-creativity 0.7
-claude-tiu config set include-context true
+claude-tui config set ai-creativity 0.7
+claude-tui config set include-context true
 
 # Enable post-generation validation
-claude-tiu config set post-validation true
+claude-tui config set post-validation true
 
 # Use specific language models
-claude-tiu ai-config set model claude-3-sonnet
+claude-tui ai-config set model claude-3-sonnet
 ```
 
 ### Issue: Validation Engine False Positives
@@ -742,19 +742,19 @@ claude-tiu ai-config set model claude-3-sonnet
 **Solution:**
 ```bash
 # Tune validation sensitivity
-claude-tiu config set validation-sensitivity 0.8
+claude-tui config set validation-sensitivity 0.8
 
 # Update validation models
-claude-tiu update --validation-models
+claude-tui update --validation-models
 
 # Train custom patterns
-claude-tiu validation train-custom --data your_training_data.json
+claude-tui validation train-custom --data your_training_data.json
 
 # Check validation accuracy
-claude-tiu validation benchmark
+claude-tui validation benchmark
 
 # Use manual validation mode
-claude-tiu validate --manual-review
+claude-tui validate --manual-review
 ```
 
 ### Issue: Anti-Hallucination Detection Too Aggressive
@@ -767,19 +767,19 @@ claude-tiu validate --manual-review
 **Solution:**
 ```bash
 # Adjust detection threshold
-claude-tiu config set anti-hallucination-threshold 0.9
+claude-tui config set anti-hallucination-threshold 0.9
 
 # Whitelist patterns
-claude-tiu validation whitelist-pattern "# TODO: implement feature X"
+claude-tui validation whitelist-pattern "# TODO: implement feature X"
 
 # Disable aggressive detection
-claude-tiu config set validation-aggressive false
+claude-tui config set validation-aggressive false
 
 # Custom validation rules
-claude-tiu validation add-rule --file custom_rules.yaml
+claude-tui validation add-rule --file custom_rules.yaml
 
 # Review detection accuracy
-claude-tiu validation accuracy-report
+claude-tui validation accuracy-report
 ```
 
 ---
@@ -788,46 +788,46 @@ claude-tiu validation accuracy-report
 
 ### General Usage
 
-**Q: How do I upgrade Claude-TIU to the latest version?**
+**Q: How do I upgrade Claude-TUI to the latest version?**
 ```bash
 # Upgrade via pip
-pip install --upgrade claude-tiu
+pip install --upgrade claude-tui
 
 # Or via package manager
-apt update && apt upgrade claude-tiu
+apt update && apt upgrade claude-tui
 
 # Check version
-claude-tiu --version
+claude-tui --version
 
 # Update configuration if needed
-claude-tiu config migrate
+claude-tui config migrate
 ```
 
-**Q: Can I use Claude-TIU offline?**
+**Q: Can I use Claude-TUI offline?**
 ```bash
 # Limited offline functionality available
-claude-tiu --offline-mode
+claude-tui --offline-mode
 
 # Pre-download models for offline use
-claude-tiu download-models --all
+claude-tui download-models --all
 
 # Enable local processing
-claude-tiu config set prefer-local true
+claude-tui config set prefer-local true
 ```
 
 **Q: How do I backup my projects and settings?**
 ```bash
 # Backup projects
-claude-tiu backup projects --output projects_backup.tar.gz
+claude-tui backup projects --output projects_backup.tar.gz
 
 # Backup settings
-claude-tiu config export --file config_backup.yaml
+claude-tui config export --file config_backup.yaml
 
 # Full system backup
-claude-tiu backup --full --output full_backup_$(date +%Y%m%d).tar.gz
+claude-tui backup --full --output full_backup_$(date +%Y%m%d).tar.gz
 
 # Restore from backup
-claude-tiu restore --file full_backup_20240115.tar.gz
+claude-tui restore --file full_backup_20240115.tar.gz
 ```
 
 ### Performance & Scaling
@@ -835,15 +835,15 @@ claude-tiu restore --file full_backup_20240115.tar.gz
 **Q: How can I improve AI response times?**
 ```bash
 # Optimize AI settings
-claude-tiu config set ai-creativity 0.6
-claude-tiu config set ai-timeout 30
-claude-tiu config set cache-ai-responses true
+claude-tui config set ai-creativity 0.6
+claude-tui config set ai-timeout 30
+claude-tui config set cache-ai-responses true
 
 # Use performance mode
-claude-tiu --performance-mode
+claude-tui --performance-mode
 
 # Enable parallel processing
-claude-tiu config set parallel-ai-requests 3
+claude-tui config set parallel-ai-requests 3
 ```
 
 **Q: What are the system requirements for enterprise use?**
@@ -890,27 +890,27 @@ security_measures:
     portability: "Data export supported"
 ```
 
-**Q: Can I run Claude-TIU in my corporate network?**
+**Q: Can I run Claude-TUI in my corporate network?**
 ```bash
 # Configure for corporate proxy
-claude-tiu config set proxy http://proxy.company.com:8080
+claude-tui config set proxy http://proxy.company.com:8080
 
 # Use corporate certificates
-claude-tiu config set ca-bundle /path/to/corporate/ca.pem
+claude-tui config set ca-bundle /path/to/corporate/ca.pem
 
 # Enable LDAP/AD integration
-claude-tiu auth configure --type ldap --server ldap.company.com
+claude-tui auth configure --type ldap --server ldap.company.com
 
 # Air-gapped deployment
-claude-tiu deploy --air-gapped --models-bundle local_models.tar.gz
+claude-tui deploy --air-gapped --models-bundle local_models.tar.gz
 ```
 
 ### Integration & API
 
-**Q: How do I integrate Claude-TIU with my existing tools?**
+**Q: How do I integrate Claude-TUI with my existing tools?**
 ```python
 # Python integration
-from claude_tiu import ClaudeTIU, ProjectConfig
+from claude_tui import ClaudeTIU, ProjectConfig
 
 client = ClaudeTIU(api_key="your-key")
 project = await client.create_project(
@@ -921,19 +921,19 @@ project = await client.create_project(
 import requests
 
 response = requests.post(
-    "https://api.claude-tiu.dev/v1/projects",
+    "https://api.claude-tui.dev/v1/projects",
     headers={"Authorization": "Bearer your-token"},
     json={"name": "api-project", "type": "react"}
 )
 
 # CLI integration
-claude-tiu create my-project --type django --output-json | jq .project_id
+claude-tui create my-project --type django --output-json | jq .project_id
 ```
 
-**Q: Can I extend Claude-TIU with custom plugins?**
+**Q: Can I extend Claude-TUI with custom plugins?**
 ```python
 # Create custom plugin
-from claude_tiu.plugins import Plugin, PluginManager
+from claude_tui.plugins import Plugin, PluginManager
 
 class MyCustomPlugin(Plugin):
     name = "my-custom-plugin"
@@ -957,19 +957,19 @@ manager.register(MyCustomPlugin())
 **Q: My validation is failing on valid code. What should I do?**
 ```bash
 # Step 1: Check validation settings
-claude-tiu config get validation-level
+claude-tui config get validation-level
 
 # Step 2: Run with detailed output
-claude-tiu validate --verbose --debug my_file.py
+claude-tui validate --verbose --debug my_file.py
 
 # Step 3: Check for false positives
-claude-tiu validation analyze-false-positives
+claude-tui validation analyze-false-positives
 
 # Step 4: Adjust thresholds if needed
-claude-tiu config set validation-sensitivity 0.7
+claude-tui config set validation-sensitivity 0.7
 
 # Step 5: Report issues to improve the system
-claude-tiu report-issue --type validation --file my_file.py
+claude-tui report-issue --type validation --file my_file.py
 ```
 
 ---
@@ -980,9 +980,9 @@ claude-tiu report-issue --type validation --file my_file.py
 | Code | Description | Solution |
 |------|-------------|----------|
 | `AUTH_INVALID_KEY` | API key is invalid or malformed | Check API key format and regenerate if needed |
-| `AUTH_TOKEN_EXPIRED` | JWT token has expired | Run `claude-tiu auth refresh` |
+| `AUTH_TOKEN_EXPIRED` | JWT token has expired | Run `claude-tui auth refresh` |
 | `AUTH_INSUFFICIENT_PERMISSIONS` | User lacks required permissions | Contact admin to update user role |
-| `AUTH_MFA_REQUIRED` | Multi-factor authentication required | Complete MFA setup with `claude-tiu auth mfa` |
+| `AUTH_MFA_REQUIRED` | Multi-factor authentication required | Complete MFA setup with `claude-tui auth mfa` |
 | `AUTH_RATE_LIMITED` | Too many authentication attempts | Wait before retrying |
 
 ### Network Errors (NET_*)
@@ -1017,26 +1017,26 @@ claude-tiu report-issue --type validation --file my_file.py
 ## Getting Help
 
 ### Self-Service Resources
-1. **Documentation**: https://docs.claude-tiu.dev
-2. **API Reference**: https://api.claude-tiu.dev/docs
-3. **Community Forum**: https://community.claude-tiu.dev
-4. **Knowledge Base**: https://help.claude-tiu.dev
-5. **Status Page**: https://status.claude-tiu.dev
+1. **Documentation**: https://docs.claude-tui.dev
+2. **API Reference**: https://api.claude-tui.dev/docs
+3. **Community Forum**: https://community.claude-tui.dev
+4. **Knowledge Base**: https://help.claude-tui.dev
+5. **Status Page**: https://status.claude-tui.dev
 
 ### Debug Information Collection
 ```bash
 # Generate comprehensive debug report
-claude-tiu debug-report --include-logs --include-config
+claude-tui debug-report --include-logs --include-config
 
-# This creates a file: claude-tiu-debug-YYYYMMDD-HHMMSS.tar.gz
+# This creates a file: claude-tui-debug-YYYYMMDD-HHMMSS.tar.gz
 # Upload this file when requesting support
 ```
 
 ### Contact Support
 - **Community Support**: Discord, Forums, GitHub Issues
-- **Email Support**: support@claude-tiu.dev
-- **Enterprise Support**: enterprise@claude-tiu.dev
-- **Security Issues**: security@claude-tiu.dev
+- **Email Support**: support@claude-tui.dev
+- **Enterprise Support**: enterprise@claude-tui.dev
+- **Security Issues**: security@claude-tui.dev
 
 ### Support Ticket Template
 ```
@@ -1044,7 +1044,7 @@ claude-tiu debug-report --include-logs --include-config
 Brief description of the issue
 
 **Environment:**
-- Claude-TIU Version: X.X.X
+- Claude-TUI Version: X.X.X
 - Operating System: 
 - Python Version:
 - Database: 
@@ -1064,13 +1064,13 @@ What actually happens
 Complete error output
 
 **Debug Report:**
-Attach claude-tiu-debug-*.tar.gz file
+Attach claude-tui-debug-*.tar.gz file
 ```
 
 ### Emergency Support
 For production-critical issues:
 - **Phone**: +1-800-CLAUDE-TIU
-- **Slack**: #claude-tiu-emergency (Enterprise customers)
+- **Slack**: #claude-tui-emergency (Enterprise customers)
 - **Priority**: Include "URGENT" in email subject
 
 ---
@@ -1098,16 +1098,16 @@ For production-critical issues:
 ### 4. Use Available Tools
 ```bash
 # Monitoring
-claude-tiu monitor --real-time
+claude-tui monitor --real-time
 
 # Debugging
-claude-tiu --debug --verbose
+claude-tui --debug --verbose
 
 # Testing
-claude-tiu test-all
+claude-tui test-all
 
 # Profiling
-claude-tiu profile --duration 60
+claude-tui profile --duration 60
 ```
 
 ### 5. Know When to Escalate
@@ -1120,4 +1120,4 @@ claude-tiu profile --duration 60
 
 **Need more help? We're here for you! 🚀**
 
-*This troubleshooting guide is regularly updated based on user feedback and common issues. For the latest version, visit: https://docs.claude-tiu.dev/troubleshooting*
+*This troubleshooting guide is regularly updated based on user feedback and common issues. For the latest version, visit: https://docs.claude-tui.dev/troubleshooting*

@@ -1,17 +1,17 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-blue-hpa
+  name: claude-tui-blue-hpa
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: blue
     environment: production
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-blue
+    name: claude-tui-blue
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -44,17 +44,17 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-green-hpa
+  name: claude-tui-green-hpa
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: green
     environment: production
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-green
+    name: claude-tui-green
   minReplicas: 3
   maxReplicas: 10
   metrics:

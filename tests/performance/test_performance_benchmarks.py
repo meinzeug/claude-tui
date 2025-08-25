@@ -1,5 +1,5 @@
 """
-Performance benchmarks and load testing for claude-tiu.
+Performance benchmarks and load testing for claude-tui.
 
 This module provides comprehensive performance testing including:
 - Load testing for concurrent operations

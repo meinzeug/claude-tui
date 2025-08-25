@@ -408,7 +408,7 @@ def pytest_runtest_makereport(item, call):
 
 def pytest_sessionstart(session):
     """Enhanced session start with monitoring setup."""
-    print("\n🚀 Starting enhanced claude-tiu test suite...")
+    print("\n🚀 Starting enhanced claude-tui test suite...")
     print("="*80)
     print("🔧 Configuration:")
     print(f"   • Async mode: enabled")

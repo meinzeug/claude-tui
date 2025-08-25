@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Smoke Tests for Claude TIU Deployment
+# Smoke Tests for Claude TUI Deployment
 # Comprehensive validation of deployed application
 
 set -euo pipefail
@@ -449,7 +449,7 @@ show_results() {
 # Help function
 show_help() {
     cat << EOF
-Smoke Tests for Claude TIU Deployment
+Smoke Tests for Claude TUI Deployment
 
 Usage: $0 [BASE_URL] [OPTIONS]
 
@@ -464,8 +464,8 @@ Options:
 
 Examples:
     $0
-    $0 https://staging.claude-tiu.dev
-    $0 https://claude-tiu.dev --timeout 60 --max-retries 3
+    $0 https://staging.claude-tui.dev
+    $0 https://claude-tui.dev --timeout 60 --max-retries 3
     $0 http://localhost:8080 --verbose
 
 EOF

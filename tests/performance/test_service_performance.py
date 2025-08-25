@@ -1,5 +1,5 @@
 """
-Performance tests for claude-tiu services.
+Performance tests for claude-tui services.
 
 Tests performance characteristics including:
 - Throughput under load

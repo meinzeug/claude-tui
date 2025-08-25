@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🎯 Comprehensive Test Suite Runner for Claude-TIU
+# 🎯 Comprehensive Test Suite Runner for Claude-TUI
 # Test Engineering Agent - Hive Mind Kollektiv
 # Mission: Verstärke die Test-Suite für 92%+ Coverage
 
@@ -216,7 +216,7 @@ create_test_summary() {
     local summary_file="$REPORT_DIR/test_summary_$TIMESTAMP.md"
     
     cat > "$summary_file" << EOF
-# 🎯 Claude-TIU Test Suite Summary
+# 🎯 Claude-TUI Test Suite Summary
 
 **Generated:** $(date '+%Y-%m-%d %H:%M:%S')  
 **Coverage Target:** ${COVERAGE_TARGET}%  
@@ -387,7 +387,7 @@ main() {
 # Script usage information
 usage() {
     cat << EOF
-🎯 Comprehensive Test Suite Runner for Claude-TIU
+🎯 Comprehensive Test Suite Runner for Claude-TUI
 
 Usage: $0 [OPTIONS]
 

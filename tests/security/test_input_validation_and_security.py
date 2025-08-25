@@ -1,5 +1,5 @@
 """
-Security testing suite for claude-tiu.
+Security testing suite for claude-tui.
 
 Tests input validation, security measures, sandbox functionality,
 and protection against various attack vectors.
@@ -23,7 +23,7 @@ class TestInputValidation:
     @pytest.fixture
     def input_validator(self):
         """Create input validator instance."""
-        # This will be: from claude_tiu.security.validators import InputValidator
+        # This will be: from claude_tui.security.validators import InputValidator
         
         class MockInputValidator:
             def __init__(self):
@@ -290,7 +290,7 @@ class TestCodeSandbox:
     @pytest.fixture
     def code_sandbox(self):
         """Create code sandbox instance."""
-        # This will be: from claude_tiu.security.sandbox import CodeSandbox
+        # This will be: from claude_tui.security.sandbox import CodeSandbox
         
         class MockCodeSandbox:
             def __init__(self, memory_limit="512M", cpu_limit=1.0, timeout=10):

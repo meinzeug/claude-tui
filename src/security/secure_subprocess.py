@@ -1,5 +1,5 @@
 """
-Secure subprocess execution system for claude-tiu.
+Secure subprocess execution system for claude-tui.
 
 This module provides enterprise-grade security for subprocess execution with:
 - Command whitelisting and argument validation

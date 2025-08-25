@@ -1,5 +1,5 @@
 """
-Service Integration Tests for claude-tiu.
+Service Integration Tests for claude-tui.
 
 Tests interactions between services to ensure proper integration:
 - AI Service + Task Service coordination

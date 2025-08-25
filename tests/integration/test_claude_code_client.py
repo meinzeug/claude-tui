@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from aiohttp import ClientError, ClientResponseError
 from aiohttp.web import Response
 
-from claude_tiu.integrations.claude_code_client import (
+from claude_tui.integrations.claude_code_client import (
     ClaudeCodeClient,
     ClaudeCodeApiError,
     ClaudeCodeAuthError,
@@ -25,9 +25,9 @@ from claude_tiu.integrations.claude_code_client import (
     ProjectAnalysisRequest,
     RateLimiter
 )
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.models.ai_models import CodeResult, ReviewCriteria, CodeReview
-from claude_tiu.models.project import Project
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.models.ai_models import CodeResult, ReviewCriteria, CodeReview
+from claude_tui.models.project import Project
 
 
 class TestRateLimiter:
@@ -574,7 +574,7 @@ class TestClaudeCodeClientLegacyMethods:
 class TestClaudeCodeClientStaticMethods:
     """Test static utility methods."""
     
-    @patch('claude_tiu.core.config_manager.ConfigManager')
+    @patch('claude_tui.core.config_manager.ConfigManager')
     def test_create_from_config(self, mock_config_class):
         """Test creating client from config file."""
         mock_config = MagicMock()
@@ -585,7 +585,7 @@ class TestClaudeCodeClientStaticMethods:
         assert isinstance(client, ClaudeCodeClient)
         mock_config_class.assert_called_once_with('/path/to/config.yaml')
     
-    @patch('claude_tiu.core.config_manager.ConfigManager')
+    @patch('claude_tui.core.config_manager.ConfigManager')
     def test_create_with_token(self, mock_config_class):
         """Test creating client with OAuth token."""
         mock_config = MagicMock()

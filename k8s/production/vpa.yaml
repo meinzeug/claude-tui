@@ -2,21 +2,21 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: claude-tiu-vpa-blue
+  name: claude-tui-vpa-blue
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: blue
 spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-blue
+    name: claude-tui-blue
   updatePolicy:
     updateMode: "Auto"  # Automatically apply recommendations
   resourcePolicy:
     containerPolicies:
-    - containerName: claude-tiu
+    - containerName: claude-tui
       minAllowed:
         cpu: 100m
         memory: 128Mi
@@ -30,21 +30,21 @@ spec:
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: claude-tiu-vpa-green
+  name: claude-tui-vpa-green
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: green
 spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-green
+    name: claude-tui-green
   updatePolicy:
     updateMode: "Auto"  # Automatically apply recommendations
   resourcePolicy:
     containerPolicies:
-    - containerName: claude-tiu
+    - containerName: claude-tui
       minAllowed:
         cpu: 100m
         memory: 128Mi
@@ -59,16 +59,16 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-hpa-blue
+  name: claude-tui-hpa-blue
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: blue
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-blue
+    name: claude-tui-blue
   minReplicas: 0  # Can scale to zero when not active
   maxReplicas: 30
   metrics:
@@ -111,16 +111,16 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-hpa-green
+  name: claude-tui-hpa-green
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     color: green
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-green
+    name: claude-tui-green
   minReplicas: 0  # Can scale to zero when not active
   maxReplicas: 30
   metrics:

@@ -175,7 +175,7 @@ CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
-  name: claude-tiu-security-policy
+  name: claude-tui-security-policy
 spec:
   privileged: false
   allowPrivilegeEscalation: false
@@ -312,7 +312,7 @@ python scripts/validate_security_config.py || exit 1
 
 # 3. Deploy with security
 echo "Deploying with security hardening..."
-docker build --security-opt no-new-privileges -t claude-tiu:secure .
+docker build --security-opt no-new-privileges -t claude-tui:secure .
 
 # 4. Runtime security
 echo "Enabling runtime security monitoring..."

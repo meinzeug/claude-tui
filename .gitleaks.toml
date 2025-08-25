@@ -1,7 +1,7 @@
-# Gitleaks configuration for Claude TIU
+# Gitleaks configuration for Claude TUI
 # Detects hardcoded secrets, keys, and sensitive information
 
-title = "Claude TIU Security Configuration"
+title = "Claude TUI Security Configuration"
 
 [extend]
 # Use default rules as base

@@ -1,4 +1,4 @@
-# Claude TIU Backend - Implementation Templates
+# Claude TUI Backend - Implementation Templates
 
 **Generated:** 2025-08-25  
 **Purpose:** Ready-to-use code templates for implementing missing backend features  

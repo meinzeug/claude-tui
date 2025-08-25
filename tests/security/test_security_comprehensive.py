@@ -1,5 +1,5 @@
 """
-Comprehensive security tests for claude-tiu.
+Comprehensive security tests for claude-tui.
 
 This module provides security testing including:
 - Input validation and sanitization

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Environment Configuration Management Script
-# Manages environment-specific configurations for Claude TIU
+# Manages environment-specific configurations for Claude TUI
 
 set -euo pipefail
 
@@ -39,7 +39,7 @@ log_error() {
 # Help function
 show_help() {
     cat << EOF
-Environment Configuration Management for Claude TIU
+Environment Configuration Management for Claude TUI
 
 Usage: $0 COMMAND [OPTIONS]
 
@@ -101,7 +101,7 @@ debug: true
 log_level: DEBUG
 
 database:
-  url: sqlite:///./claude_tiu_dev.db
+  url: sqlite:///./claude_tui_dev.db
   pool_size: 5
   echo: true
 
@@ -167,7 +167,7 @@ debug: false
 log_level: INFO
 
 database:
-  url: postgresql://user:password@staging-db:5432/claude_tiu_staging
+  url: postgresql://user:password@staging-db:5432/claude_tui_staging
   pool_size: 20
   max_connections: 50
 
@@ -178,7 +178,7 @@ redis:
 security:
   secret_key: ${SECRET_KEY}
   enable_cors: true
-  cors_origins: ["https://staging.claude-tiu.dev"]
+  cors_origins: ["https://staging.claude-tui.dev"]
   enable_https_redirect: true
 
 api:
@@ -202,7 +202,7 @@ debug: false
 log_level: WARNING
 
 database:
-  url: postgresql://user:password@prod-db:5432/claude_tiu_production
+  url: postgresql://user:password@prod-db:5432/claude_tui_production
   pool_size: 50
   max_connections: 100
   ssl_mode: require
@@ -263,7 +263,7 @@ handlers:
     class: logging.handlers.RotatingFileHandler
     level: $([ "$env" = "production" ] && echo "WARNING" || echo "INFO")
     formatter: detailed
-    filename: /app/logs/claude-tiu.log
+    filename: /app/logs/claude-tui.log
     maxBytes: 10485760
     backupCount: 5
 
@@ -272,7 +272,7 @@ root:
   handlers: [console, file]
 
 loggers:
-  claude_tiu:
+  claude_tui:
     level: $([ "$env" = "development" ] && echo "DEBUG" || echo "INFO")
     handlers: [console, file]
     propagate: no
@@ -323,24 +323,24 @@ EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: claude-tiu-app
+  name: claude-tui-app
   namespace: {{ NAMESPACE }}
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: {{ ENVIRONMENT }}
 spec:
   replicas: {{ REPLICAS }}
   selector:
     matchLabels:
-      app: claude-tiu
+      app: claude-tui
   template:
     metadata:
       labels:
-        app: claude-tiu
+        app: claude-tui
         environment: {{ ENVIRONMENT }}
     spec:
       containers:
-      - name: claude-tiu
+      - name: claude-tui
         image: {{ IMAGE }}
         ports:
         - containerPort: 8000
@@ -350,7 +350,7 @@ spec:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: secret-key
         resources:
           requests:
@@ -501,7 +501,7 @@ deploy_config() {
             ;;
         "development"|"testing")
             # Copy to local config directory
-            cp "$config_file" "$PROJECT_ROOT/claude_tiu_config.yaml"
+            cp "$config_file" "$PROJECT_ROOT/claude_tui_config.yaml"
             log_success "Configuration deployed locally"
             ;;
     esac
@@ -513,14 +513,14 @@ deploy_to_kubernetes() {
     local namespace="$env"
     
     # Create ConfigMap
-    kubectl create configmap claude-tiu-config \
+    kubectl create configmap claude-tui-config \
         --from-file="$ENVIRONMENTS_DIR/$env/" \
         --namespace="$namespace" \
         --dry-run=client \
         -o yaml | kubectl apply -f -
     
     # Restart deployment to pick up new config
-    kubectl rollout restart deployment/claude-tiu-app -n "$namespace"
+    kubectl rollout restart deployment/claude-tui-app -n "$namespace"
     
     log_success "Configuration deployed to Kubernetes namespace: $namespace"
 }

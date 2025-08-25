@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
-  claude-tiu:
+  claude-tui:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
-    image: claude-tiu:production
-    container_name: claude-tiu-prod
+    image: claude-tui:production
+    container_name: claude-tui-prod
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
-      - CLAUDE_TIU_ENV=production
+      - CLAUDE_TUI_ENV=production
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
     env_file:
@@ -22,7 +22,7 @@ services:
       - ./logs:/app/logs
       - ./config:/app/config:ro
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     depends_on:
       - postgres
       - redis
@@ -49,11 +49,11 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: claude-tiu-postgres
+    container_name: claude-tui-postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=claude_tiu
-      - POSTGRES_USER=claude_tiu
+      - POSTGRES_DB=claude_tui
+      - POSTGRES_USER=claude_tui
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
     secrets:
       - postgres_password
@@ -61,11 +61,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U claude_tiu -d claude_tiu"]
+      test: ["CMD-SHELL", "pg_isready -U claude_tui -d claude_tui"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -82,7 +82,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: claude-tiu-redis
+    container_name: claude-tui-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass-file /run/secrets/redis_password
     secrets:
@@ -91,7 +91,7 @@ services:
       - redis_data:/data
       - ./config/redis.conf:/etc/redis/redis.conf:ro
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     ports:
       - "127.0.0.1:6379:6379"
     healthcheck:
@@ -112,7 +112,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: claude-tiu-nginx
+    container_name: claude-tui-nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -122,9 +122,9 @@ services:
       - ./ssl:/etc/nginx/ssl:ro
       - nginx_logs:/var/log/nginx
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     depends_on:
-      - claude-tiu
+      - claude-tui
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
@@ -144,7 +144,7 @@ services:
   # Monitoring stack
   prometheus:
     image: prom/prometheus:latest
-    container_name: claude-tiu-prometheus
+    container_name: claude-tui-prometheus
     restart: unless-stopped
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -159,7 +159,7 @@ services:
     ports:
       - "127.0.0.1:9090:9090"
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     deploy:
       resources:
         limits:
@@ -168,7 +168,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: claude-tiu-grafana
+    container_name: claude-tui-grafana
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_PASSWORD_FILE=/run/secrets/grafana_admin_password
@@ -182,7 +182,7 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     depends_on:
       - prometheus
     deploy:
@@ -194,7 +194,7 @@ services:
   # Log aggregation
   loki:
     image: grafana/loki:latest
-    container_name: claude-tiu-loki
+    container_name: claude-tui-loki
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
@@ -203,7 +203,7 @@ services:
     ports:
       - "127.0.0.1:3100:3100"
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     deploy:
       resources:
         limits:
@@ -212,7 +212,7 @@ services:
 
   promtail:
     image: grafana/promtail:latest
-    container_name: claude-tiu-promtail
+    container_name: claude-tui-promtail
     restart: unless-stopped
     command: -config.file=/etc/promtail/config.yml
     volumes:
@@ -220,7 +220,7 @@ services:
       - /var/log:/var/log:ro
       - nginx_logs:/var/log/nginx:ro
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     depends_on:
       - loki
     deploy:
@@ -230,7 +230,7 @@ services:
           cpus: '0.1'
 
 networks:
-  claude-tiu-network:
+  claude-tui-network:
     driver: bridge
     ipam:
       config:

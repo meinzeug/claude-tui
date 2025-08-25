@@ -1,6 +1,6 @@
-# Claude TIU - Documentation Index
+# Claude TUI - Documentation Index
 
-Welcome to the comprehensive documentation for Claude TIU, an AI-powered Terminal User Interface for modern software development.
+Welcome to the comprehensive documentation for Claude TUI, an AI-powered Terminal User Interface for modern software development.
 
 ## 📚 Documentation Structure
 
@@ -44,7 +44,7 @@ Welcome to the comprehensive documentation for Claude TIU, an AI-powered Termina
 
 | Task | Documentation |
 |------|---------------|
-| **Install Claude TIU** | [Deployment Guide](deployment.md#installation) |
+| **Install Claude TUI** | [Deployment Guide](deployment.md#installation) |
 | **Create First Project** | [User Guide - Quick Start](user-guide.md#quick-start) |
 | **Setup Development Environment** | [Developer Guide - Setup](developer-guide.md#development-environment-setup) |
 | **Contribute to Project** | [Contributing Guidelines](CONTRIBUTING.md) |
@@ -57,7 +57,7 @@ Welcome to the comprehensive documentation for Claude TIU, an AI-powered Termina
 
 #### New Users
 1. Start with [Requirements](requirements.md) to understand system capabilities
-2. Follow [Installation Guide](deployment.md) to set up Claude TIU
+2. Follow [Installation Guide](deployment.md) to set up Claude TUI
 3. Complete [Quick Start Tutorial](user-guide.md#quick-start)
 4. Explore [Project Templates](user-guide.md#project-templates)
 
@@ -140,9 +140,9 @@ Welcome to the comprehensive documentation for Claude TIU, an AI-powered Termina
 ## 🆘 Getting Help
 
 ### Documentation Issues
-- **Missing Information** - [Request documentation](https://github.com/your-org/claude-tiu/issues/new?template=documentation.md)
-- **Unclear Sections** - [Suggest improvements](https://github.com/your-org/claude-tiu/issues/new?template=documentation.md)
-- **Broken Examples** - [Report code issues](https://github.com/your-org/claude-tiu/issues/new?template=bug_report.md)
+- **Missing Information** - [Request documentation](https://github.com/your-org/claude-tui/issues/new?template=documentation.md)
+- **Unclear Sections** - [Suggest improvements](https://github.com/your-org/claude-tui/issues/new?template=documentation.md)
+- **Broken Examples** - [Report code issues](https://github.com/your-org/claude-tui/issues/new?template=bug_report.md)
 
 ### Community Resources
 - **GitHub Discussions** - Community Q&A and general discussions

@@ -60,10 +60,10 @@ jobs:
         run: |
           case "${{ matrix.environment }}" in
             "production")
-              echo "url=https://claude-tiu.dev" >> $GITHUB_OUTPUT
+              echo "url=https://claude-tui.dev" >> $GITHUB_OUTPUT
               ;;
             "staging")
-              echo "url=https://staging.claude-tiu.dev" >> $GITHUB_OUTPUT
+              echo "url=https://staging.claude-tui.dev" >> $GITHUB_OUTPUT
               ;;
           esac
 

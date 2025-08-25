@@ -1,4 +1,4 @@
-# Claude TIU Backend - Missing Features & Implementation Roadmap
+# Claude TUI Backend - Missing Features & Implementation Roadmap
 
 **Generated:** 2025-08-25  
 **Priority:** CRITICAL - PRODUCTION BLOCKER  
@@ -546,4 +546,4 @@ async def create_example(
 **Team Size:** 2-3 backend developers recommended  
 **Priority:** CRITICAL - Required for production deployment  
 
-*This roadmap provides a structured approach to completing the missing backend features. Following this plan will result in a production-ready Claude TIU backend system.*
+*This roadmap provides a structured approach to completing the missing backend features. Following this plan will result in a production-ready Claude TUI backend system.*

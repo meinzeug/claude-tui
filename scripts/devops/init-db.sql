@@ -2,10 +2,10 @@
 -- Creates necessary databases, users, and initial schema
 
 -- Create database (if not exists)
-SELECT 'CREATE DATABASE claude_tiu' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'claude_tiu')\gexec
+SELECT 'CREATE DATABASE claude_tui' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'claude_tui')\gexec
 
--- Connect to the claude_tiu database
-\c claude_tiu;
+-- Connect to the claude_tui database
+\c claude_tui;
 
 -- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -241,7 +241,7 @@ ORDER BY component;
 
 -- Insert default admin user (change password in production!)
 INSERT INTO users (username, email, password_hash) 
-VALUES ('admin', 'admin@claude-tiu.local', crypt('admin123', gen_salt('bf')))
+VALUES ('admin', 'admin@claude-tui.local', crypt('admin123', gen_salt('bf')))
 ON CONFLICT (username) DO NOTHING;
 
 -- Grant permissions
@@ -310,7 +310,7 @@ END
 $$;
 
 -- Grant necessary permissions to application user
-GRANT CONNECT ON DATABASE claude_tiu TO claude_app;
+GRANT CONNECT ON DATABASE claude_tui TO claude_app;
 GRANT USAGE ON SCHEMA public TO claude_app;
 GRANT USAGE ON SCHEMA audit TO claude_app;
 GRANT USAGE ON SCHEMA metrics TO claude_app;
@@ -325,7 +325,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO claude_app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO claude_app;
 
 -- Create a scheduled job for cleanup (if pg_cron extension is available)
--- SELECT cron.schedule('cleanup-claude-tiu', '0 2 * * *', 'SELECT cleanup_old_data(30);');
+-- SELECT cron.schedule('cleanup-claude-tui', '0 2 * * *', 'SELECT cleanup_old_data(30);');
 
 COMMIT;
 

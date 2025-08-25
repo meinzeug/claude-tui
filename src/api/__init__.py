@@ -1,5 +1,5 @@
 """
-Claude TIU API Package.
+Claude TUI API Package.
 
 FastAPI-based REST API for AI-powered development operations.
 """

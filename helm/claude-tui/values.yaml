@@ -1,0 +1,160 @@
+# Default values for claude-tui
+# Production-ready configuration
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/your-org/claude-tui
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "claude-tui"
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8000"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.claude-tui.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: claude-tui-tls
+      hosts:
+        - api.claude-tui.com
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 400Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 75
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: claude-tui
+        topologyKey: kubernetes.io/hostname
+
+# Application configuration
+config:
+  environment: production
+  logLevel: INFO
+  server:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+    timeout: 30
+  performance:
+    maxMemoryMb: 400
+    maxCpuCores: 1
+    responseTimeoutMs: 500
+  monitoring:
+    metricsEnabled: true
+    healthCheckInterval: 30
+
+# Secrets configuration
+secrets:
+  claudeApiKey: ""
+  databaseUrl: ""
+  # Add other secrets as needed
+
+# Database configuration
+database:
+  enabled: true
+  type: postgresql
+  host: ""
+  port: 5432
+  name: claudetui
+  username: claudetui
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+
+# Persistence
+persistence:
+  enabled: true
+  storageClass: "gp3"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+# Health checks
+healthChecks:
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    enabled: true
+    path: /health/ready
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  startup:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 10

@@ -1,5 +1,5 @@
 """
-Comprehensive integration tests for claude-tiu API endpoints and services.
+Comprehensive integration tests for claude-tui API endpoints and services.
 
 This module tests the integration between different components,
 API endpoints, external services, and data flow throughout the system.

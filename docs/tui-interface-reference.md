@@ -1,8 +1,8 @@
-# Claude-TIU Terminal User Interface Reference
+# Claude-TUI Terminal User Interface Reference
 
 ## 🖥️ Complete TUI Navigation & Keyboard Shortcuts
 
-The Claude-TIU Terminal User Interface provides a powerful, keyboard-driven development environment. This reference covers all keyboard shortcuts, interface elements, and advanced navigation techniques.
+The Claude-TUI Terminal User Interface provides a powerful, keyboard-driven development environment. This reference covers all keyboard shortcuts, interface elements, and advanced navigation techniques.
 
 ---
 
@@ -21,7 +21,7 @@ The Claude-TIU Terminal User Interface provides a powerful, keyboard-driven deve
 
 ### Main Interface Layout
 ```
-┌─ Claude-TIU AI Development Environment ─ [v1.0.0] ──────────────────────┐
+┌─ Claude-TUI AI Development Environment ─ [v1.0.0] ──────────────────────┐
 │                                                                         │
 │ 📊 Dashboard │ 📁 Projects │ 🤖 AI Tools │ 🔧 Tasks │ ⚙️ Settings      │
 │ ────────────────────────────────────────────────────────────────────── │
@@ -99,7 +99,7 @@ Main Dashboard
 | `Enter` | Confirm/Select | Confirm action or select item |
 | `Space` | Toggle/Activate | Toggle checkboxes or activate buttons |
 | `?` / `F1` | Help | Show context-sensitive help |
-| `Ctrl+Q` / `Q` | Quit | Exit Claude-TIU (with confirmation) |
+| `Ctrl+Q` / `Q` | Quit | Exit Claude-TUI (with confirmation) |
 
 ### File & Project Operations
 | Shortcut | Action | Description |
@@ -459,7 +459,7 @@ Configure frequently used commands in Settings → Quick Actions:
 - Skip links available for main sections
 
 ### Screen Reader Support
-Claude-TIU supports popular screen readers:
+Claude-TUI supports popular screen readers:
 - NVDA (Windows)
 - JAWS (Windows)
 - VoiceOver (macOS)
@@ -480,14 +480,14 @@ Ctrl+F5
 Ctrl+Alt+0
 
 # Safe mode restart
-claude-tiu --safe-mode
+claude-tui --safe-mode
 ```
 
 ### Keyboard Shortcuts Not Working
 1. Check if shortcuts are conflicting with system shortcuts
 2. Reset shortcuts: Settings → Keyboard → Reset to Defaults
 3. Clear keyboard buffer: `Esc` → `Ctrl+Alt+K`
-4. Restart in keyboard-only mode: `claude-tiu --keyboard-mode`
+4. Restart in keyboard-only mode: `claude-tui --keyboard-mode`
 
 ### Display Issues
 ```bash
@@ -498,10 +498,10 @@ Ctrl+0
 Ctrl+Shift+D (toggle to light mode)
 
 # Clear interface cache
-claude-tiu --clear-cache
+claude-tui --clear-cache
 
 # Terminal compatibility mode
-claude-tiu --terminal-mode
+claude-tui --terminal-mode
 ```
 
 ---
@@ -594,6 +594,6 @@ The help system (`?` or `F1`) provides context-aware assistance:
 
 ---
 
-**Master these shortcuts to become a Claude-TIU power user! 🚀**
+**Master these shortcuts to become a Claude-TUI power user! 🚀**
 
 *This reference is also available within the application by pressing `?` or `F1` for context-sensitive help.*

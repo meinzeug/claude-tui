@@ -1,8 +1,8 @@
 """
-Comprehensive unit tests for core functionality of claude-tiu.
+Comprehensive unit tests for core functionality of claude-tui.
 
 This module tests the fundamental components and business logic
-of the claude-tiu application, ensuring high code coverage and
+of the claude-tui application, ensuring high code coverage and
 robust error handling.
 """
 

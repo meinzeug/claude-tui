@@ -16,12 +16,12 @@ except ImportError:
     pytest.skip("pytest-benchmark not available", allow_module_level=True)
 
 # Import application components
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.integrations.ai_interface import AIInterface
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.models.task import DevelopmentTask, TaskType, TaskPriority
-from claude_tiu.models.project import Project
-from claude_tiu.validation.progress_validator import ValidationResult
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.integrations.ai_interface import AIInterface
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.models.task import DevelopmentTask, TaskType, TaskPriority
+from claude_tui.models.project import Project
+from claude_tui.validation.progress_validator import ValidationResult
 
 
 @pytest.fixture
@@ -244,7 +244,7 @@ class TestAIInterfacePerformance:
     @pytest.mark.asyncio
     async def test_validation_performance(self, benchmark, mock_config_manager, sample_code_data):
         """Benchmark AI validation performance."""
-        with patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah:
+        with patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah:
             mock_ah_instance = Mock()
             mock_ah_instance.initialize = AsyncMock()
             mock_ah_instance.validate_ai_generated_content = AsyncMock(
@@ -284,7 +284,7 @@ class TestAIInterfacePerformance:
     
     def test_task_execution_throughput(self, benchmark, mock_config_manager):
         """Benchmark task execution throughput."""
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc:
             # Mock fast task execution
             mock_cc_instance = Mock()
             mock_cc_instance.execute_coding_task = AsyncMock(
@@ -328,8 +328,8 @@ class TestAntiHallucinationPerformance:
     
     def test_content_analysis_speed(self, benchmark, mock_config_manager, sample_code_data):
         """Benchmark content analysis speed."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             
@@ -366,8 +366,8 @@ class TestAntiHallucinationPerformance:
     
     def test_batch_validation_performance(self, benchmark, mock_config_manager):
         """Benchmark batch validation performance."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             
@@ -403,8 +403,8 @@ class TestAntiHallucinationPerformance:
     
     def test_memory_efficiency_large_files(self, benchmark, mock_config_manager):
         """Benchmark memory efficiency with large files."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             
@@ -455,8 +455,8 @@ class TestConcurrencyPerformance:
     
     def test_concurrent_validation_throughput(self, benchmark, mock_config_manager):
         """Benchmark concurrent validation throughput."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(mock_config_manager)
             

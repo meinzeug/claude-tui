@@ -2,7 +2,7 @@
 
 ## Overview
 
-Claude-TIU's Enhanced Git Integration provides enterprise-grade version control features with AI-powered automation, intelligent code review workflows, and advanced conflict resolution capabilities. This guide covers all aspects of using the enhanced Git features within Claude-TIU.
+Claude-TUI's Enhanced Git Integration provides enterprise-grade version control features with AI-powered automation, intelligent code review workflows, and advanced conflict resolution capabilities. This guide covers all aspects of using the enhanced Git features within Claude-TUI.
 
 ## Table of Contents
 
@@ -44,7 +44,7 @@ Claude-TIU's Enhanced Git Integration provides enterprise-grade version control 
 
 ### Installation
 
-The Enhanced Git Integration is included with Claude-TIU. Ensure you have the required dependencies:
+The Enhanced Git Integration is included with Claude-TUI. Ensure you have the required dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -979,7 +979,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Code Review
-        run: claude-tiu git review --pr ${{ github.event.number }}
+        run: claude-tui git review --pr ${{ github.event.number }}
       - name: Security Scan
         run: bandit -r src/
       - name: Tests
@@ -1112,10 +1112,10 @@ print(f"Metrics: {health['metrics']}")
 
 ### Support and Resources
 
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/your-org/claude-tiu/issues)
-- **Documentation**: [Complete API documentation](https://docs.claude-tiu.org)
-- **Examples**: [Sample implementations](https://github.com/your-org/claude-tiu/tree/main/examples)
-- **Community**: [Join our Discord](https://discord.gg/claude-tiu)
+- **GitHub Issues**: [Report bugs and feature requests](https://github.com/your-org/claude-tui/issues)
+- **Documentation**: [Complete API documentation](https://docs.claude-tui.org)
+- **Examples**: [Sample implementations](https://github.com/your-org/claude-tui/tree/main/examples)
+- **Community**: [Join our Discord](https://discord.gg/claude-tui)
 
 ---
 

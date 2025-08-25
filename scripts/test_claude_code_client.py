@@ -14,12 +14,12 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from claude_tiu.integrations.claude_code_client import (
+from claude_tui.integrations.claude_code_client import (
     ClaudeCodeClient, 
     ClaudeCodeApiError,
     RateLimiter
 )
-from claude_tiu.core.config_manager import ConfigManager
+from claude_tui.core.config_manager import ConfigManager
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

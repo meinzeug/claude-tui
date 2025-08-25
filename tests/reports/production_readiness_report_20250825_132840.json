@@ -39,7 +39,7 @@
         "api_score": 85,
         "scalability_score": 90,
         "current_memory_mb": 32.546875,
-        "latest_report": "/home/tekkadmin/claude-tiu/tests/reports/performance_validation_20250825_132658.json"
+        "latest_report": "/home/tekkadmin/claude-tui/tests/reports/performance_validation_20250825_132658.json"
       },
       "recommendations": []
     },

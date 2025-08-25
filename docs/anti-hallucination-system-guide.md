@@ -800,7 +800,7 @@ Content-Type: application/json
 ### Real-time Validation WebSocket
 ```javascript
 // Connect to real-time validation stream
-const ws = new WebSocket('wss://api.claude-tiu.dev/v1/ws/validation/stream');
+const ws = new WebSocket('wss://api.claude-tui.dev/v1/ws/validation/stream');
 
 // Send code for real-time validation
 ws.send(JSON.stringify({
@@ -839,7 +839,7 @@ ws.onmessage = function(event) {
 
 ### Python Integration
 ```python
-from claude_tiu.validation import ValidationEngine, ValidationConfig
+from claude_tui.validation import ValidationEngine, ValidationConfig
 
 # Initialize validation engine
 validator = ValidationEngine()
@@ -888,11 +888,11 @@ asyncio.run(validate_code_example())
 
 ### Node.js Integration
 ```javascript
-const { ValidationClient } = require('@claude-tiu/validation-sdk');
+const { ValidationClient } = require('@claude-tui/validation-sdk');
 
 const validator = new ValidationClient({
   apiKey: process.env.CLAUDE_TIU_API_KEY,
-  baseUrl: 'https://api.claude-tiu.dev/v1'
+  baseUrl: 'https://api.claude-tui.dev/v1'
 });
 
 async function validateCode() {
@@ -940,24 +940,24 @@ validateCode();
 ### CLI Usage
 ```bash
 # Validate single file
-claude-tiu validate src/auth/models.py \
+claude-tui validate src/auth/models.py \
   --level comprehensive \
   --auto-fix \
   --output-format json
 
 # Validate entire project
-claude-tiu validate-project ./my-project \
+claude-tui validate-project ./my-project \
   --exclude "tests/,docs/" \
   --parallel \
   --fix-threshold 0.8
 
 # Real-time validation mode
-claude-tiu validate --watch src/ \
+claude-tui validate --watch src/ \
   --auto-fix \
   --notify-on-issues
 
 # Generate validation report
-claude-tiu validate src/ \
+claude-tui validate src/ \
   --report-format html \
   --output validation-report.html \
   --include-metrics
@@ -1014,9 +1014,9 @@ Claude-TIU's Anti-Hallucination System represents the cutting edge of AI-generat
 The system ensures that AI-generated code meets production-quality standards while maintaining developer productivity and code authenticity.
 
 For additional resources:
-- 📚 [Validation Best Practices](https://docs.claude-tiu.dev/validation)
-- 🔧 [Integration Guides](https://docs.claude-tiu.dev/integration)
-- 📊 [Performance Optimization](https://docs.claude-tiu.dev/performance)
+- 📚 [Validation Best Practices](https://docs.claude-tui.dev/validation)
+- 🔧 [Integration Guides](https://docs.claude-tui.dev/integration)
+- 📊 [Performance Optimization](https://docs.claude-tui.dev/performance)
 
 ---
 

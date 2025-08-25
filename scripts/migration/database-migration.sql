@@ -7,11 +7,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
 
 -- Create schemas
-CREATE SCHEMA IF NOT EXISTS claude_tiu;
+CREATE SCHEMA IF NOT EXISTS claude_tui;
 CREATE SCHEMA IF NOT EXISTS monitoring;
 
 -- Set search path
-SET search_path TO claude_tiu, public;
+SET search_path TO claude_tui, public;
 
 -- Users table for authentication and session management
 CREATE TABLE IF NOT EXISTS users (
@@ -230,12 +230,12 @@ GROUP BY ss.id, ss.swarm_id, ss.topology, ss.status, ss.agent_count, ss.created_
 ORDER BY ss.created_at DESC;
 
 -- Grant permissions
-GRANT USAGE ON SCHEMA claude_tiu TO claude_tiu;
-GRANT USAGE ON SCHEMA monitoring TO claude_tiu;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA claude_tiu TO claude_tiu;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA monitoring TO claude_tiu;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA claude_tiu TO claude_tiu;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA monitoring TO claude_tiu;
+GRANT USAGE ON SCHEMA claude_tui TO claude_tui;
+GRANT USAGE ON SCHEMA monitoring TO claude_tui;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA claude_tui TO claude_tui;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA monitoring TO claude_tui;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA claude_tui TO claude_tui;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA monitoring TO claude_tui;
 
 -- Enable row level security for multi-tenant support (optional)
 -- ALTER TABLE users ENABLE ROW LEVEL SECURITY;

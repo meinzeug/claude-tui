@@ -1,5 +1,5 @@
 """
-Advanced Decorator System for claude-tiu.
+Advanced Decorator System for claude-tui.
 
 This module provides sophisticated decorators for:
 - Error handling with recovery strategies

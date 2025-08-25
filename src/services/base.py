@@ -1,5 +1,5 @@
 """
-Base Service Class with Dependency Injection for claude-tiu.
+Base Service Class with Dependency Injection for claude-tui.
 
 This module provides the foundation service class with:
 - Dependency injection container
@@ -16,7 +16,7 @@ from contextvars import ContextVar
 from typing import Any, Dict, Optional, Type, TypeVar, Union
 from uuid import uuid4
 
-from ..core.exceptions import ClaudeTIUException, ValidationError
+from ..core.exceptions import ClaudeTUIException, ValidationError
 from ..core.logger import get_logger, get_performance_logger, get_security_logger
 
 T = TypeVar('T')
@@ -209,7 +209,7 @@ class BaseService(ABC):
             self.logger.debug(f"Completed operation: {operation_name}")
             return result
             
-        except ClaudeTIUException as e:
+        except ClaudeTUIException as e:
             self.performance_logger.end_timer(timer_id, {
                 'operation': operation_name,
                 'service': self.__class__.__name__,

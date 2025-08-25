@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Test Framework for claude-tiu
+Enhanced Test Framework for claude-tui
 
 This module provides advanced testing utilities, fixtures, and infrastructure
 for comprehensive test coverage and quality assurance.

@@ -59,28 +59,28 @@ This comprehensive guide provides the complete production deployment strategy fo
 - **Size**: Optimized < 500MB
 - **Security**: Read-only root filesystem, dropped capabilities
 
-**Location**: `/home/tekkadmin/claude-tiu/docker/Dockerfile.production`
+**Location**: `/home/tekkadmin/claude-tui/docker/Dockerfile.production`
 
 ### 2. Kubernetes Manifests
 
 #### Core Deployments
-- **Blue Environment**: `/home/tekkadmin/claude-tiu/k8s/production/deployment-blue.yaml`
-- **Green Environment**: `/home/tekkadmin/claude-tiu/k8s/production/deployment-green.yaml`
-- **Services**: `/home/tekkadmin/claude-tiu/k8s/production/blue-green-service.yaml`
+- **Blue Environment**: `/home/tekkadmin/claude-tui/k8s/production/deployment-blue.yaml`
+- **Green Environment**: `/home/tekkadmin/claude-tui/k8s/production/deployment-green.yaml`
+- **Services**: `/home/tekkadmin/claude-tui/k8s/production/blue-green-service.yaml`
 
 #### Scaling Configuration
 - **HPA**: Memory-optimized auto-scaling (3-30 replicas)
 - **VPA**: Automated resource optimization
 - **PDB**: Pod Disruption Budget for availability
 
-**Location**: `/home/tekkadmin/claude-tiu/k8s/production/vpa.yaml`
+**Location**: `/home/tekkadmin/claude-tui/k8s/production/vpa.yaml`
 
 #### Health Monitoring
 - **Startup Probe**: Validates application initialization
 - **Readiness Probe**: Ensures traffic readiness
 - **Liveness Probe**: Monitors application health
 
-**Location**: `/home/tekkadmin/claude-tiu/src/api/middleware/health_checks.py`
+**Location**: `/home/tekkadmin/claude-tui/src/api/middleware/health_checks.py`
 
 ### 3. Secret Management
 
@@ -90,7 +90,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 - Azure Key Vault
 - Sealed Secrets fallback
 
-**Location**: `/home/tekkadmin/claude-tiu/k8s/external-secrets.yaml`
+**Location**: `/home/tekkadmin/claude-tui/k8s/external-secrets.yaml`
 
 ### 4. Monitoring Stack
 
@@ -100,14 +100,14 @@ This comprehensive guide provides the complete production deployment strategy fo
 - Custom metrics collection
 - 30-day retention policy
 
-**Location**: `/home/tekkadmin/claude-tiu/monitoring/prometheus-production.yaml`
+**Location**: `/home/tekkadmin/claude-tui/monitoring/prometheus-production.yaml`
 
 #### Alert Rules (27 Production Alerts)
 - **Critical**: Service down, high error rate, memory pressure
 - **Warning**: High CPU/memory, slow response times
 - **Infrastructure**: HPA scaling, disk space, dependencies
 
-**Location**: `/home/tekkadmin/claude-tiu/monitoring/prometheus-rules.yaml`
+**Location**: `/home/tekkadmin/claude-tui/monitoring/prometheus-rules.yaml`
 
 ### 5. Database Management
 
@@ -117,7 +117,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 - Rollback capabilities
 - Verification checks
 
-**Location**: `/home/tekkadmin/claude-tiu/scripts/db-migration.sh`
+**Location**: `/home/tekkadmin/claude-tui/scripts/db-migration.sh`
 
 ### 6. Blue-Green Deployment
 
@@ -127,7 +127,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 - Rollback on failure
 - Pre-deployment backups
 
-**Location**: `/home/tekkadmin/claude-tiu/scripts/deploy-blue-green.sh`
+**Location**: `/home/tekkadmin/claude-tui/scripts/deploy-blue-green.sh`
 
 ## 🚀 Deployment Process
 
@@ -181,13 +181,13 @@ This comprehensive guide provides the complete production deployment strategy fo
 1. **Health Check Validation**
    ```bash
    # Check startup probe
-   curl -f http://claude-tiu.production.svc.cluster.local/startup
+   curl -f http://claude-tui.production.svc.cluster.local/startup
    
    # Check readiness probe
-   curl -f http://claude-tiu.production.svc.cluster.local/ready
+   curl -f http://claude-tui.production.svc.cluster.local/ready
    
    # Check liveness probe
-   curl -f http://claude-tiu.production.svc.cluster.local/health
+   curl -f http://claude-tui.production.svc.cluster.local/health
    ```
 
 2. **Load Testing**
@@ -196,7 +196,7 @@ This comprehensive guide provides the complete production deployment strategy fo
    k6 run scripts/load-test.js
    
    # Validate auto-scaling
-   kubectl get hpa claude-tiu-hpa-blue -w
+   kubectl get hpa claude-tui-hpa-blue -w
    ```
 
 ## 📈 Monitoring & Alerting
@@ -204,8 +204,8 @@ This comprehensive guide provides the complete production deployment strategy fo
 ### Production Metrics Dashboard
 
 **Key Performance Indicators**:
-- Request Rate: Tracked via `claude_tiu:http_requests:rate5m`
-- Error Rate: Monitored via `claude_tiu:http_requests:error_rate5m`
+- Request Rate: Tracked via `claude_tui:http_requests:rate5m`
+- Error Rate: Monitored via `claude_tui:http_requests:error_rate5m`
 - Response Time: P95/P99 percentiles tracked
 - Memory Usage: Real-time percentage monitoring
 - CPU Utilization: Optimized scaling thresholds
@@ -291,7 +291,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 6. **Staging Deployment**: Automated staging environment deployment
 7. **Production Deployment**: Manual approval gate with Blue-Green strategy
 
-**Location**: `/home/tekkadmin/claude-tiu/.github/workflows/production-deployment.yml`
+**Location**: `/home/tekkadmin/claude-tui/.github/workflows/production-deployment.yml`
 
 ### Performance Monitoring Integration
 
@@ -301,7 +301,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 - Alert generation for performance degradation
 - Integration with monitoring stack
 
-**Location**: `/home/tekkadmin/claude-tiu/.github/workflows/performance-monitoring.yml`
+**Location**: `/home/tekkadmin/claude-tui/.github/workflows/performance-monitoring.yml`
 
 ## 🛠 Operational Procedures
 
@@ -309,7 +309,7 @@ This comprehensive guide provides the complete production deployment strategy fo
 
 1. **Deploy to Inactive Environment**
    ```bash
-   ./scripts/deploy-blue-green.sh deploy ghcr.io/claude-tiu/claude-tiu:v1.2.3
+   ./scripts/deploy-blue-green.sh deploy ghcr.io/claude-tui/claude-tui:v1.2.3
    ```
 
 2. **Health Validation**
@@ -343,10 +343,10 @@ This comprehensive guide provides the complete production deployment strategy fo
 1. **Service Issues**
    ```bash
    # Check pod status
-   kubectl get pods -l app=claude-tiu -n production
+   kubectl get pods -l app=claude-tui -n production
    
    # View logs
-   kubectl logs -l app=claude-tiu -n production --tail=100
+   kubectl logs -l app=claude-tui -n production --tail=100
    
    # Check events
    kubectl get events -n production --sort-by=.metadata.creationTimestamp
@@ -358,7 +358,7 @@ This comprehensive guide provides the complete production deployment strategy fo
    kubectl top pods -n production
    
    # Review HPA status
-   kubectl describe hpa claude-tiu-hpa-blue -n production
+   kubectl describe hpa claude-tui-hpa-blue -n production
    
    # Analyze metrics in Grafana dashboard
    ```
@@ -419,9 +419,9 @@ This comprehensive guide provides the complete production deployment strategy fo
 ## 📞 Support & Escalation
 
 ### Contact Information
-- **DevOps Team**: devops@claude-tiu.com
+- **DevOps Team**: devops@claude-tui.com
 - **On-Call Engineer**: +1-555-DEVOPS-1
-- **Slack Channel**: #claude-tiu-production
+- **Slack Channel**: #claude-tui-production
 - **Incident Management**: PagerDuty integration
 
 ### Documentation Links

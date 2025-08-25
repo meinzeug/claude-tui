@@ -1,4 +1,4 @@
-"""Integration tests for service interactions in claude-tiu."""
+"""Integration tests for service interactions in claude-tui."""
 
 import pytest
 import asyncio

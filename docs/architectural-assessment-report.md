@@ -151,7 +151,7 @@ class TaskEngine:
 ```python
 # Comprehensive API with OpenAPI Documentation
 app = FastAPI(
-    title="Claude TIU API",
+    title="Claude TUI API",
     description="AI-Powered Development Tool REST API",
     version="1.0.0",
     docs_url="/docs",

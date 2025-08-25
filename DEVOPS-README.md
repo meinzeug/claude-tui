@@ -14,7 +14,7 @@ This document provides comprehensive guidance for deploying, managing, and maint
 ```bash
 # Clone and setup
 git clone <repository>
-cd claude-tiu
+cd claude-tui
 
 # Install dependencies
 make install-dev
@@ -193,15 +193,15 @@ safety check
 ### Daily Operations
 ```bash
 # Check system health
-kubectl get pods -n claude-tiu
+kubectl get pods -n claude-tui
 docker-compose ps
 
 # View logs
 make logs
-kubectl logs -f deployment/claude-tiu -n claude-tiu
+kubectl logs -f deployment/claude-tui -n claude-tui
 
 # Monitor resources
-kubectl top pods -n claude-tiu
+kubectl top pods -n claude-tui
 docker stats
 ```
 
@@ -211,7 +211,7 @@ docker stats
 make db-backup
 
 # Full system backup
-kubectl exec -n claude-tiu deployment/claude-tiu -- /app/scripts/backup.sh
+kubectl exec -n claude-tui deployment/claude-tui -- /app/scripts/backup.sh
 
 # Verify backup integrity
 ./scripts/devops/verify-backup.sh
@@ -220,25 +220,25 @@ kubectl exec -n claude-tiu deployment/claude-tiu -- /app/scripts/backup.sh
 ### Update Procedures
 ```bash
 # Rolling update (Kubernetes)
-kubectl set image deployment/claude-tiu claude-tiu=claude-tiu:v1.2.0 -n claude-tiu
+kubectl set image deployment/claude-tui claude-tui=claude-tui:v1.2.0 -n claude-tui
 
 # Blue-green deployment
 ./scripts/devops/blue-green-deploy.sh
 
 # Rollback if needed
-kubectl rollout undo deployment/claude-tiu -n claude-tiu
+kubectl rollout undo deployment/claude-tui -n claude-tui
 ```
 
 ### Scaling Operations
 ```bash
 # Manual scaling
-kubectl scale deployment claude-tiu --replicas=5 -n claude-tiu
+kubectl scale deployment claude-tui --replicas=5 -n claude-tui
 
 # Auto-scaling configuration
-kubectl autoscale deployment claude-tiu --cpu-percent=70 --min=2 --max=10 -n claude-tiu
+kubectl autoscale deployment claude-tui --cpu-percent=70 --min=2 --max=10 -n claude-tui
 
 # Check scaling status
-kubectl get hpa -n claude-tiu
+kubectl get hpa -n claude-tui
 ```
 
 ## 🚨 Troubleshooting
@@ -248,30 +248,30 @@ kubectl get hpa -n claude-tiu
 #### Container Won't Start
 ```bash
 # Check logs
-docker logs claude-tiu-container
-kubectl logs -f pod/claude-tiu-xxx -n claude-tiu
+docker logs claude-tui-container
+kubectl logs -f pod/claude-tui-xxx -n claude-tui
 
 # Check configuration
-kubectl describe pod claude-tiu-xxx -n claude-tiu
+kubectl describe pod claude-tui-xxx -n claude-tui
 ```
 
 #### Database Connection Issues
 ```bash
 # Test database connectivity
-kubectl exec -it deployment/claude-tiu -n claude-tiu -- python -c "import psycopg2; print('DB OK')"
+kubectl exec -it deployment/claude-tui -n claude-tui -- python -c "import psycopg2; print('DB OK')"
 
 # Check database status
-kubectl exec -it claude-tiu-db -n claude-tiu -- pg_isready
+kubectl exec -it claude-tui-db -n claude-tui -- pg_isready
 ```
 
 #### Performance Issues
 ```bash
 # Check resource usage
-kubectl top pods -n claude-tiu
+kubectl top pods -n claude-tui
 docker stats
 
 # Review metrics
-kubectl port-forward service/claude-tiu-service 9090:9090 -n claude-tiu
+kubectl port-forward service/claude-tui-service 9090:9090 -n claude-tui
 # Access http://localhost:9090/metrics
 ```
 
@@ -328,9 +328,9 @@ RATE_LIMIT             # API rate limiting configuration
 - [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 
 ### Support Contacts
-- Development Team: dev@claude-tiu.local
-- DevOps Team: devops@claude-tiu.local
-- Security Team: security@claude-tiu.local
+- Development Team: dev@claude-tui.local
+- DevOps Team: devops@claude-tui.local
+- Security Team: security@claude-tui.local
 
 ## 📈 Performance Benchmarks
 

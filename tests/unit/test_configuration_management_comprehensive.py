@@ -2,7 +2,7 @@
 Comprehensive Configuration Management Tests
 
 Tests for configuration loading, validation, merging, environment handling,
-and security features in the Claude TIU application.
+and security features in the Claude TUI application.
 
 This module ensures robust configuration management across different
 environments and deployment scenarios.
@@ -31,7 +31,7 @@ class TestConfigurationLoader:
     @pytest.fixture
     def config_loader(self):
         """Mock configuration loader."""
-        from claude_tiu.config.loader import ConfigLoader
+        from claude_tui.config.loader import ConfigLoader
         return ConfigLoader()
     
     @pytest.fixture
@@ -39,7 +39,7 @@ class TestConfigurationLoader:
         """Sample configuration data for testing."""
         return {
             'json_config': {
-                'app': {'name': 'claude-tiu', 'version': '1.0.0'},
+                'app': {'name': 'claude-tui', 'version': '1.0.0'},
                 'ai': {'provider': 'anthropic', 'model': 'claude-3'},
                 'ui': {'theme': 'dark', 'refresh_rate': 60}
             },
@@ -64,7 +64,7 @@ class TestConfigurationLoader:
             with patch('pathlib.Path.exists', return_value=True):
                 config = await config_loader.load_json('config.json')
         
-        assert config['app']['name'] == 'claude-tiu'
+        assert config['app']['name'] == 'claude-tui'
         assert config['ai']['provider'] == 'anthropic'
         assert config['ui']['theme'] == 'dark'
     
@@ -123,7 +123,7 @@ class TestConfigurationValidator:
     @pytest.fixture
     def config_validator(self):
         """Mock configuration validator."""
-        from claude_tiu.config.validator import ConfigValidator
+        from claude_tui.config.validator import ConfigValidator
         return ConfigValidator()
     
     @pytest.fixture
@@ -131,7 +131,7 @@ class TestConfigurationValidator:
         """Valid configuration for testing."""
         return {
             'app': {
-                'name': 'claude-tiu',
+                'name': 'claude-tui',
                 'version': '1.0.0',
                 'debug': False
             },
@@ -248,14 +248,14 @@ class TestConfigurationMerger:
     @pytest.fixture
     def config_merger(self):
         """Mock configuration merger."""
-        from claude_tiu.config.merger import ConfigMerger
+        from claude_tui.config.merger import ConfigMerger
         return ConfigMerger()
     
     @pytest.fixture
     def base_config(self):
         """Base configuration."""
         return {
-            'app': {'name': 'claude-tiu', 'version': '1.0.0', 'debug': False},
+            'app': {'name': 'claude-tui', 'version': '1.0.0', 'debug': False},
             'ai': {'provider': 'anthropic', 'model': 'claude-3', 'temperature': 0.7},
             'ui': {'theme': 'light', 'refresh_rate': 30}
         }
@@ -288,7 +288,7 @@ class TestConfigurationMerger:
         assert merged['ui']['theme'] == 'dark'
         
         # Check preserved values
-        assert merged['app']['name'] == 'claude-tiu'
+        assert merged['app']['name'] == 'claude-tui'
         assert merged['ai']['provider'] == 'anthropic'
         
         # Check new values
@@ -308,7 +308,7 @@ class TestConfigurationMerger:
         assert merged['ui']['theme'] == 'dark'
         
         # Base values should be preserved
-        assert merged['app']['name'] == 'claude-tiu'
+        assert merged['app']['name'] == 'claude-tui'
     
     @pytest.mark.asyncio
     async def test_deep_merge_nested_objects(self, config_merger):
@@ -369,7 +369,7 @@ class TestEnvironmentConfigManager:
     @pytest.fixture
     def env_manager(self):
         """Mock environment configuration manager."""
-        from claude_tiu.config.environment import EnvironmentManager
+        from claude_tui.config.environment import EnvironmentManager
         return EnvironmentManager()
     
     @pytest.fixture
@@ -452,7 +452,7 @@ class TestConfigurationSecurity:
     @pytest.fixture
     def security_manager(self):
         """Mock configuration security manager."""
-        from claude_tiu.config.security import SecurityManager
+        from claude_tui.config.security import SecurityManager
         return SecurityManager()
     
     @pytest.mark.asyncio
@@ -461,14 +461,14 @@ class TestConfigurationSecurity:
         config = {
             'ai': {'api_key': 'sk-very-secret-key-12345'},
             'database': {'password': 'super-secret-password'},
-            'app': {'name': 'claude-tiu'}
+            'app': {'name': 'claude-tui'}
         }
         
         masked = await security_manager.mask_sensitive_data(config)
         
         assert masked['ai']['api_key'] == 'sk-***'
         assert masked['database']['password'] == '***'
-        assert masked['app']['name'] == 'claude-tiu'  # Not sensitive
+        assert masked['app']['name'] == 'claude-tui'  # Not sensitive
     
     @pytest.mark.asyncio
     async def test_configuration_encryption(self, security_manager):
@@ -487,7 +487,7 @@ class TestConfigurationSecurity:
     @pytest.mark.asyncio
     async def test_configuration_signing(self, security_manager):
         """Test configuration signing and verification."""
-        config = {'app': {'name': 'claude-tiu', 'version': '1.0.0'}}
+        config = {'app': {'name': 'claude-tui', 'version': '1.0.0'}}
         
         # Test signing
         signed_config = await security_manager.sign_config(config)
@@ -528,7 +528,7 @@ class TestConfigurationPerformance:
     @pytest.fixture
     def perf_tester(self):
         """Performance testing utilities."""
-        from claude_tiu.utils.performance import PerformanceTester
+        from claude_tui.utils.performance import PerformanceTester
         return PerformanceTester()
     
     @pytest.mark.asyncio
@@ -547,7 +547,7 @@ class TestConfigurationPerformance:
                 # Test loading performance
                 start_time = perf_tester.start_timer()
                 
-                from claude_tiu.config.loader import ConfigLoader
+                from claude_tui.config.loader import ConfigLoader
                 loader = ConfigLoader()
                 config = await loader.load_json('large_config.json')
                 
@@ -564,7 +564,7 @@ class TestConfigurationPerformance:
         config = TestDataGenerator.generate_complex_config()
         schema = TestDataGenerator.generate_config_schema()
         
-        from claude_tiu.config.validator import ConfigValidator
+        from claude_tui.config.validator import ConfigValidator
         validator = ConfigValidator()
         
         start_time = perf_tester.start_timer()
@@ -584,7 +584,7 @@ class TestConfigurationPerformance:
             for _ in range(10)
         ]
         
-        from claude_tiu.config.merger import ConfigMerger
+        from claude_tui.config.merger import ConfigMerger
         merger = ConfigMerger()
         
         start_time = perf_tester.start_timer()
@@ -603,7 +603,7 @@ class TestConfigurationManager:
     @pytest.fixture
     def config_manager(self):
         """Mock configuration manager integrating all components."""
-        from claude_tiu.config.manager import ConfigurationManager
+        from claude_tui.config.manager import ConfigurationManager
         return ConfigurationManager()
     
     @pytest.mark.asyncio
@@ -614,7 +614,7 @@ class TestConfigurationManager:
             
             # Create test configuration files
             base_config = {
-                'app': {'name': 'claude-tiu', 'version': '1.0.0'},
+                'app': {'name': 'claude-tui', 'version': '1.0.0'},
                 'ai': {'provider': 'anthropic', 'model': 'claude-3'}
             }
             
@@ -632,7 +632,7 @@ class TestConfigurationManager:
                 config = await config_manager.load_configuration(config_dir)
         
         # Verify merged configuration
-        assert config['app']['name'] == 'claude-tiu'
+        assert config['app']['name'] == 'claude-tui'
         assert config['app']['debug'] is True
         assert config['ai']['provider'] == 'anthropic'
         assert config['ai']['temperature'] == 0.9
@@ -699,7 +699,7 @@ class TestConfigurationPerformanceBenchmarks:
     @pytest.mark.asyncio
     async def test_startup_config_loading_benchmark(self):
         """Benchmark configuration loading during application startup."""
-        from claude_tiu.config.manager import ConfigurationManager
+        from claude_tui.config.manager import ConfigurationManager
         
         manager = ConfigurationManager()
         
@@ -725,7 +725,7 @@ class TestConfigurationPerformanceBenchmarks:
     @pytest.mark.asyncio
     async def test_concurrent_config_access_benchmark(self):
         """Benchmark concurrent configuration access performance."""
-        from claude_tiu.config.manager import ConfigurationManager
+        from claude_tui.config.manager import ConfigurationManager
         import asyncio
         
         manager = ConfigurationManager()

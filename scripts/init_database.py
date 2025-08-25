@@ -187,7 +187,7 @@ class DatabaseInitializer:
                 user_repo = repos.get_user_repository()
                 
                 # Check if admin user already exists
-                admin_user = await user_repo.get_by_email("admin@claude-tiu.com")
+                admin_user = await user_repo.get_by_email("admin@claude-tui.com")
                 
                 if admin_user:
                     logger.info("Admin user already exists, skipping seed")
@@ -201,7 +201,7 @@ class DatabaseInitializer:
                         logger.warning("⚠️  Using default admin password! Set CLAUDE_TIU_ADMIN_PASSWORD env var")
                     
                     admin_user = await user_repo.create_user(
-                        email="admin@claude-tiu.com",
+                        email="admin@claude-tui.com",
                         username="admin",
                         password=admin_password,
                         full_name="Development Admin"
@@ -217,7 +217,7 @@ class DatabaseInitializer:
                     random_password = ''.join(secrets.choice(alphabet) for _ in range(16))
                     
                     admin_user = await user_repo.create_user(
-                        email="admin@claude-tiu.com",
+                        email="admin@claude-tui.com",
                         username="admin",
                         password=random_password,
                         full_name="System Administrator"
@@ -303,7 +303,7 @@ class DatabaseInitializer:
         """
         if not backup_path:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_path = f"backup_claude_tiu_{self.environment}_{timestamp}.sql"
+            backup_path = f"backup_claude_tui_{self.environment}_{timestamp}.sql"
         
         logger.info(f"Creating database backup: {backup_path}")
         

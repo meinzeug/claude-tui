@@ -21,7 +21,7 @@ graph TD
     G --> H[Final Report]
 ```
 
-### 1. **Static Analysis Engine** (`src/claude_tiu/validation/placeholder_detector.py`)
+### 1. **Static Analysis Engine** (`src/claude_tui/validation/placeholder_detector.py`)
 
 **Detection Patterns** (95%+ accuracy):
 - `TODO`, `FIXME`, `HACK` comments
@@ -48,7 +48,7 @@ def get_user_data():
     return {"name": "placeholder"}  # Detected as dummy data
 ```
 
-### 2. **Semantic Analysis** (`src/claude_tiu/validation/semantic_analyzer.py`)
+### 2. **Semantic Analysis** (`src/claude_tui/validation/semantic_analyzer.py`)
 
 **AST-Based Analysis**:
 - **Function Complexity**: Measures actual vs claimed functionality
@@ -63,7 +63,7 @@ def get_user_data():
 - JSON/YAML (structure validation)
 - Markdown (content analysis)
 
-### 3. **Execution Testing** (`src/claude_tiu/validation/execution_tester.py`)
+### 3. **Execution Testing** (`src/claude_tui/validation/execution_tester.py`)
 
 **Safe Execution Environment**:
 - **Sandboxed Testing**: Docker-based isolated execution
@@ -78,7 +78,7 @@ def get_user_data():
 - File system restrictions
 - Process isolation
 
-### 4. **Progress Validator** (`src/claude_tiu/validation/progress_validator.py`)
+### 4. **Progress Validator** (`src/claude_tui/validation/progress_validator.py`)
 
 **Authenticity Metrics**:
 - **Real vs Claimed Progress**: Compares actual code changes to reported progress
@@ -100,7 +100,7 @@ def calculate_authenticity_score(metrics):
     return sum(metrics[key] * weights[key] for key in weights)
 ```
 
-### 5. **Auto-Completion Engine** (`src/claude_tiu/validation/auto_completion_engine.py`)
+### 5. **Auto-Completion Engine** (`src/claude_tui/validation/auto_completion_engine.py`)
 
 **Completion Strategies** (80%+ success rate):
 
@@ -485,7 +485,7 @@ export CLAUDE_TIU_DEBUG=true
 export VALIDATION_LOG_LEVEL=DEBUG
 
 # Run validation with detailed output
-python -m claude_tiu.validation.cli --debug validate file.py
+python -m claude_tui.validation.cli --debug validate file.py
 ```
 
 ---

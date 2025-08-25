@@ -8,7 +8,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "claude-tiu-production-lb"],
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "claude-tui-production-lb"],
           [".", "TargetResponseTime", ".", "."],
           [".", "HTTPCode_5XX_Count", ".", "."],
           [".", "HTTPCode_4XX_Count", ".", "."]
@@ -29,7 +29,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/EKS", "cluster_failed_request_count", "ClusterName", "claude-tiu-production"],
+          ["AWS/EKS", "cluster_failed_request_count", "ClusterName", "claude-tui-production"],
           [".", "cluster_node_count", ".", "."],
           [".", "cluster_pod_count", ".", "."]
         ],
@@ -48,7 +48,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "claude-tiu-prod-db"],
+          ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "claude-tui-prod-db"],
           [".", "DatabaseConnections", ".", "."],
           [".", "ReadLatency", ".", "."],
           [".", "WriteLatency", ".", "."]
@@ -68,7 +68,7 @@
       "height": 6,
       "properties": {
         "metrics": [
-          ["AWS/ElastiCache", "CPUUtilization", "CacheClusterId", "claude-tiu-redis-prod"],
+          ["AWS/ElastiCache", "CPUUtilization", "CacheClusterId", "claude-tui-redis-prod"],
           [".", "NetworkBytesIn", ".", "."],
           [".", "NetworkBytesOut", ".", "."],
           [".", "CurrConnections", ".", "."]
@@ -105,7 +105,7 @@
       "width": 24,
       "height": 6,
       "properties": {
-        "query": "SOURCE '/aws/eks/claude-tiu-production/cluster' | fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "query": "SOURCE '/aws/eks/claude-tui-production/cluster' | fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
         "region": "us-west-2",
         "title": "Recent Error Logs",
         "view": "table"

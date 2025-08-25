@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Configuration
 NAMESPACE="production"
-APP_NAME="claude-tiu"
+APP_NAME="claude-tui"
 HEALTH_CHECK_TIMEOUT=300
 ROLLBACK_TIMEOUT=120
 
@@ -372,14 +372,14 @@ Commands:
     help                       Show this help message
 
 Examples:
-    $0 deploy ghcr.io/claude-tiu/claude-tiu:v1.2.3
-    $0 deploy ghcr.io/claude-tiu/claude-tiu:latest 5
+    $0 deploy ghcr.io/claude-tui/claude-tui:v1.2.3
+    $0 deploy ghcr.io/claude-tui/claude-tui:latest 5
     $0 status
     $0 rollback
 
 Environment Variables:
     NAMESPACE              Kubernetes namespace (default: production)
-    APP_NAME              Application name (default: claude-tiu)
+    APP_NAME              Application name (default: claude-tui)
     HEALTH_CHECK_TIMEOUT  Health check timeout in seconds (default: 300)
 
 EOF

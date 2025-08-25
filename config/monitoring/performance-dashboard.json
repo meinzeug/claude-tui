@@ -1,8 +1,8 @@
 {
   "dashboard": {
     "id": null,
-    "title": "Claude TIU - Performance Monitoring Dashboard",
-    "tags": ["claude-tiu", "performance", "monitoring"],
+    "title": "Claude TUI - Performance Monitoring Dashboard",
+    "tags": ["claude-tui", "performance", "monitoring"],
     "timezone": "UTC",
     "editable": true,
     "hideControls": false,
@@ -20,7 +20,7 @@
         {
           "name": "instance",
           "type": "query",
-          "query": "label_values(up{job=\"claude-tiu\"}, instance)",
+          "query": "label_values(up{job=\"claude-tui\"}, instance)",
           "refresh": 1,
           "includeAll": true,
           "multi": true
@@ -34,7 +34,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "claude_tiu_system_health_score",
+            "expr": "claude_tui_system_health_score",
             "legendFormat": "Health Score"
           }
         ],
@@ -79,7 +79,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "rate(claude_tiu_tasks_completed_total[5m]) / rate(claude_tiu_tasks_total[5m]) * 100",
+            "expr": "rate(claude_tui_tasks_completed_total[5m]) / rate(claude_tui_tasks_total[5m]) * 100",
             "legendFormat": "Success Rate"
           }
         ],
@@ -161,7 +161,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "claude_tiu_active_agents",
+            "expr": "claude_tui_active_agents",
             "legendFormat": "Active Agents"
           }
         ],
@@ -377,7 +377,7 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "claude_tiu_task_queue_depth{instance=~\"$instance\"}",
+            "expr": "claude_tui_task_queue_depth{instance=~\"$instance\"}",
             "legendFormat": "Queue Depth"
           }
         ],
@@ -513,19 +513,19 @@
         "type": "table",
         "targets": [
           {
-            "expr": "claude_tiu_sla_availability",
+            "expr": "claude_tui_sla_availability",
             "legendFormat": "Availability"
           },
           {
-            "expr": "claude_tiu_sla_response_time_compliance",
+            "expr": "claude_tui_sla_response_time_compliance",
             "legendFormat": "Response Time"
           },
           {
-            "expr": "claude_tiu_sla_error_rate_compliance",
+            "expr": "claude_tui_sla_error_rate_compliance",
             "legendFormat": "Error Rate"
           },
           {
-            "expr": "claude_tiu_sla_throughput_compliance",
+            "expr": "claude_tui_sla_throughput_compliance",
             "legendFormat": "Throughput"
           }
         ],
@@ -566,7 +566,7 @@
           "name": "Deployments",
           "datasource": "Prometheus",
           "enable": true,
-          "expr": "changes(up{job=\"claude-tiu\"}[1m]) > 0",
+          "expr": "changes(up{job=\"claude-tui\"}[1m]) > 0",
           "iconColor": "blue",
           "titleFormat": "Deployment"
         },

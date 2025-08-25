@@ -781,10 +781,10 @@ USER claudetiu
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import claude_tiu; print('healthy')" || exit 1
+    CMD python -c "import claude_tui; print('healthy')" || exit 1
 
 # Default command
-CMD ["claude-tiu", "--help"]
+CMD ["claude-tui", "--help"]
 ```
 
 #### Docker Compose for Development
@@ -792,9 +792,9 @@ CMD ["claude-tiu", "--help"]
 version: '3.8'
 
 services:
-  claude-tiu:
+  claude-tui:
     build: .
-    container_name: claude-tiu-dev
+    container_name: claude-tui-dev
     volumes:
       - ./projects:/app/projects
       - ./config:/app/config
@@ -806,38 +806,38 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     depends_on:
       - redis
       - postgres
 
   redis:
     image: redis:7-alpine
-    container_name: claude-tiu-redis
+    container_name: claude-tui-redis
     volumes:
       - redis_data:/data
     networks:
-      - claude-tiu-network
+      - claude-tui-network
     command: redis-server --appendonly yes
 
   postgres:
     image: postgres:15-alpine
-    container_name: claude-tiu-postgres
+    container_name: claude-tui-postgres
     environment:
-      - POSTGRES_DB=claude_tiu
-      - POSTGRES_USER=claude_tiu
+      - POSTGRES_DB=claude_tui
+      - POSTGRES_USER=claude_tui
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - claude-tiu-network
+      - claude-tui-network
 
 volumes:
   redis_data:
   postgres_data:
 
 networks:
-  claude-tiu-network:
+  claude-tui-network:
     driver: bridge
 ```
 
@@ -848,30 +848,30 @@ networks:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: claude-tiu
-  namespace: claude-tiu
+  name: claude-tui
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
     version: v1
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: claude-tiu
+      app: claude-tui
   template:
     metadata:
       labels:
-        app: claude-tiu
+        app: claude-tui
         version: v1
     spec:
-      serviceAccountName: claude-tiu
+      serviceAccountName: claude-tui
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
       containers:
-      - name: claude-tiu
-        image: claude-tiu:latest
+      - name: claude-tui
+        image: claude-tui:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -880,12 +880,12 @@ spec:
         - name: CLAUDE_API_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: claude-api-key
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: postgres-password
         volumeMounts:
         - name: config
@@ -915,19 +915,19 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: claude-tiu-config
+          name: claude-tui-config
       - name: projects
         persistentVolumeClaim:
-          claimName: claude-tiu-projects
+          claimName: claude-tui-projects
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu-service
-  namespace: claude-tiu
+  name: claude-tui-service
+  namespace: claude-tui
 spec:
   selector:
-    app: claude-tiu
+    app: claude-tui
   ports:
   - name: http
     port: 80
@@ -1714,4 +1714,4 @@ class DistributedSessionManager:
         await self.redis_cluster.expire(session_key, self.session_ttl)
 ```
 
-This comprehensive architecture documentation provides a solid foundation for the claude-tiu project, covering all aspects from high-level system design to detailed implementation patterns. The architecture emphasizes modularity, scalability, security, and the unique anti-hallucination validation pipeline that ensures high-quality AI-generated code.
+This comprehensive architecture documentation provides a solid foundation for the claude-tui project, covering all aspects from high-level system design to detailed implementation patterns. The architecture emphasizes modularity, scalability, security, and the unique anti-hallucination validation pipeline that ensures high-quality AI-generated code.

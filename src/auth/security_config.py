@@ -19,8 +19,8 @@ class JWTConfig:
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
-    issuer: str = "claude-tiu"
-    audience: str = "claude-tiu-api"
+    issuer: str = "claude-tui"
+    audience: str = "claude-tui-api"
     
     # Token type expiration settings
     email_verification_expire_hours: int = 24
@@ -84,12 +84,12 @@ class EmailConfig:
     smtp_use_tls: bool = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
     smtp_use_ssl: bool = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
     
-    from_email: str = os.getenv("FROM_EMAIL", "noreply@claude-tiu.com")
+    from_email: str = os.getenv("FROM_EMAIL", "noreply@claude-tui.com")
     from_name: str = os.getenv("FROM_NAME", "Claude-TIU")
     
     # Email content settings
     company_name: str = "Claude-TIU"
-    support_email: str = os.getenv("SUPPORT_EMAIL", "support@claude-tiu.com")
+    support_email: str = os.getenv("SUPPORT_EMAIL", "support@claude-tui.com")
     frontend_url: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 
@@ -134,7 +134,7 @@ class AuditConfig:
     log_level: str = os.getenv("AUDIT_LOG_LEVEL", "INFO")
     
     # File logging
-    log_file: Optional[str] = os.getenv("AUDIT_LOG_FILE", "/var/log/claude-tiu/audit.log")
+    log_file: Optional[str] = os.getenv("AUDIT_LOG_FILE", "/var/log/claude-tui/audit.log")
     max_file_size_mb: int = int(os.getenv("AUDIT_MAX_FILE_SIZE_MB", "100"))
     backup_count: int = int(os.getenv("AUDIT_BACKUP_COUNT", "10"))
     
@@ -253,11 +253,11 @@ class SecurityConfig:
     
     # Global security settings
     allowed_hosts: List[str] = field(default_factory=lambda: [
-        "localhost", "127.0.0.1", "claude-tiu.com", "*.claude-tiu.com"
+        "localhost", "127.0.0.1", "claude-tui.com", "*.claude-tui.com"
     ])
     
     cors_origins: List[str] = field(default_factory=lambda: [
-        "http://localhost:3000", "https://claude-tiu.com"
+        "http://localhost:3000", "https://claude-tui.com"
     ])
     
     trusted_proxies: List[str] = field(default_factory=lambda: [

@@ -241,7 +241,7 @@ class ProjectTestHelper:
             main_file.write_text("""
 def main():
     \"\"\"Main application entry point.\"\"\"
-    print("Hello, claude-tiu!")
+    print("Hello, claude-tui!")
     
     # TODO: implement CLI interface
     pass

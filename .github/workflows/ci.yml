@@ -93,7 +93,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -147,7 +147,7 @@ jobs:
           mkdir -p reports logs data
           python scripts/setup_test_env.py
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
 
       - name: 🧪 Run Unit Tests
@@ -158,7 +158,7 @@ jobs:
         run: |
           pytest tests/integration/ -v --tb=short --junitxml=reports/integration-tests.xml
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
 
       - name: 🛡️ Run Security Tests
@@ -171,9 +171,9 @@ jobs:
 
       - name: 📊 Generate Coverage Report
         run: |
-          pytest --cov=src/claude_tiu --cov-report=xml --cov-report=html --cov-report=term
+          pytest --cov=src/claude_tui --cov-report=xml --cov-report=html --cov-report=term
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
 
       - name: 📤 Upload Coverage to Codecov
@@ -202,7 +202,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: claude_tiu_perf
+          POSTGRES_DB: claude_tui_perf
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -240,7 +240,7 @@ jobs:
         run: |
           pytest tests/performance/ -v --benchmark-json=benchmark-results.json
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tiu_perf
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_perf
           REDIS_URL: redis://localhost:6379/0
 
       - name: 📊 Upload Benchmark Results

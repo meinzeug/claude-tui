@@ -108,7 +108,7 @@
 
 ### Quick Deploy (5 minutes)
 ```bash
-cd /home/tekkadmin/claude-tiu
+cd /home/tekkadmin/claude-tui
 
 # Run critical optimizations
 python -m src.performance.critical_optimizations

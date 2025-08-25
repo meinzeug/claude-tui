@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Pyramid Validator for claude-tiu
+Test Pyramid Validator for claude-tui
 
 This module validates and monitors test distribution according to the testing pyramid
 principles, ensuring optimal balance between unit, integration, and e2e tests.

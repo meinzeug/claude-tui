@@ -81,12 +81,12 @@ cat << 'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
         "collect_list": [
           {
             "file_path": "/var/log/messages",
-            "log_group_name": "/aws/ec2/claude-tiu-worker-nodes",
+            "log_group_name": "/aws/ec2/claude-tui-worker-nodes",
             "log_stream_name": "{instance_id}/messages"
           },
           {
             "file_path": "/var/log/dmesg",
-            "log_group_name": "/aws/ec2/claude-tiu-worker-nodes",
+            "log_group_name": "/aws/ec2/claude-tui-worker-nodes",
             "log_stream_name": "{instance_id}/dmesg"
           }
         ]
@@ -150,8 +150,8 @@ EOF
 sudo systemctl restart docker
 
 # Set up log rotation
-sudo tee /etc/logrotate.d/claude-tiu-worker << 'EOF'
-/var/log/claude-tiu/*.log {
+sudo tee /etc/logrotate.d/claude-tui-worker << 'EOF'
+/var/log/claude-tui/*.log {
     daily
     missingok
     rotate 7

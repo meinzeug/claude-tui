@@ -1,4 +1,4 @@
-# Test Suite Gap Analysis - claude-tiu
+# Test Suite Gap Analysis - claude-tui
 
 **Testing Specialist Assessment**  
 **Date**: 2025-08-25  
@@ -238,7 +238,7 @@ TECHNICAL DEBT SCORE: 23/100 (Excellent)
 
 ## Conclusion
 
-The claude-tiu project has an **outstanding test foundation** with strategic gaps that, when addressed, will elevate it to **world-class testing standards**. The identified gaps are **manageable and well-defined**, with clear implementation paths.
+The claude-tui project has an **outstanding test foundation** with strategic gaps that, when addressed, will elevate it to **world-class testing standards**. The identified gaps are **manageable and well-defined**, with clear implementation paths.
 
 **Gap Closure Priority**:
 1. 🔴 **High**: Unit test distribution, performance regression detection

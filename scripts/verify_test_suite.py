@@ -25,7 +25,7 @@ class TestSuiteVerifier:
     
     def verify_all(self) -> bool:
         """Run all verification checks."""
-        print("🔍 Verifying Claude TIU Test Suite Configuration")
+        print("🔍 Verifying Claude TUI Test Suite Configuration")
         print("=" * 55)
         
         # Run all verification methods

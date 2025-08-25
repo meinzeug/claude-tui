@@ -63,8 +63,8 @@ class JWTService:
         algorithm: str = "HS256",
         access_token_expire_minutes: int = 30,
         refresh_token_expire_days: int = 30,
-        issuer: str = "claude-tiu",
-        audience: str = "claude-tiu-api"
+        issuer: str = "claude-tui",
+        audience: str = "claude-tui-api"
     ):
         self.secret_key = secret_key
         self.algorithm = algorithm

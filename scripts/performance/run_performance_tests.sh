@@ -22,7 +22,7 @@ BENCHMARK_DURATION=60
 MAX_CONCURRENT_REQUESTS=50
 PERFORMANCE_THRESHOLD_MS=500
 
-echo -e "${BLUE}🚀 Claude TIU Performance Testing Suite${NC}"
+echo -e "${BLUE}🚀 Claude TUI Performance Testing Suite${NC}"
 echo "================================================="
 echo "Target API: $API_BASE_URL"
 echo "Performance threshold: ${PERFORMANCE_THRESHOLD_MS}ms"
@@ -67,7 +67,7 @@ echo "--------------------"
 # Check if API server is running
 if ! check_service "API Server" "curl -s -f $API_BASE_URL/health"; then
     echo -e "${YELLOW}⚠️  Starting API server...${NC}"
-    cd /home/tekkadmin/claude-tiu
+    cd /home/tekkadmin/claude-tui
     python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 &
     API_PID=$!
     

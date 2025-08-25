@@ -1,5 +1,5 @@
 """
-Service Layer Package for claude-tiu.
+Service Layer Package for claude-tui.
 
 Provides business logic services with dependency injection, 
 error handling, and coordination capabilities.

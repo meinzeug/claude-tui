@@ -1,8 +1,8 @@
-# Claude TIU Production Deployment Guide
+# Claude TUI Production Deployment Guide
 
 ## Overview
 
-This document provides comprehensive instructions for deploying Claude TIU to production using our CI/CD pipeline with blue-green deployment strategy, monitoring, and security best practices.
+This document provides comprehensive instructions for deploying Claude TUI to production using our CI/CD pipeline with blue-green deployment strategy, monitoring, and security best practices.
 
 ## Architecture
 
@@ -55,26 +55,26 @@ TEAMS_WEBHOOK=https://hooks.teams.microsoft.com/xxx
 1. **EKS Clusters**:
    ```bash
    # Staging cluster
-   aws eks create-cluster --name claude-tiu-staging --region us-west-2
+   aws eks create-cluster --name claude-tui-staging --region us-west-2
    
    # Production cluster
-   aws eks create-cluster --name claude-tiu-production --region us-west-2
+   aws eks create-cluster --name claude-tui-production --region us-west-2
    ```
 
 2. **RDS Database**:
    ```bash
    aws rds create-db-instance \
-     --db-instance-identifier claude-tiu-prod-db \
+     --db-instance-identifier claude-tui-prod-db \
      --db-instance-class db.r5.large \
      --engine postgres \
-     --master-username claude_tiu \
+     --master-username claude_tui \
      --allocated-storage 100
    ```
 
 3. **ElastiCache Redis**:
    ```bash
    aws elasticache create-cache-cluster \
-     --cache-cluster-id claude-tiu-redis-prod \
+     --cache-cluster-id claude-tui-redis-prod \
      --cache-node-type cache.r5.large \
      --engine redis
    ```
@@ -118,8 +118,8 @@ TEAMS_WEBHOOK=https://hooks.teams.microsoft.com/xxx
 ```bash
 # Auto-triggered on develop branch
 kubectl apply -f k8s/staging/
-kubectl set image deployment/claude-tiu-app claude-tiu=${IMAGE_TAG} -n staging
-kubectl rollout status deployment/claude-tiu-app -n staging
+kubectl set image deployment/claude-tui-app claude-tui=${IMAGE_TAG} -n staging
+kubectl rollout status deployment/claude-tui-app -n staging
 ```
 
 **Performance Target**: ✅ < 15 minutes
@@ -139,22 +139,22 @@ kubectl rollout status deployment/claude-tiu-app -n staging
 
 ```bash
 # Determine current color
-CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}')
+CURRENT_COLOR=$(kubectl get service claude-tui-service -n production -o jsonpath='{.spec.selector.color}')
 NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
 
 # Deploy to inactive environment
 kubectl apply -f k8s/production/deployment-${NEW_COLOR}.yaml
-kubectl set image deployment/claude-tiu-${NEW_COLOR} claude-tiu=${IMAGE_TAG} -n production
+kubectl set image deployment/claude-tui-${NEW_COLOR} claude-tui=${IMAGE_TAG} -n production
 
 # Health checks
 kubectl wait --for=condition=ready pod -l color=${NEW_COLOR} -n production
 
 # Switch traffic
-kubectl patch service claude-tiu-service -n production \
+kubectl patch service claude-tui-service -n production \
   -p '{"spec":{"selector":{"color":"'${NEW_COLOR}'"}}}'
 
 # Scale down old environment
-kubectl scale deployment claude-tiu-${CURRENT_COLOR} --replicas=0 -n production
+kubectl scale deployment claude-tui-${CURRENT_COLOR} --replicas=0 -n production
 ```
 
 **Performance Target**: ✅ < 30 minutes
@@ -193,15 +193,15 @@ gh workflow run ci-cd.yml -f environment=production -f skip_tests=true
 
 ```bash
 # Get current deployment color
-CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}')
+CURRENT_COLOR=$(kubectl get service claude-tui-service -n production -o jsonpath='{.spec.selector.color}')
 OLD_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
 
 # Switch back to previous version
-kubectl patch service claude-tiu-service -n production \
+kubectl patch service claude-tui-service -n production \
   -p '{"spec":{"selector":{"color":"'${OLD_COLOR}'"}}}'
 
 # Scale up old deployment
-kubectl scale deployment claude-tiu-${OLD_COLOR} --replicas=3 -n production
+kubectl scale deployment claude-tui-${OLD_COLOR} --replicas=3 -n production
 ```
 
 ### Manual Kubernetes Deployment
@@ -209,7 +209,7 @@ kubectl scale deployment claude-tiu-${OLD_COLOR} --replicas=3 -n production
 ```bash
 # Deploy to staging
 kubectl apply -f k8s/staging/
-kubectl set image deployment/claude-tiu-app claude-tiu=ghcr.io/claude-tiu/claude-tiu:latest -n staging
+kubectl set image deployment/claude-tui-app claude-tui=ghcr.io/claude-tui/claude-tui:latest -n staging
 
 # Deploy to production (blue-green)
 kubectl apply -f k8s/production/
@@ -319,15 +319,15 @@ kubectl apply -f k8s/production/
 1. **Complete Rollback**:
    ```bash
    # Rollback to last known good deployment
-   kubectl rollout undo deployment/claude-tiu-blue -n production
-   kubectl rollout undo deployment/claude-tiu-green -n production
+   kubectl rollout undo deployment/claude-tui-blue -n production
+   kubectl rollout undo deployment/claude-tui-green -n production
    ```
 
 2. **Scale Down**:
    ```bash
    # Emergency scale down
-   kubectl scale deployment claude-tiu-blue --replicas=0 -n production
-   kubectl scale deployment claude-tiu-green --replicas=0 -n production
+   kubectl scale deployment claude-tui-blue --replicas=0 -n production
+   kubectl scale deployment claude-tui-green --replicas=0 -n production
    ```
 
 3. **Maintenance Mode**:
@@ -395,7 +395,7 @@ kubectl apply -f k8s/production/
 3. **Kubernetes Updates**:
    ```bash
    # Update cluster
-   aws eks update-cluster-version --name claude-tiu-production --version 1.28
+   aws eks update-cluster-version --name claude-tui-production --version 1.28
    ```
 
 ## Cost Optimization
@@ -439,9 +439,9 @@ kubectl apply -f k8s/production/
 
 ### Contact Information
 
-- **DevOps Team**: devops@claude-tiu.dev
-- **Security Team**: security@claude-tiu.dev
-- **Platform Team**: platform@claude-tiu.dev
+- **DevOps Team**: devops@claude-tui.dev
+- **Security Team**: security@claude-tui.dev
+- **Platform Team**: platform@claude-tui.dev
 
 ### SLA Targets
 
@@ -454,4 +454,4 @@ kubectl apply -f k8s/production/
 
 **Last Updated**: 2025-08-25
 **Version**: 1.0.0
-**Maintainer**: Claude TIU DevOps Team
+**Maintainer**: Claude TUI DevOps Team

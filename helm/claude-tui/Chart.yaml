@@ -1,0 +1,19 @@
+apiVersion: v2
+name: claude-tui
+description: A Helm chart for Claude TUI production deployment
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - ai
+  - claude
+  - automation
+  - swarm
+home: https://github.com/your-org/claude-tui
+sources:
+  - https://github.com/your-org/claude-tui
+maintainers:
+  - name: Claude TUI Team
+    email: team@claude-tui.com
+annotations:
+  category: AI/ML

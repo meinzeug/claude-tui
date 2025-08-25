@@ -457,23 +457,23 @@ query GetPopularTemplates {
 
 ```bash
 # Install CLI
-npm install -g claude-tiu-cli
+npm install -g claude-tui-cli
 
 # Login
-claude-tiu auth login
+claude-tui auth login
 
 # Browse templates
-claude-tiu templates search react --category frontend
+claude-tui templates search react --category frontend
 
 # Download template
-claude-tiu templates download template_123
+claude-tui templates download template_123
 
 # Upload template
-claude-tiu templates upload ./my-template --name "My Template"
+claude-tui templates upload ./my-template --name "My Template"
 
 # Manage plugins
-claude-tiu plugins list --installed
-claude-tiu plugins install ai-codegen
+claude-tui plugins list --installed
+claude-tui plugins install ai-codegen
 ```
 
 ### IDE Extensions
@@ -614,4 +614,4 @@ The Claude-TIU Community Platform thrives on the contributions and engagement of
 
 ---
 
-*For technical support or questions, visit our [Discord community](https://discord.gg/claude-tiu) or email support@claude-tiu.dev*
+*For technical support or questions, visit our [Discord community](https://discord.gg/claude-tui) or email support@claude-tui.dev*

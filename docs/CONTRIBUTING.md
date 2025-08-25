@@ -1,6 +1,6 @@
-# Contributing to Claude TIU
+# Contributing to Claude TUI
 
-Thank you for your interest in contributing to Claude TIU! This guide will help you get started with contributing to our AI-powered development tool.
+Thank you for your interest in contributing to Claude TUI! This guide will help you get started with contributing to our AI-powered development tool.
 
 ## 📋 Table of Contents
 
@@ -34,8 +34,8 @@ We are committed to making participation in our project a harassment-free experi
 
 ```bash
 # Fork the repository on GitHub
-git clone https://github.com/your-username/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/your-username/claude-tui.git
+cd claude-tui
 
 # Set up development environment
 ./scripts/setup-dev.sh
@@ -82,7 +82,7 @@ DEBUG=true
 pytest tests/unit/ -v
 
 # Start development server
-python -m claude_tiu --debug
+python -m claude_tui --debug
 
 # Verify Claude Flow integration
 npx claude-flow@alpha hive-mind status
@@ -320,7 +320,7 @@ tests/
 
 ```python
 import pytest
-from claude_tiu import ClaudeTIU, ProjectConfig
+from claude_tui import ClaudeTIU, ProjectConfig
 
 class TestProjectCreation:
     """Test project creation functionality."""
@@ -398,7 +398,7 @@ import pytest
 @pytest.fixture
 def mock_claude_client():
     """Mock Claude Code client."""
-    with patch('claude_tiu.ai.ClaudeCodeClient') as mock:
+    with patch('claude_tui.ai.ClaudeCodeClient') as mock:
         mock.generate_code.return_value = AsyncMock(return_value={
             'code': 'def hello(): return "world"',
             'language': 'python',
@@ -521,12 +521,12 @@ When asking for help:
 **Environment**: 
 - OS: Ubuntu 20.04
 - Python: 3.9.7  
-- Claude TIU: v1.2.0
+- Claude TUI: v1.2.0
 
 **Steps to reproduce**:
 1. Install Claude Flow: `npm install -g claude-flow@alpha`
 2. Initialize swarm: `npx claude-flow@alpha swarm init mesh`
-3. Run: `claude-tiu create --template react`
+3. Run: `claude-tui create --template react`
 
 **Expected behavior**:
 Project should be created successfully
@@ -552,4 +552,4 @@ Contributors are recognized in:
 - **GitHub Contributors** - Automatic GitHub recognition
 - **Annual Reports** - Major contributor highlights
 
-Thank you for contributing to Claude TIU! Your efforts help make AI-powered development accessible to everyone.
+Thank you for contributing to Claude TUI! Your efforts help make AI-powered development accessible to everyone.

@@ -240,7 +240,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -275,15 +275,15 @@ jobs:
 
       - name: 🧪 Run Tests - ${{ matrix.test-type }}
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
-          CLAUDE_TIU_ENV: testing
+          CLAUDE_TUI_ENV: testing
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           case "${{ matrix.test-type }}" in
             "unit")
               pytest tests/unit/ \
-                --cov=src/claude_tiu \
+                --cov=src/claude_tui \
                 --cov-report=xml:coverage-pr-unit.xml \
                 --cov-report=html:htmlcov-pr-unit \
                 --junit-xml=junit-pr-unit.xml \
@@ -337,7 +337,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: claude-tiu:pr-${{ github.event.number }}
+          tags: claude-tui:pr-${{ github.event.number }}
           cache-from: type=gha,scope=build-pr
           cache-to: type=gha,mode=max,scope=build-pr
           target: testing
@@ -345,7 +345,7 @@ jobs:
       - name: 🧪 Test Docker Image
         run: |
           # Test that the image runs correctly
-          docker run --rm claude-tiu:pr-${{ github.event.number }} python -c "import claude_tiu; print('✅ Image build successful')"
+          docker run --rm claude-tui:pr-${{ github.event.number }} python -c "import claude_tui; print('✅ Image build successful')"
 
   # ==================== PR VALIDATION SUMMARY ====================
   pr-validation-summary:

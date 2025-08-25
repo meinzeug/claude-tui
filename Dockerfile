@@ -1,4 +1,4 @@
-# Multi-stage Docker build for Claude TIU - Production-ready with security hardening
+# Multi-stage Docker build for Claude TUI - Production-ready with security hardening
 # Stage 1: Builder - Install and compile dependencies
 FROM python:3.11-slim as builder
 
@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y \
 # Security: Create non-root user with restricted permissions
 RUN groupadd -r -g 1000 claude && \
     useradd -r -u 1000 -g claude -d /home/claude -m -s /bin/bash claude && \
-    mkdir -p /app /home/claude/.claude-tiu /app/data /app/logs /app/config && \
+    mkdir -p /app /home/claude/.claude-tui /app/data /app/logs /app/config && \
     chown -R claude:claude /app /home/claude
 
 WORKDIR /app
@@ -81,23 +81,23 @@ RUN mkdir -p .swarm logs data backups coordination memory && \
 
 # Comprehensive health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD python -c "import claude_tiu; print('Health check passed')" || exit 1
+  CMD python -c "import claude_tui; print('Health check passed')" || exit 1
 
 # Environment variables for production
 ENV PYTHONPATH=/app/src \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    CLAUDE_TIU_ENV=production \
-    CLAUDE_TIU_CONFIG_DIR=/app/config \
-    CLAUDE_TIU_DATA_DIR=/app/data \
-    CLAUDE_TIU_LOG_DIR=/app/logs
+    CLAUDE_TUI_ENV=production \
+    CLAUDE_TUI_CONFIG_DIR=/app/config \
+    CLAUDE_TUI_DATA_DIR=/app/data \
+    CLAUDE_TUI_LOG_DIR=/app/logs
 
 # Expose application port
 EXPOSE 8000
 
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["python", "-m", "claude_tiu.main"]
+CMD ["python", "-m", "claude_tui.main"]
 
 # Stage 3: Development - Extended image with dev tools
 FROM production as development
@@ -122,11 +122,11 @@ RUN apt-get update && apt-get install -y \
 USER claude
 
 # Development environment variables
-ENV CLAUDE_TIU_ENV=development \
+ENV CLAUDE_TUI_ENV=development \
     PYTHONDONTWRITEBYTECODE=0
 
 # Development command with hot reload
-CMD ["python", "-m", "claude_tiu.main", "--dev", "--reload"]
+CMD ["python", "-m", "claude_tui.main", "--dev", "--reload"]
 
 # Stage 4: Testing - Image for running tests in CI
 FROM development as testing
@@ -142,8 +142,8 @@ RUN pip install --no-cache-dir pytest pytest-cov pytest-asyncio pytest-mock
 USER claude
 
 # Test environment variables
-ENV CLAUDE_TIU_ENV=testing \
+ENV CLAUDE_TUI_ENV=testing \
     PYTHONPATH=/app/src:/app/tests
 
 # Default test command
-CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=claude_tiu"]
+CMD ["python", "-m", "pytest", "tests/", "-v", "--cov=claude_tui"]

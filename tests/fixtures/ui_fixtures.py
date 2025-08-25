@@ -194,7 +194,7 @@ class UITestHelper:
     def create_welcome_screen() -> MockScreen:
         """Create welcome screen."""
         widgets = [
-            UITestHelper.create_widget_mock("welcome_title", "title", "Welcome to claude-tiu"),
+            UITestHelper.create_widget_mock("welcome_title", "title", "Welcome to claude-tui"),
             UITestHelper.create_widget_mock("new_project_btn", "button", "New Project"),
             UITestHelper.create_widget_mock("open_project_btn", "button", "Open Project"),
             UITestHelper.create_widget_mock("recent_projects", "list", "Recent Projects")

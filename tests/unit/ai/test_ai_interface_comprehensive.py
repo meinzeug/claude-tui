@@ -6,12 +6,12 @@ from unittest.mock import AsyncMock, Mock, patch, MagicMock
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
 
-from claude_tiu.integrations.ai_interface import AIInterface
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.models.task import DevelopmentTask, TaskResult, TaskType, TaskPriority
-from claude_tiu.models.project import Project
-from claude_tiu.models.ai_models import AIRequest, AIResponse, CodeResult, WorkflowRequest
-from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity
+from claude_tui.integrations.ai_interface import AIInterface
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.models.task import DevelopmentTask, TaskResult, TaskType, TaskPriority
+from claude_tui.models.project import Project
+from claude_tui.models.ai_models import AIRequest, AIResponse, CodeResult, WorkflowRequest
+from claude_tui.validation.progress_validator import ValidationResult, ValidationSeverity
 
 
 @pytest.fixture
@@ -79,11 +79,11 @@ def mock_decision_engine():
 @pytest.fixture
 def ai_interface(mock_config_manager):
     """Create AI interface with mocked dependencies."""
-    with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient'), \
-         patch('claude_tiu.integrations.ai_interface.ClaudeFlowClient'), \
-         patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration'), \
-         patch('claude_tiu.integrations.ai_interface.ContextBuilder'), \
-         patch('claude_tiu.integrations.ai_interface.IntegrationDecisionEngine'):
+    with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient'), \
+         patch('claude_tui.integrations.ai_interface.ClaudeFlowClient'), \
+         patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration'), \
+         patch('claude_tui.integrations.ai_interface.ContextBuilder'), \
+         patch('claude_tui.integrations.ai_interface.IntegrationDecisionEngine'):
         
         interface = AIInterface(mock_config_manager)
         return interface
@@ -130,11 +130,11 @@ class TestAIInterfaceInitialization:
     
     def test_init_creates_components(self, mock_config_manager):
         """Test that initialization creates all required components."""
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc, \
-             patch('claude_tiu.integrations.ai_interface.ClaudeFlowClient') as mock_cf, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah, \
-             patch('claude_tiu.integrations.ai_interface.ContextBuilder') as mock_cb, \
-             patch('claude_tiu.integrations.ai_interface.IntegrationDecisionEngine') as mock_de:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc, \
+             patch('claude_tui.integrations.ai_interface.ClaudeFlowClient') as mock_cf, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah, \
+             patch('claude_tui.integrations.ai_interface.ContextBuilder') as mock_cb, \
+             patch('claude_tui.integrations.ai_interface.IntegrationDecisionEngine') as mock_de:
             
             interface = AIInterface(mock_config_manager)
             
@@ -901,11 +901,11 @@ class TestAIInterfaceIntegration:
     @pytest.mark.asyncio
     async def test_full_workflow_integration(self, mock_config_manager, sample_project, sample_task):
         """Test full workflow integration from task to result."""
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
-             patch('claude_tiu.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class, \
-             patch('claude_tiu.integrations.ai_interface.ContextBuilder') as mock_cb_class, \
-             patch('claude_tiu.integrations.ai_interface.IntegrationDecisionEngine') as mock_de_class:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
+             patch('claude_tui.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class, \
+             patch('claude_tui.integrations.ai_interface.ContextBuilder') as mock_cb_class, \
+             patch('claude_tui.integrations.ai_interface.IntegrationDecisionEngine') as mock_de_class:
             
             # Setup mock instances
             mock_cc = Mock()

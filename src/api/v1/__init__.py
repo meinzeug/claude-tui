@@ -1,5 +1,5 @@
 """
-Claude TIU API v1 Package.
+Claude TUI API v1 Package.
 
 REST API endpoints for AI-powered development operations.
 """

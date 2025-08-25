@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, Mock, patch, MagicMock
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from claude_tiu.integrations.ai_interface import AIInterface
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.models.task import DevelopmentTask, TaskResult, TaskType, TaskPriority
-from claude_tiu.models.project import Project
-from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity
+from claude_tui.integrations.ai_interface import AIInterface
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.models.task import DevelopmentTask, TaskResult, TaskType, TaskPriority
+from claude_tui.models.project import Project
+from claude_tui.validation.progress_validator import ValidationResult, ValidationSeverity
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def mock_config_manager():
     }.get(path, default))
     
     # Mock AI service config
-    from claude_tiu.core.config_manager import AIServiceConfig
+    from claude_tui.core.config_manager import AIServiceConfig
     service_config = AIServiceConfig(
         service_name='claude',
         endpoint_url='https://api.anthropic.com',
@@ -101,9 +101,9 @@ class TestAIInterfaceIntegration:
     async def test_ai_interface_full_workflow(self, mock_config_manager, test_project, sample_tasks):
         """Test complete AI interface workflow integration."""
         # Initialize AI interface with mocked components
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
-             patch('claude_tiu.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
+             patch('claude_tui.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
             
             # Setup mock instances
             mock_cc = Mock()
@@ -169,8 +169,8 @@ class TestAIInterfaceIntegration:
     @pytest.mark.asyncio
     async def test_ai_interface_error_recovery(self, mock_config_manager, test_project):
         """Test AI interface error recovery and correction."""
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
             
             mock_cc = Mock()
             mock_ah = Mock()
@@ -237,7 +237,7 @@ class TestAIInterfaceIntegration:
     @pytest.mark.asyncio
     async def test_ai_interface_streaming_validation(self, mock_config_manager):
         """Test real-time streaming validation."""
-        with patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
+        with patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
             mock_ah = Mock()
             mock_ah_class.return_value = mock_ah
             
@@ -293,7 +293,7 @@ class TestAntiHallucinationIntegration:
     @pytest.mark.asyncio
     async def test_anti_hallucination_validation_pipeline(self, mock_config_manager, test_project):
         """Test complete anti-hallucination validation pipeline."""
-        from claude_tiu.integrations.anti_hallucination_integration import AntiHallucinationIntegration
+        from claude_tui.integrations.anti_hallucination_integration import AntiHallucinationIntegration
         
         with patch.object(AntiHallucinationIntegration, '_load_models'), \
              patch.object(AntiHallucinationIntegration, '_initialize_validators'):
@@ -364,8 +364,8 @@ class TestPerformanceIntegration:
     @pytest.mark.performance
     async def test_concurrent_task_processing_performance(self, mock_config_manager, test_project):
         """Test performance of concurrent task processing."""
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
             
             mock_cc = Mock()
             mock_ah = Mock()
@@ -456,9 +456,9 @@ class TestRealWorldScenarios:
         # 5. Code review and validation
         # 6. Deployment preparation
         
-        with patch('claude_tiu.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
-             patch('claude_tiu.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
-             patch('claude_tiu.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
+        with patch('claude_tui.integrations.ai_interface.ClaudeCodeClient') as mock_cc_class, \
+             patch('claude_tui.integrations.ai_interface.ClaudeFlowClient') as mock_cf_class, \
+             patch('claude_tui.integrations.ai_interface.AntiHallucinationIntegration') as mock_ah_class:
             
             # Setup mock clients
             mock_cc = Mock()

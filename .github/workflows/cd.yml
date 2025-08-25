@@ -134,7 +134,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment:
       name: staging
-      url: https://staging.claude-tiu.dev
+      url: https://staging.claude-tui.dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -155,21 +155,21 @@ jobs:
           
           # Update image in deployment
           IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
-          sed -i "s|image: .*claude-tiu.*|image: ${IMAGE_TAG}|g" k8s/staging/deployment.yaml
+          sed -i "s|image: .*claude-tui.*|image: ${IMAGE_TAG}|g" k8s/staging/deployment.yaml
           
           # Apply configurations
           kubectl apply -f k8s/staging/namespace.yaml
-          kubectl apply -f k8s/staging/ -n claude-tiu-staging
+          kubectl apply -f k8s/staging/ -n claude-tui-staging
           
           # Wait for rollout
-          kubectl rollout status deployment/claude-tiu-app -n claude-tiu-staging --timeout=300s
+          kubectl rollout status deployment/claude-tui-app -n claude-tui-staging --timeout=300s
 
       - name: Run smoke tests
         run: |
           export KUBECONFIG=kubeconfig
           
           # Get service endpoint
-          ENDPOINT=$(kubectl get service claude-tiu-service -n claude-tiu-staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          ENDPOINT=$(kubectl get service claude-tui-service -n claude-tui-staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           
           # Run basic health checks
           curl -f http://${ENDPOINT}/health || exit 1
@@ -178,7 +178,7 @@ jobs:
       - name: Run integration tests against staging
         run: |
           export KUBECONFIG=kubeconfig
-          STAGING_URL="https://staging.claude-tiu.dev"
+          STAGING_URL="https://staging.claude-tui.dev"
           
           python -m pytest tests/e2e/ -v \
             --base-url="${STAGING_URL}" \
@@ -199,7 +199,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     environment:
       name: production
-      url: https://claude-tiu.dev
+      url: https://claude-tui.dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -223,7 +223,7 @@ jobs:
           kubectl top nodes
           
           # Check current deployment status
-          kubectl get deployments -n claude-tiu-production
+          kubectl get deployments -n claude-tui-production
 
       - name: Blue-Green Deployment
         run: |
@@ -232,7 +232,7 @@ jobs:
           IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
           
           # Determine current color
-          CURRENT_COLOR=$(kubectl get deployment -n claude-tiu-production -l app=claude-tiu -o jsonpath='{.items[0].metadata.labels.version}')
+          CURRENT_COLOR=$(kubectl get deployment -n claude-tui-production -l app=claude-tui -o jsonpath='{.items[0].metadata.labels.version}')
           if [[ "$CURRENT_COLOR" == "blue" ]]; then
             NEW_COLOR="green"
           else
@@ -242,21 +242,21 @@ jobs:
           echo "Deploying to $NEW_COLOR environment"
           
           # Update deployment with new color
-          sed -i "s|image: .*claude-tiu.*|image: ${IMAGE_TAG}|g" k8s/production/deployment-${NEW_COLOR}.yaml
+          sed -i "s|image: .*claude-tui.*|image: ${IMAGE_TAG}|g" k8s/production/deployment-${NEW_COLOR}.yaml
           sed -i "s|version: .*|version: ${NEW_COLOR}|g" k8s/production/deployment-${NEW_COLOR}.yaml
           
           # Deploy to new color
-          kubectl apply -f k8s/production/deployment-${NEW_COLOR}.yaml -n claude-tiu-production
+          kubectl apply -f k8s/production/deployment-${NEW_COLOR}.yaml -n claude-tui-production
           
           # Wait for rollout
-          kubectl rollout status deployment/claude-tiu-app-${NEW_COLOR} -n claude-tiu-production --timeout=600s
+          kubectl rollout status deployment/claude-tui-app-${NEW_COLOR} -n claude-tui-production --timeout=600s
 
       - name: Health checks and validation
         run: |
           export KUBECONFIG=kubeconfig
           
           # Get new deployment endpoint
-          kubectl port-forward service/claude-tiu-service-${NEW_COLOR} 8080:8000 -n claude-tiu-production &
+          kubectl port-forward service/claude-tui-service-${NEW_COLOR} 8080:8000 -n claude-tui-production &
           PF_PID=$!
           sleep 10
           
@@ -272,7 +272,7 @@ jobs:
           export KUBECONFIG=kubeconfig
           
           # Update service to point to new deployment
-          kubectl patch service claude-tiu-service -n claude-tiu-production \
+          kubectl patch service claude-tui-service -n claude-tui-production \
             -p '{"spec":{"selector":{"version":"'${NEW_COLOR}'"}}}'
           
           echo "Traffic switched to $NEW_COLOR deployment"
@@ -284,8 +284,8 @@ jobs:
           # Monitor for 2 minutes
           for i in {1..12}; do
             echo "Monitoring check $i/12"
-            kubectl get pods -n claude-tiu-production -l version=${NEW_COLOR}
-            kubectl top pods -n claude-tiu-production -l version=${NEW_COLOR} || true
+            kubectl get pods -n claude-tui-production -l version=${NEW_COLOR}
+            kubectl top pods -n claude-tui-production -l version=${NEW_COLOR} || true
             sleep 10
           done
 
@@ -296,7 +296,7 @@ jobs:
           OLD_COLOR=$(if [[ "$NEW_COLOR" == "blue" ]]; then echo "green"; else echo "blue"; fi)
           
           # Scale down old deployment
-          kubectl scale deployment claude-tiu-app-${OLD_COLOR} --replicas=0 -n claude-tiu-production
+          kubectl scale deployment claude-tui-app-${OLD_COLOR} --replicas=0 -n claude-tui-production
           
           echo "Scaled down $OLD_COLOR deployment"
 

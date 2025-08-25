@@ -1,5 +1,5 @@
 """
-Alembic Environment Configuration for claude-tiu
+Alembic Environment Configuration for claude-tui
 
 Provides database migration environment with:
 - Async SQLAlchemy support

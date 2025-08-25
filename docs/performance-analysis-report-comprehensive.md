@@ -144,7 +144,7 @@ Das Claude-TIU System zeigt eine **robuste Architektur** mit moderaten Performan
 ### 7. Database Performance ✅ COMPLETED
 
 **Database Architecture**:
-- **Main DB**: claude_tiu.db (12KB)
+- **Main DB**: claude_tui.db (12KB)
 - **Hive Mind DB**: hive.db (1.1MB)  
 - **Memory Store**: memory.db (1.8MB)
 - **Legacy DB**: memory.db (16KB)

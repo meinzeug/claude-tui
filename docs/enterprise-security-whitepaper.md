@@ -1,17 +1,17 @@
-# Claude-TIU Enterprise Security Whitepaper
+# Claude-TUI Enterprise Security Whitepaper
 
 ## 🔐 Comprehensive Security Architecture & Compliance Framework
 
 **Version**: 1.0  
 **Classification**: Public  
 **Date**: January 2024  
-**Authors**: Claude-TIU Security Team  
+**Authors**: Claude-TUI Security Team  
 
 ---
 
 ## Executive Summary
 
-Claude-TIU implements enterprise-grade security controls across all layers of the application stack, ensuring robust protection for AI-powered development workflows. This whitepaper outlines our comprehensive security architecture, compliance frameworks, and risk mitigation strategies.
+Claude-TUI implements enterprise-grade security controls across all layers of the application stack, ensuring robust protection for AI-powered development workflows. This whitepaper outlines our comprehensive security architecture, compliance frameworks, and risk mitigation strategies.
 
 ### Key Security Achievements
 - **Zero Known Vulnerabilities** in production deployments
@@ -42,7 +42,7 @@ Claude-TIU implements enterprise-grade security controls across all layers of th
 
 ### Defense-in-Depth Strategy
 
-Claude-TIU implements a comprehensive defense-in-depth security model across seven distinct layers:
+Claude-TUI implements a comprehensive defense-in-depth security model across seven distinct layers:
 
 ```
 ┌─ User Access Layer ─────────────────────────────────┐
@@ -114,7 +114,7 @@ Claude-TIU implements a comprehensive defense-in-depth security model across sev
 
 ### Multi-Factor Authentication (MFA)
 
-Claude-TIU mandates MFA for all user accounts with enterprise-grade options:
+Claude-TUI mandates MFA for all user accounts with enterprise-grade options:
 
 #### Supported MFA Methods
 ```yaml
@@ -731,7 +731,7 @@ class APISecurityMiddleware:
             'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
             
             # Server Information Hiding
-            'Server': 'Claude-TIU'
+            'Server': 'Claude-TUI'
         }
         
         for header, value in security_headers.items():
@@ -1183,7 +1183,7 @@ class BreachNotificationManager:
 ```yaml
 siem_configuration:
   log_sources:
-    - application_logs: "Claude-TIU application logs"
+    - application_logs: "Claude-TUI application logs"
     - web_server_logs: "NGINX/Apache access logs"
     - database_logs: "PostgreSQL audit logs"
     - system_logs: "Operating system logs"
@@ -1411,7 +1411,7 @@ security_metrics:
 
 ## Conclusion
 
-Claude-TIU's enterprise security architecture provides comprehensive protection through:
+Claude-TUI's enterprise security architecture provides comprehensive protection through:
 
 ✅ **Zero-Trust Security Model** with continuous verification  
 ✅ **End-to-End Encryption** for all data at rest and in transit  
@@ -1421,16 +1421,16 @@ Claude-TIU's enterprise security architecture provides comprehensive protection 
 ✅ **Incident Response** with <15 minute response times  
 ✅ **Risk-Based Security** with continuous assessment  
 
-Our security framework ensures enterprise customers can confidently deploy Claude-TIU in the most regulated environments while maintaining the highest levels of data protection and system integrity.
+Our security framework ensures enterprise customers can confidently deploy Claude-TUI in the most regulated environments while maintaining the highest levels of data protection and system integrity.
 
 ### Contact Information
 
 For security inquiries and enterprise security discussions:
 
-- **Security Team**: security@claude-tiu.dev
+- **Security Team**: security@claude-tui.dev
 - **Security Hotline**: +1-800-CLAUDE-SEC
-- **Responsible Disclosure**: security-reports@claude-tiu.dev
-- **Compliance Team**: compliance@claude-tiu.dev
+- **Responsible Disclosure**: security-reports@claude-tui.dev
+- **Compliance Team**: compliance@claude-tui.dev
 
 ### Certifications & Audits
 
@@ -1444,4 +1444,4 @@ For security inquiries and enterprise security discussions:
 
 **Securing AI-Powered Development at Enterprise Scale! 🔐**
 
-*This whitepaper is updated annually or following significant security architecture changes. For the latest version, visit: https://security.claude-tiu.dev/whitepaper*
+*This whitepaper is updated annually or following significant security architecture changes. For the latest version, visit: https://security.claude-tui.dev/whitepaper*

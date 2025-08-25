@@ -1,4 +1,4 @@
-# Production Prometheus Configuration for Claude-TIU
+# Production Prometheus Configuration for Claude-TUI
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,7 +12,7 @@ data:
       scrape_interval: 15s
       evaluation_interval: 15s
       external_labels:
-        cluster: 'claude-tiu-production'
+        cluster: 'claude-tui-production'
         environment: 'production'
 
     rule_files:
@@ -30,8 +30,8 @@ data:
         static_configs:
           - targets: ['localhost:9090']
 
-      # Claude-TIU Application
-      - job_name: 'claude-tiu-production'
+      # Claude-TUI Application
+      - job_name: 'claude-tui-production'
         kubernetes_sd_configs:
         - role: pod
           namespaces:
@@ -67,7 +67,7 @@ data:
           action: drop
 
       # Blue-Green Deployment Specific Metrics
-      - job_name: 'claude-tiu-blue'
+      - job_name: 'claude-tui-blue'
         kubernetes_sd_configs:
         - role: pod
           namespaces:
@@ -98,7 +98,7 @@ data:
           action: replace
           target_label: kubernetes_pod_name
 
-      - job_name: 'claude-tiu-green'
+      - job_name: 'claude-tui-green'
         kubernetes_sd_configs:
         - role: pod
           namespaces:

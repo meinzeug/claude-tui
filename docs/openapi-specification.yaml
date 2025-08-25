@@ -32,18 +32,18 @@ info:
     - Memory-efficient operations with cleanup
     
   contact:
-    name: Claude TIU Support
-    email: support@claude-tiu.dev
-    url: https://claude-tiu.dev/support
+    name: Claude TUI Support
+    email: support@claude-tui.dev
+    url: https://claude-tui.dev/support
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  termsOfService: https://claude-tiu.dev/terms
+  termsOfService: https://claude-tui.dev/terms
 
 servers:
-  - url: https://api.claude-tiu.dev/v1
+  - url: https://api.claude-tui.dev/v1
     description: Production API Server
-  - url: https://staging-api.claude-tiu.dev/v1
+  - url: https://staging-api.claude-tui.dev/v1
     description: Staging API Server
   - url: http://localhost:8000/api/v1
     description: Local Development Server
@@ -1791,4 +1791,4 @@ tags:
 
 externalDocs:
   description: Find more information about Claude-TIU
-  url: https://claude-tiu.dev/docs
+  url: https://claude-tui.dev/docs

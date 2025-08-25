@@ -113,7 +113,7 @@ POST /oauth/token         - Token refresh
 
 ### New Files
 ```
-src/claude_tiu/integrations/claude_code_client.py     (890 LOC)
+src/claude_tui/integrations/claude_code_client.py     (890 LOC)
 tests/integration/test_claude_code_client.py          (800+ LOC)
 scripts/test_claude_code_client.py                    (200 LOC)
 scripts/simple_claude_code_test.py                    (250 LOC)
@@ -147,8 +147,8 @@ httpx>=0.25.0       # Alternative HTTP client
 
 ### Basic Usage
 ```python
-from claude_tiu.integrations.claude_code_client import ClaudeCodeClient
-from claude_tiu.core.config_manager import ConfigManager
+from claude_tui.integrations.claude_code_client import ClaudeCodeClient
+from claude_tui.core.config_manager import ConfigManager
 
 # Initialize client
 config = ConfigManager()

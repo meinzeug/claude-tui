@@ -1,10 +1,10 @@
 # Performance Monitoring and Alerting Configuration
-# Claude TIU System - Production Ready
+# Claude TUI System - Production Ready
 
 # Global alert configuration
 global:
   smtp_smarthost: 'localhost:587'
-  smtp_from: 'alerts@claude-tiu.local'
+  smtp_from: 'alerts@claude-tui.local'
   slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
   resolve_timeout: 5m
 
@@ -30,8 +30,8 @@ route:
 receivers:
 - name: 'performance-team'
   email_configs:
-  - to: 'performance-team@claude-tiu.local'
-    subject: '[Claude TIU] {{ .GroupLabels.alertname }}'
+  - to: 'performance-team@claude-tui.local'
+    subject: '[Claude TUI] {{ .GroupLabels.alertname }}'
     body: |
       {{ range .Alerts }}
       Alert: {{ .Annotations.summary }}
@@ -52,8 +52,8 @@ receivers:
       Time: {{ .StartsAt }}
       {{ end }}
   email_configs:
-  - to: 'oncall@claude-tiu.local'
-    subject: '🚨 CRITICAL: [Claude TIU] {{ .GroupLabels.alertname }}'
+  - to: 'oncall@claude-tui.local'
+    subject: '🚨 CRITICAL: [Claude TUI] {{ .GroupLabels.alertname }}'
 
 - name: 'warning-alerts'
   slack_configs:
@@ -81,7 +81,7 @@ groups:
     annotations:
       summary: "High CPU usage detected on {{ $labels.instance }}"
       description: "CPU usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-cpu"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-cpu"
 
   - alert: CriticalCPUUsage
     expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
@@ -92,7 +92,7 @@ groups:
     annotations:
       summary: "Critical CPU usage on {{ $labels.instance }}"
       description: "CPU usage is above 95% for more than 2 minutes. Immediate attention required. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-cpu"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-cpu"
 
   # High Memory usage
   - alert: HighMemoryUsage
@@ -104,7 +104,7 @@ groups:
     annotations:
       summary: "High memory usage on {{ $labels.instance }}"
       description: "Memory usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-memory"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-memory"
 
   - alert: CriticalMemoryUsage
     expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
@@ -115,7 +115,7 @@ groups:
     annotations:
       summary: "Critical memory usage on {{ $labels.instance }}"
       description: "Memory usage is above 95% for more than 2 minutes. System may become unresponsive. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-memory"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-memory"
 
   # Disk space
   - alert: LowDiskSpace
@@ -127,7 +127,7 @@ groups:
     annotations:
       summary: "Low disk space on {{ $labels.instance }}:{{ $labels.mountpoint }}"
       description: "Disk usage is above 80% for more than 10 minutes. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/low-disk-space"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-disk-space"
 
   - alert: CriticalDiskSpace
     expr: (1 - (node_filesystem_free_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes)) * 100 > 90
@@ -138,7 +138,7 @@ groups:
     annotations:
       summary: "Critical disk space on {{ $labels.instance }}:{{ $labels.mountpoint }}"
       description: "Disk usage is above 90%. System may fail soon. Current value: {{ $value }}%"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-disk-space"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-disk-space"
 
 - name: application_performance
   rules:
@@ -152,7 +152,7 @@ groups:
     annotations:
       summary: "High response time detected"
       description: "95th percentile response time is above 500ms for more than 5 minutes. Current value: {{ $value }}s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-response-time"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-response-time"
 
   - alert: CriticalResponseTime
     expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2.0
@@ -163,7 +163,7 @@ groups:
     annotations:
       summary: "Critical response time detected"
       description: "95th percentile response time is above 2 seconds. User experience severely impacted. Current value: {{ $value }}s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-response-time"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-response-time"
 
   # High error rate
   - alert: HighErrorRate
@@ -175,7 +175,7 @@ groups:
     annotations:
       summary: "High error rate detected"
       description: "Error rate is above 5% for more than 3 minutes. Current value: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-error-rate"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-error-rate"
 
   - alert: CriticalErrorRate
     expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.20
@@ -186,7 +186,7 @@ groups:
     annotations:
       summary: "Critical error rate detected"
       description: "Error rate is above 20%. Service is severely degraded. Current value: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-error-rate"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-error-rate"
 
   # Low throughput
   - alert: LowThroughput
@@ -198,11 +198,11 @@ groups:
     annotations:
       summary: "Low throughput detected"
       description: "Request rate is below 10 requests/second for more than 10 minutes. Current value: {{ $value }} req/s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/low-throughput"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-throughput"
 
   # Task queue depth
   - alert: HighTaskQueueDepth
-    expr: claude_tiu_task_queue_depth > 100
+    expr: claude_tui_task_queue_depth > 100
     for: 5m
     labels:
       severity: warning
@@ -210,10 +210,10 @@ groups:
     annotations:
       summary: "High task queue depth"
       description: "Task queue depth is above 100 for more than 5 minutes. System may be overloaded. Current value: {{ $value }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-queue-depth"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-queue-depth"
 
   - alert: CriticalTaskQueueDepth
-    expr: claude_tiu_task_queue_depth > 500
+    expr: claude_tui_task_queue_depth > 500
     for: 2m
     labels:
       severity: critical
@@ -221,7 +221,7 @@ groups:
     annotations:
       summary: "Critical task queue depth"
       description: "Task queue depth is above 500. System is severely overloaded. Current value: {{ $value }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/critical-queue-depth"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-queue-depth"
 
 - name: database_performance
   rules:
@@ -235,7 +235,7 @@ groups:
     annotations:
       summary: "Database connection pool usage high"
       description: "Database connection pool is above 80% utilization. Current: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/db-connection-pool"
+      runbook_url: "https://docs.claude-tui.local/runbooks/db-connection-pool"
 
   - alert: DatabaseConnectionPoolCritical
     expr: (database_connections_active / database_connections_max) > 0.95
@@ -246,7 +246,7 @@ groups:
     annotations:
       summary: "Database connection pool near exhaustion"
       description: "Database connection pool is above 95% utilization. New connections may be rejected. Current: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/db-connection-pool-critical"
+      runbook_url: "https://docs.claude-tui.local/runbooks/db-connection-pool-critical"
 
   # Slow queries
   - alert: DatabaseSlowQueries
@@ -258,7 +258,7 @@ groups:
     annotations:
       summary: "High number of slow database queries"
       description: "Slow query rate is above 1 query/second. Performance may be degraded. Current rate: {{ $value }} queries/s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/slow-queries"
+      runbook_url: "https://docs.claude-tui.local/runbooks/slow-queries"
 
   # Database replication lag
   - alert: DatabaseReplicationLag
@@ -270,7 +270,7 @@ groups:
     annotations:
       summary: "High database replication lag"
       description: "Database replica lag is above 30 seconds. Read queries may return stale data. Current lag: {{ $value }}s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/replication-lag"
+      runbook_url: "https://docs.claude-tui.local/runbooks/replication-lag"
 
 - name: cache_performance
   rules:
@@ -284,7 +284,7 @@ groups:
     annotations:
       summary: "Low cache hit rate"
       description: "Cache hit rate is below 70% for more than 10 minutes. Performance may be impacted. Current rate: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/low-cache-hit-rate"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-cache-hit-rate"
 
   # High cache memory usage
   - alert: HighCacheMemoryUsage
@@ -296,7 +296,7 @@ groups:
     annotations:
       summary: "High cache memory usage"
       description: "Cache memory usage is above 90%. Cache evictions may increase. Current usage: {{ $value | humanizePercentage }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/high-cache-memory"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-cache-memory"
 
 - name: scaling_performance
   rules:
@@ -310,7 +310,7 @@ groups:
     annotations:
       summary: "Slow auto-scaling response"
       description: "Auto-scaling event detected but scaling is taking longer than 5 minutes to complete"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/slow-autoscaling"
+      runbook_url: "https://docs.claude-tui.local/runbooks/slow-autoscaling"
 
   # Frequent scaling events
   - alert: FrequentScalingEvents
@@ -322,7 +322,7 @@ groups:
     annotations:
       summary: "Frequent auto-scaling events"
       description: "More than 10 scaling events in the last 30 minutes. System may be oscillating. Events: {{ $value }}"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/frequent-scaling"
+      runbook_url: "https://docs.claude-tui.local/runbooks/frequent-scaling"
 
 - name: sla_compliance
   rules:
@@ -336,7 +336,7 @@ groups:
     annotations:
       summary: "SLA availability breach detected"
       description: "Service availability has dropped below 99.9% SLA target. Immediate attention required."
-      runbook_url: "https://docs.claude-tiu.local/runbooks/sla-availability-breach"
+      runbook_url: "https://docs.claude-tui.local/runbooks/sla-availability-breach"
 
   # SLA response time breach
   - alert: SLAResponseTimeBreach
@@ -348,7 +348,7 @@ groups:
     annotations:
       summary: "SLA response time breach"
       description: "95th percentile response time exceeds 100ms SLA target for more than 5 minutes. Current: {{ $value }}s"
-      runbook_url: "https://docs.claude-tiu.local/runbooks/sla-response-time-breach"
+      runbook_url: "https://docs.claude-tui.local/runbooks/sla-response-time-breach"
 
 # Inhibition rules (suppress alerts when other more specific alerts are firing)
 inhibit_rules:

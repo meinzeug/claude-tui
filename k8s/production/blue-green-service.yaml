@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu
+  name: claude-tui
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: production
   annotations:
     prometheus.io/scrape: "true"
@@ -22,7 +22,7 @@ spec:
     targetPort: 8000  # Metrics endpoint on same port
     protocol: TCP
   selector:
-    app: claude-tiu
+    app: claude-tui
     environment: production
     # color: blue/green (dynamically switched during deployment)
 
@@ -30,10 +30,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu-blue
+  name: claude-tui-blue
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: production
     color: blue
   annotations:
@@ -52,7 +52,7 @@ spec:
     targetPort: 8000
     protocol: TCP
   selector:
-    app: claude-tiu
+    app: claude-tui
     environment: production
     color: blue
 
@@ -60,10 +60,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu-green
+  name: claude-tui-green
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: production
     color: green
   annotations:
@@ -82,7 +82,7 @@ spec:
     targetPort: 8000
     protocol: TCP
   selector:
-    app: claude-tiu
+    app: claude-tui
     environment: production
     color: green
 
@@ -90,10 +90,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu-headless
+  name: claude-tui-headless
   namespace: production
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: production
 spec:
   type: ClusterIP
@@ -104,5 +104,5 @@ spec:
     targetPort: 8000
     protocol: TCP
   selector:
-    app: claude-tiu
+    app: claude-tui
     environment: production

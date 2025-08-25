@@ -1,5 +1,5 @@
 """
-Test fixtures and factories for claude-tiu testing.
+Test fixtures and factories for claude-tui testing.
 """
 
 from .project_fixtures import *

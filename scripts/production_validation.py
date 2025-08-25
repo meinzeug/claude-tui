@@ -101,7 +101,7 @@ class ProductionValidator:
             conn_params = {
                 'host': 'localhost',
                 'port': 5432,
-                'database': 'claude_tiu',
+                'database': 'claude_tui',
                 'user': 'claude_user',
                 'password': 'claude_secure_production_pass_2024'
             }
@@ -313,8 +313,8 @@ class ProductionValidator:
         
         # Check key implementation files exist
         key_files = [
-            "src/claude_tiu/integrations/claude_code_client.py",
-            "src/claude_tiu/validation/anti_hallucination_engine.py",
+            "src/claude_tui/integrations/claude_code_client.py",
+            "src/claude_tui/validation/anti_hallucination_engine.py",
             "src/ui/main_app.py",
             "docker-compose.yml",
             "Dockerfile"

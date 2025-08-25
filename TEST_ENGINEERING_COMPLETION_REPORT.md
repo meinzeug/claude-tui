@@ -10,7 +10,7 @@
 ### 🚀 Test Infrastructure Created
 
 #### 1. **Enhanced Test Configuration**
-- **File:** `/home/tekkadmin/claude-tiu/pytest.ini`
+- **File:** `/home/tekkadmin/claude-tui/pytest.ini`
 - **Coverage Target:** Upgraded to 92% (from 80%)
 - **Features:** Branch coverage, comprehensive markers, performance tracking
 - **Markers:** 25+ test categorization markers for organized testing

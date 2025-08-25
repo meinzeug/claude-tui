@@ -7,8 +7,8 @@ set -euo pipefail
 
 # Configuration
 NAMESPACE="${NAMESPACE:-production}"
-APP_NAME="${APP_NAME:-claude-tiu}"
-MIGRATION_IMAGE="${MIGRATION_IMAGE:-ghcr.io/claude-tiu/claude-tiu:latest}"
+APP_NAME="${APP_NAME:-claude-tui}"
+MIGRATION_IMAGE="${MIGRATION_IMAGE:-ghcr.io/claude-tui/claude-tui:latest}"
 MIGRATION_TIMEOUT="${MIGRATION_TIMEOUT:-300}"
 BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
 
@@ -56,7 +56,7 @@ check_prerequisites() {
     fi
     
     # Check if database connection secret exists
-    if ! kubectl get secret claude-tiu-secrets -n "$NAMESPACE" &> /dev/null; then
+    if ! kubectl get secret claude-tui-secrets -n "$NAMESPACE" &> /dev/null; then
         error "Database secrets not found in namespace $NAMESPACE"
         exit 1
     fi
@@ -78,14 +78,14 @@ metadata:
   name: db-backup-$backup_name
   namespace: $NAMESPACE
   labels:
-    app: claude-tiu-migration
+    app: claude-tui-migration
     type: backup
 spec:
   ttlSecondsAfterFinished: 86400  # 24 hours
   template:
     metadata:
       labels:
-        app: claude-tiu-migration
+        app: claude-tui-migration
         type: backup
     spec:
       restartPolicy: Never
@@ -105,14 +105,14 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: database-url
         - name: BACKUP_NAME
           value: "$backup_name"
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: database-password
               optional: true
         volumeMounts:
@@ -128,7 +128,7 @@ spec:
       volumes:
       - name: backup-storage
         persistentVolumeClaim:
-          claimName: claude-tiu-backup-pvc
+          claimName: claude-tui-backup-pvc
 EOF
 
     # Wait for backup job to complete
@@ -160,7 +160,7 @@ metadata:
   name: $job_name
   namespace: $NAMESPACE
   labels:
-    app: claude-tiu-migration
+    app: claude-tui-migration
     type: migration
     migration-type: $migration_type
 spec:
@@ -168,7 +168,7 @@ spec:
   template:
     metadata:
       labels:
-        app: claude-tiu-migration
+        app: claude-tui-migration
         type: migration
     spec:
       restartPolicy: Never
@@ -219,7 +219,7 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: database-url
         - name: CLAUDE_TIU_ENV
           value: "production"
@@ -289,14 +289,14 @@ metadata:
   name: $job_name
   namespace: $NAMESPACE
   labels:
-    app: claude-tiu-migration
+    app: claude-tui-migration
     type: verification
 spec:
   ttlSecondsAfterFinished: 3600  # 1 hour
   template:
     metadata:
       labels:
-        app: claude-tiu-migration
+        app: claude-tui-migration
         type: verification
     spec:
       restartPolicy: Never
@@ -360,7 +360,7 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: database-url
         - name: PYTHONPATH
           value: "/app/src"
@@ -442,14 +442,14 @@ metadata:
   name: cleanup-backups-$(date +%Y%m%d-%H%M%S)
   namespace: $NAMESPACE
   labels:
-    app: claude-tiu-migration
+    app: claude-tui-migration
     type: cleanup
 spec:
   ttlSecondsAfterFinished: 3600
   template:
     metadata:
       labels:
-        app: claude-tiu-migration
+        app: claude-tui-migration
         type: cleanup
     spec:
       restartPolicy: Never
@@ -485,7 +485,7 @@ spec:
       volumes:
       - name: backup-storage
         persistentVolumeClaim:
-          claimName: claude-tiu-backup-pvc
+          claimName: claude-tui-backup-pvc
 EOF
 
     log "Backup cleanup job started"
@@ -493,17 +493,17 @@ EOF
 
 # Function to create required PVC for backups
 ensure_backup_pvc() {
-    if ! kubectl get pvc claude-tiu-backup-pvc -n "$NAMESPACE" &> /dev/null; then
+    if ! kubectl get pvc claude-tui-backup-pvc -n "$NAMESPACE" &> /dev/null; then
         log "Creating backup PVC..."
         
         cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: claude-tiu-backup-pvc
+  name: claude-tui-backup-pvc
   namespace: $NAMESPACE
   labels:
-    app: claude-tiu
+    app: claude-tui
     component: backup
 spec:
   accessModes:

@@ -1,4 +1,4 @@
-# 🚀 Claude-TIU Quick Start Guide
+# 🚀 Claude TUI Quick Start Guide
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/claude-tiu/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/your-username/claude-tui.git
+cd claude-tui
 
 # Start with Docker Compose
 docker-compose up -d
@@ -22,7 +22,7 @@ docker-compose up -d
 # Access the application
 # API: http://localhost:8000
 # API Docs: http://localhost:8000/docs
-# TUI: docker exec -it claude-tiu-app python -m claude_tiu.main
+# TUI: docker exec -it claude-tui-app python -m claude_tui
 ```
 
 ### Option 2: Local Development
@@ -176,9 +176,9 @@ pytest tests/validation/test_anti_hallucination.py
 
 ## 🆘 Getting Help
 
-- **GitHub Issues**: [Report bugs](https://github.com/claude-tiu/claude-tiu/issues)
-- **Documentation**: [Full docs](https://docs.claude-tiu.ai)
-- **Discord**: [Join community](https://discord.gg/claude-tiu)
+- **GitHub Issues**: [Report bugs](https://github.com/claude-tui/claude-tui/issues)
+- **Documentation**: [Full docs](https://docs.claude-tui.ai)
+- **Discord**: [Join community](https://discord.gg/claude-tui)
 
 ## 🎉 Next Steps
 

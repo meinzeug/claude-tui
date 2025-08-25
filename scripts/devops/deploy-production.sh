@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Production Deployment Script for Claude TIU
+# Production Deployment Script for Claude TUI
 # Supports multiple deployment strategies with automated rollback
 
 set -euo pipefail
@@ -41,7 +41,7 @@ log_error() {
 # Help function
 show_help() {
     cat << EOF
-Production Deployment Script for Claude TIU
+Production Deployment Script for Claude TUI
 
 Usage: $0 [OPTIONS]
 
@@ -56,9 +56,9 @@ Options:
     -h, --help                 Show this help message
 
 Examples:
-    $0 --image ghcr.io/claude-tiu/claude-tiu:v1.0.0
-    $0 --image ghcr.io/claude-tiu/claude-tiu:latest --strategy blue-green
-    $0 --image ghcr.io/claude-tiu/claude-tiu:v1.1.0 --strategy canary --timeout 3600
+    $0 --image ghcr.io/claude-tui/claude-tui:v1.0.0
+    $0 --image ghcr.io/claude-tui/claude-tui:latest --strategy blue-green
+    $0 --image ghcr.io/claude-tui/claude-tui:v1.1.0 --strategy canary --timeout 3600
 
 EOF
 }
@@ -146,24 +146,24 @@ deploy_rolling() {
     
     # Get current image for rollback
     local current_image
-    current_image=$(kubectl get deployment claude-tiu-app -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}')
+    current_image=$(kubectl get deployment claude-tui-app -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}')
     log_info "Current image: $current_image"
     log_info "New image: $image"
     
     # Update the deployment
-    kubectl set image deployment/claude-tiu-app claude-tiu="$image" -n "$NAMESPACE"
+    kubectl set image deployment/claude-tui-app claude-tui="$image" -n "$NAMESPACE"
     
     # Wait for rollout to complete
     log_info "Waiting for rollout to complete (timeout: ${TIMEOUT}s)..."
-    if kubectl rollout status deployment/claude-tiu-app -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
+    if kubectl rollout status deployment/claude-tui-app -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
         log_success "Rolling deployment completed successfully"
         return 0
     else
         log_error "Rolling deployment failed"
         if [[ "$ROLLBACK_ON_FAILURE" == "true" ]]; then
             log_warning "Initiating rollback to previous image: $current_image"
-            kubectl set image deployment/claude-tiu-app claude-tiu="$current_image" -n "$NAMESPACE"
-            kubectl rollout status deployment/claude-tiu-app -n "$NAMESPACE" --timeout=300s
+            kubectl set image deployment/claude-tui-app claude-tui="$current_image" -n "$NAMESPACE"
+            kubectl rollout status deployment/claude-tui-app -n "$NAMESPACE" --timeout=300s
         fi
         return 1
     fi
@@ -176,7 +176,7 @@ deploy_blue_green() {
     
     # Determine current and target colors
     local current_color
-    current_color=$(kubectl get service claude-tiu-service -n "$NAMESPACE" -o jsonpath='{.spec.selector.color}' 2>/dev/null || echo "blue")
+    current_color=$(kubectl get service claude-tui-service -n "$NAMESPACE" -o jsonpath='{.spec.selector.color}' 2>/dev/null || echo "blue")
     local target_color
     if [[ "$current_color" == "blue" ]]; then
         target_color="green"
@@ -193,11 +193,11 @@ deploy_blue_green() {
     fi
     
     # Deploy to target environment
-    kubectl set image deployment/claude-tiu-"$target_color" claude-tiu="$image" -n "$NAMESPACE"
+    kubectl set image deployment/claude-tui-"$target_color" claude-tui="$image" -n "$NAMESPACE"
     
     # Wait for target deployment to be ready
     log_info "Waiting for $target_color deployment to be ready..."
-    if kubectl rollout status deployment/claude-tiu-"$target_color" -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
+    if kubectl rollout status deployment/claude-tui-"$target_color" -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
         log_success "$target_color deployment ready"
     else
         log_error "$target_color deployment failed"
@@ -208,7 +208,7 @@ deploy_blue_green() {
     if run_health_checks "$target_color"; then
         # Switch traffic to target
         log_info "Switching traffic to $target_color..."
-        kubectl patch service claude-tiu-service -n "$NAMESPACE" -p '{"spec":{"selector":{"color":"'$target_color'"}}}'
+        kubectl patch service claude-tui-service -n "$NAMESPACE" -p '{"spec":{"selector":{"color":"'$target_color'"}}}'
         
         # Wait a bit and verify
         sleep 30
@@ -217,12 +217,12 @@ deploy_blue_green() {
             
             # Scale down old environment
             log_info "Scaling down $current_color environment..."
-            kubectl scale deployment claude-tiu-"$current_color" --replicas=0 -n "$NAMESPACE"
+            kubectl scale deployment claude-tui-"$current_color" --replicas=0 -n "$NAMESPACE"
             return 0
         else
             log_error "Health checks failed after traffic switch"
             # Rollback traffic
-            kubectl patch service claude-tiu-service -n "$NAMESPACE" -p '{"spec":{"selector":{"color":"'$current_color'"}}}'
+            kubectl patch service claude-tui-service -n "$NAMESPACE" -p '{"spec":{"selector":{"color":"'$current_color'"}}}'
             return 1
         fi
     else
@@ -243,11 +243,11 @@ deploy_canary() {
     fi
     
     # Deploy canary version
-    kubectl set image deployment/claude-tiu-canary claude-tiu="$image" -n "$NAMESPACE"
+    kubectl set image deployment/claude-tui-canary claude-tui="$image" -n "$NAMESPACE"
     
     # Wait for canary to be ready
     log_info "Waiting for canary deployment to be ready..."
-    if kubectl rollout status deployment/claude-tiu-canary -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
+    if kubectl rollout status deployment/claude-tui-canary -n "$NAMESPACE" --timeout="${TIMEOUT}s"; then
         log_success "Canary deployment ready"
     else
         log_error "Canary deployment failed"
@@ -266,17 +266,17 @@ deploy_canary() {
         log_success "Canary validation successful. Promoting to full deployment..."
         
         # Promote canary to main deployment
-        kubectl set image deployment/claude-tiu-app claude-tiu="$image" -n "$NAMESPACE"
-        kubectl rollout status deployment/claude-tiu-app -n "$NAMESPACE" --timeout="${TIMEOUT}s"
+        kubectl set image deployment/claude-tui-app claude-tui="$image" -n "$NAMESPACE"
+        kubectl rollout status deployment/claude-tui-app -n "$NAMESPACE" --timeout="${TIMEOUT}s"
         
         # Scale down canary
-        kubectl scale deployment claude-tiu-canary --replicas=0 -n "$NAMESPACE"
+        kubectl scale deployment claude-tui-canary --replicas=0 -n "$NAMESPACE"
         
         log_success "Canary deployment completed successfully"
         return 0
     else
         log_error "Canary validation failed. Rolling back..."
-        kubectl scale deployment claude-tiu-canary --replicas=0 -n "$NAMESPACE"
+        kubectl scale deployment claude-tui-canary --replicas=0 -n "$NAMESPACE"
         return 1
     fi
 }
@@ -284,10 +284,10 @@ deploy_canary() {
 # Health check function
 run_health_checks() {
     local target=${1:-""}
-    local service_name="claude-tiu-service"
+    local service_name="claude-tui-service"
     
     if [[ -n "$target" ]]; then
-        service_name="claude-tiu-service-$target"
+        service_name="claude-tui-service-$target"
     fi
     
     log_info "Running health checks for $service_name..."
@@ -373,21 +373,21 @@ pre_deployment_checks() {
     # Check if required deployments exist
     case "$STRATEGY" in
         rolling)
-            if ! kubectl get deployment claude-tiu-app -n "$NAMESPACE" &> /dev/null; then
-                log_error "Deployment claude-tiu-app not found in namespace $NAMESPACE"
+            if ! kubectl get deployment claude-tui-app -n "$NAMESPACE" &> /dev/null; then
+                log_error "Deployment claude-tui-app not found in namespace $NAMESPACE"
                 return 1
             fi
             ;;
         blue-green)
-            if ! kubectl get deployment claude-tiu-blue -n "$NAMESPACE" &> /dev/null || \
-               ! kubectl get deployment claude-tiu-green -n "$NAMESPACE" &> /dev/null; then
+            if ! kubectl get deployment claude-tui-blue -n "$NAMESPACE" &> /dev/null || \
+               ! kubectl get deployment claude-tui-green -n "$NAMESPACE" &> /dev/null; then
                 log_error "Blue-green deployments not found in namespace $NAMESPACE"
                 return 1
             fi
             ;;
         canary)
-            if ! kubectl get deployment claude-tiu-app -n "$NAMESPACE" &> /dev/null || \
-               ! kubectl get deployment claude-tiu-canary -n "$NAMESPACE" &> /dev/null; then
+            if ! kubectl get deployment claude-tui-app -n "$NAMESPACE" &> /dev/null || \
+               ! kubectl get deployment claude-tui-canary -n "$NAMESPACE" &> /dev/null; then
                 log_error "Main or canary deployment not found in namespace $NAMESPACE"
                 return 1
             fi
@@ -408,7 +408,7 @@ post_deployment_tasks() {
     log_info "Running post-deployment tasks..."
     
     # Update deployment annotations
-    kubectl annotate deployment claude-tiu-app deployment.kubernetes.io/revision-history-limit=10 -n "$NAMESPACE" --overwrite
+    kubectl annotate deployment claude-tui-app deployment.kubernetes.io/revision-history-limit=10 -n "$NAMESPACE" --overwrite
     
     # Log deployment details
     log_info "Deployment completed:"
@@ -424,7 +424,7 @@ post_deployment_tasks() {
 
 # Main execution
 main() {
-    log_info "Starting Claude TIU production deployment..."
+    log_info "Starting Claude TUI production deployment..."
     log_info "Image: $IMAGE"
     log_info "Strategy: $STRATEGY"
     log_info "Namespace: $NAMESPACE"

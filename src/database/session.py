@@ -57,7 +57,7 @@ class DatabaseConfig:
     def _get_database_url(self) -> str:
         """Get database URL from environment or settings."""
         settings = get_settings()
-        return getattr(settings, 'database_url', 'sqlite+aiosqlite:///./claude_tiu.db')
+        return getattr(settings, 'database_url', 'sqlite+aiosqlite:///./claude_tui.db')
     
     def _validate_config(self) -> None:
         """Validate database configuration."""

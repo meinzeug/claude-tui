@@ -1,4 +1,4 @@
-# Claude TIU - DevOps Makefile
+# Claude TUI - DevOps Makefile
 # Comprehensive development and deployment automation
 
 .PHONY: help install install-dev clean test test-full lint format security-scan \
@@ -11,7 +11,7 @@
 # Variables
 PYTHON := python3
 PIP := pip3
-PROJECT_NAME := claude-tiu
+PROJECT_NAME := claude-tui
 DOCKER_IMAGE := $(PROJECT_NAME)
 DOCKER_TAG := latest
 ENVIRONMENT := development
@@ -26,7 +26,7 @@ NC := \033[0m # No Color
 
 # Help target
 help: ## Show this help message
-	@echo "$(GREEN)Claude TIU - DevOps Makefile$(NC)"
+	@echo "$(GREEN)Claude TUI - DevOps Makefile$(NC)"
 	@echo "=============================="
 	@echo ""
 	@echo "Available targets:"
@@ -76,7 +76,7 @@ test-e2e: ## Run end-to-end tests
 
 test-full: ## Run all tests with coverage
 	@echo "$(BLUE)Running full test suite with coverage...$(NC)"
-	$(PYTHON) -m pytest tests/ -v --cov=claude_tiu --cov-report=term-missing --cov-report=html
+	$(PYTHON) -m pytest tests/ -v --cov=claude_tui --cov-report=term-missing --cov-report=html
 	@echo "$(GREEN)Coverage report generated in htmlcov/$(NC)"
 
 test-performance: ## Run performance tests
@@ -201,8 +201,8 @@ k8s-lint: ## Lint Kubernetes manifests
 k8s-deploy-staging: ## Deploy to Kubernetes staging
 	@echo "$(BLUE)Deploying to Kubernetes staging...$(NC)"
 	kubectl apply -f k8s/namespace.yaml
-	kubectl apply -f k8s/staging/ -n claude-tiu-staging
-	kubectl rollout status deployment/claude-tiu-staging -n claude-tiu-staging
+	kubectl apply -f k8s/staging/ -n claude-tui-staging
+	kubectl rollout status deployment/claude-tui-staging -n claude-tui-staging
 
 k8s-deploy-production: ## Deploy to Kubernetes production
 	@echo "$(YELLOW)Deploying to Kubernetes production...$(NC)"
@@ -210,8 +210,8 @@ k8s-deploy-production: ## Deploy to Kubernetes production
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
 		echo ""; \
 		kubectl apply -f k8s/namespace.yaml; \
-		kubectl apply -f k8s/production/ -n claude-tiu; \
-		kubectl rollout status deployment/claude-tiu -n claude-tiu; \
+		kubectl apply -f k8s/production/ -n claude-tui; \
+		kubectl rollout status deployment/claude-tui -n claude-tui; \
 	else \
 		echo ""; \
 		echo "Production deployment cancelled"; \
@@ -219,16 +219,16 @@ k8s-deploy-production: ## Deploy to Kubernetes production
 
 k8s-status: ## Check Kubernetes deployment status
 	@echo "$(BLUE)Kubernetes Status:$(NC)"
-	kubectl get pods -n claude-tiu-staging
-	kubectl get pods -n claude-tiu
+	kubectl get pods -n claude-tui-staging
+	kubectl get pods -n claude-tui
 
 k8s-logs: ## View Kubernetes logs
 	@echo "$(BLUE)Kubernetes Logs (Staging):$(NC)"
-	kubectl logs -l app=claude-tiu -n claude-tiu-staging --tail=100
+	kubectl logs -l app=claude-tui -n claude-tui-staging --tail=100
 
 k8s-rollback: ## Rollback Kubernetes deployment
 	@echo "$(BLUE)Rolling back Kubernetes deployment...$(NC)"
-	kubectl rollout undo deployment/claude-tiu -n $(ENV:-claude-tiu-staging)
+	kubectl rollout undo deployment/claude-tui -n $(ENV:-claude-tui-staging)
 
 # Database targets
 db-migrate: ## Run database migrations
@@ -256,7 +256,7 @@ db-reset: ## Reset database (WARNING: destroys data)
 backup: ## Create backup
 	@echo "$(BLUE)Creating backup...$(NC)"
 	mkdir -p backups/$(shell date +%Y%m%d_%H%M%S)
-	docker-compose exec -T db pg_dump -U claude_user claude_tiu > backups/$(shell date +%Y%m%d_%H%M%S)/database.sql
+	docker-compose exec -T db pg_dump -U claude_user claude_tui > backups/$(shell date +%Y%m%d_%H%M%S)/database.sql
 	@echo "$(GREEN)Backup created in backups/$(NC)"
 
 restore: ## Restore from backup (provide BACKUP_DIR)
@@ -265,7 +265,7 @@ ifndef BACKUP_DIR
 	@exit 1
 endif
 	@echo "$(BLUE)Restoring from $(BACKUP_DIR)...$(NC)"
-	docker-compose exec -T db psql -U claude_user claude_tiu < $(BACKUP_DIR)/database.sql
+	docker-compose exec -T db psql -U claude_user claude_tui < $(BACKUP_DIR)/database.sql
 	@echo "$(GREEN)Restore complete!$(NC)"
 
 # Monitoring targets
@@ -278,7 +278,7 @@ monitoring: ## Start monitoring stack
 
 logs: ## View application logs
 	@echo "$(BLUE)Application logs:$(NC)"
-	docker-compose logs -f claude-tiu
+	docker-compose logs -f claude-tui
 
 logs-all: ## View all service logs
 	@echo "$(BLUE)All service logs:$(NC)"
@@ -287,7 +287,7 @@ logs-all: ## View all service logs
 # Documentation targets
 docs: ## Generate documentation
 	@echo "$(BLUE)Generating documentation...$(NC)"
-	sphinx-apidoc -o docs/api src/claude_tiu --force
+	sphinx-apidoc -o docs/api src/claude_tui --force
 	sphinx-build -b html docs docs/_build/html
 	@echo "$(GREEN)Documentation generated in docs/_build/html$(NC)"
 
@@ -368,7 +368,7 @@ load-test: ## Run load tests
 
 # Utility targets
 version: ## Show current version
-	@$(PYTHON) -c "import toml; print(f\"Claude TIU v{toml.load('pyproject.toml')['project']['version']}\")"
+	@$(PYTHON) -c "import toml; print(f\"Claude TUI v{toml.load('pyproject.toml')['project']['version']}\")"
 
 env: ## Show environment information
 	@echo "$(BLUE)Environment Information:$(NC)"
@@ -401,7 +401,7 @@ quick-test: ## Quick test run (unit tests only)
 	$(PYTHON) -m pytest tests/unit/ -x -v
 
 quick-start: ## Quick start (no deps install)
-	docker-compose up -d claude-tiu db cache
+	docker-compose up -d claude-tui db cache
 
 # Cleanup on exit
 .ONESHELL:

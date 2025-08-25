@@ -1,5 +1,5 @@
 """
-AI Services Integration Tests for claude-tiu.
+AI Services Integration Tests for claude-tui.
 
 Comprehensive tests for AI service functionality including:
 - Swarm initialization and coordination

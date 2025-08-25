@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced test runner for claude-tiu project with comprehensive testing capabilities.
+Enhanced test runner for claude-tui project with comprehensive testing capabilities.
 
 This module provides a centralized test runner that:
 - Runs all test categories (unit, integration, performance, security)
@@ -317,7 +317,7 @@ class TestRunner:
 
 def main():
     """Main entry point for test runner."""
-    parser = argparse.ArgumentParser(description="claude-tiu Test Runner")
+    parser = argparse.ArgumentParser(description="claude-tui Test Runner")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     parser.add_argument("--parallel", "-p", action="store_true", help="Run tests in parallel")
     parser.add_argument("--coverage", "-c", action="store_true", help="Generate coverage report")

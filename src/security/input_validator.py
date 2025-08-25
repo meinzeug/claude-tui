@@ -1,5 +1,5 @@
 """
-Comprehensive security-first input validation system for claude-tiu.
+Comprehensive security-first input validation system for claude-tui.
 
 This module implements enterprise-grade security validation with:
 - Multi-layered threat detection

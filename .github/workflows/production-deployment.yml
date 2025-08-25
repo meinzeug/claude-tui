@@ -191,7 +191,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
       name: staging
-      url: https://staging.claude-tiu.com
+      url: https://staging.claude-tui.com
     steps:
       - uses: actions/checkout@v4
       
@@ -207,12 +207,12 @@ jobs:
           kubectl apply -f namespace.yaml
           kubectl apply -f configmap.yaml
           kubectl apply -f secrets.yaml
-          kubectl set image deployment/claude-tiu claude-tiu=${{ needs.build-and-push.outputs.image-tag }} -n claude-tiu-staging
-          kubectl rollout status deployment/claude-tiu -n claude-tiu-staging --timeout=300s
+          kubectl set image deployment/claude-tui claude-tui=${{ needs.build-and-push.outputs.image-tag }} -n claude-tui-staging
+          kubectl rollout status deployment/claude-tui -n claude-tui-staging --timeout=300s
           
       - name: Smoke tests
         run: |
-          ./scripts/smoke-tests.sh staging.claude-tiu.com
+          ./scripts/smoke-tests.sh staging.claude-tui.com
           
       - name: Notify staging deployment
         uses: 8398a7/action-slack@v3
@@ -228,7 +228,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     environment:
       name: production
-      url: https://claude-tiu.com
+      url: https://claude-tui.com
     steps:
       - uses: actions/checkout@v4
       
@@ -240,19 +240,19 @@ jobs:
           
       - name: Pre-deployment backup
         run: |
-          kubectl create backup production-backup-$(date +%Y%m%d-%H%M%S) -n claude-tiu-production || echo "Backup creation skipped"
+          kubectl create backup production-backup-$(date +%Y%m%d-%H%M%S) -n claude-tui-production || echo "Backup creation skipped"
           
       - name: Blue-Green Deployment
         run: |
           cd k8s
           # Update image in deployment
-          kubectl set image deployment/claude-tiu claude-tiu=${{ needs.build-and-push.outputs.image-tag }} -n claude-tiu-production
+          kubectl set image deployment/claude-tui claude-tui=${{ needs.build-and-push.outputs.image-tag }} -n claude-tui-production
           
           # Wait for rollout with timeout
-          kubectl rollout status deployment/claude-tiu -n claude-tiu-production --timeout=600s
+          kubectl rollout status deployment/claude-tui -n claude-tui-production --timeout=600s
           
           # Health check
-          kubectl wait --for=condition=ready pod -l app=claude-tiu -n claude-tiu-production --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=claude-tui -n claude-tui-production --timeout=300s
           
       - name: Post-deployment validation
         run: |
@@ -261,8 +261,8 @@ jobs:
       - name: Rollback on failure
         if: failure()
         run: |
-          kubectl rollout undo deployment/claude-tiu -n claude-tiu-production
-          kubectl rollout status deployment/claude-tiu -n claude-tiu-production --timeout=300s
+          kubectl rollout undo deployment/claude-tui -n claude-tui-production
+          kubectl rollout status deployment/claude-tui -n claude-tui-production --timeout=300s
           
       - name: Update production monitoring
         run: |

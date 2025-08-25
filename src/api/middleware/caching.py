@@ -153,7 +153,7 @@ class HighPerformanceCacheMiddleware(BaseHTTPMiddleware):
         key_data = f"{path}:{query_params}:{'|'.join(header_parts)}"
         cache_key = hashlib.sha256(key_data.encode()).hexdigest()[:16]
         
-        return f"claude_tiu:api:{cache_key}"
+        return f"claude_tui:api:{cache_key}"
     
     async def _get_cached_response(self, cache_key: str) -> Optional[Dict[str, Any]]:
         """Retrieve response from cache (Redis or memory fallback)."""
@@ -288,12 +288,12 @@ class HighPerformanceCacheMiddleware(BaseHTTPMiddleware):
             if self.redis_client:
                 if pattern:
                     # Clear matching keys
-                    keys = await self.redis_client.keys(f"claude_tiu:api:{pattern}*")
+                    keys = await self.redis_client.keys(f"claude_tui:api:{pattern}*")
                     if keys:
                         await self.redis_client.delete(*keys)
                 else:
                     # Clear all API cache
-                    keys = await self.redis_client.keys("claude_tiu:api:*")
+                    keys = await self.redis_client.keys("claude_tui:api:*")
                     if keys:
                         await self.redis_client.delete(*keys)
             

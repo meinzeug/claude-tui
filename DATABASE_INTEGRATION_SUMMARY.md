@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-Successfully implemented a comprehensive Database Integration Layer for claude-tiu with AsyncIO, connection pooling, repository patterns, migrations, and full service integration.
+Successfully implemented a comprehensive Database Integration Layer for claude-tui with AsyncIO, connection pooling, repository patterns, migrations, and full service integration.
 
 ## 📋 Implemented Components
 
@@ -115,7 +115,7 @@ Successfully implemented a comprehensive Database Integration Layer for claude-t
 
 ### Environment Configuration:
 ```python
-DATABASE_URL=sqlite+aiosqlite:///./claude_tiu.db  # Development
+DATABASE_URL=sqlite+aiosqlite:///./claude_tui.db  # Development
 DATABASE_URL=postgresql+asyncpg://user:pass@host/db  # Production
 ```
 
@@ -182,7 +182,7 @@ user, project = await service.execute_in_transaction(create_user_with_project)
 ## 🔄 Integration Points
 
 ### With Existing Services:
-- **BaseService**: Inherits from claude-tiu service architecture
+- **BaseService**: Inherits from claude-tui service architecture
 - **Logging**: Integrated with core logging system
 - **Configuration**: Uses core configuration management
 - **Error Handling**: Consistent error handling patterns
@@ -212,6 +212,6 @@ user, project = await service.execute_in_transaction(create_user_with_project)
 
 ## 🎉 Conclusion
 
-The Database Integration Layer provides a robust, scalable, and secure foundation for claude-tiu's data persistence needs. With comprehensive async support, security features, and extensive testing, it's ready for both development and production use.
+The Database Integration Layer provides a robust, scalable, and secure foundation for claude-tui's data persistence needs. With comprehensive async support, security features, and extensive testing, it's ready for both development and production use.
 
 All components follow Python best practices, include comprehensive error handling, and are fully documented with type hints and docstrings.

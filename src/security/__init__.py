@@ -1,5 +1,5 @@
 """
-Security module for claude-tiu.
+Security module for claude-tui.
 
 This module provides comprehensive security features including:
 - Input validation and sanitization

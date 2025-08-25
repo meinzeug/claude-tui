@@ -18,7 +18,7 @@ class TestAIInterface:
     @pytest.fixture
     def ai_interface(self):
         """Create AI interface instance."""
-        # This will be: from claude_tiu.core.ai_interface import ClaudeInterface
+        # This will be: from claude_tui.core.ai_interface import ClaudeInterface
         # For now, create a mock implementation
         
         class MockAIInterface:

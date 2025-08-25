@@ -1,5 +1,5 @@
 """
-Performance Benchmarks for claude-tiu.
+Performance Benchmarks for claude-tui.
 
 Comprehensive performance benchmarks including:
 - Authentication performance benchmarks

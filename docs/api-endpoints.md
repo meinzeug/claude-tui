@@ -1,13 +1,13 @@
-# Claude TIU REST API Endpoints
+# Claude TUI REST API Endpoints
 
 ## Overview
 
-The Claude TIU REST API provides comprehensive endpoints for AI-powered development operations, including project management, task orchestration, validation services, and AI integration.
+The Claude TUI REST API provides comprehensive endpoints for AI-powered development operations, including project management, task orchestration, validation services, and AI integration.
 
 ## Base URL
 
 ```
-https://api.claude-tiu.example.com/api/v1
+https://api.claude-tui.example.com/api/v1
 ```
 
 ## Authentication
@@ -455,6 +455,6 @@ Interactive API documentation is available at:
 ## Support and Contact
 
 For API support and questions:
-- Documentation: https://docs.claude-tiu.example.com
-- Issues: https://github.com/your-org/claude-tiu/issues
-- Email: api-support@claude-tiu.example.com
+- Documentation: https://docs.claude-tui.example.com
+- Issues: https://github.com/your-org/claude-tui/issues
+- Email: api-support@claude-tui.example.com

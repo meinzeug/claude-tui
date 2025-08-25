@@ -1,8 +1,8 @@
-# Testing Implementation Guide - claude-tiu
+# Testing Implementation Guide - claude-tui
 
 ## Overview
 
-This guide provides comprehensive documentation for implementing and running tests in the claude-tiu project. The testing strategy follows industry best practices with a focus on anti-hallucination validation, security, and performance.
+This guide provides comprehensive documentation for implementing and running tests in the claude-tui project. The testing strategy follows industry best practices with a focus on anti-hallucination validation, security, and performance.
 
 ## Table of Contents
 
@@ -655,7 +655,7 @@ kernprof -l -v tests/performance/test_performance.py
 
 ## Conclusion
 
-This comprehensive testing strategy ensures the reliability, security, and performance of the claude-tiu project. By following these guidelines and utilizing the provided tools and frameworks, developers can maintain high code quality and catch issues early in the development cycle.
+This comprehensive testing strategy ensures the reliability, security, and performance of the claude-tui project. By following these guidelines and utilizing the provided tools and frameworks, developers can maintain high code quality and catch issues early in the development cycle.
 
 The anti-hallucination focus, combined with traditional testing practices, provides unique value in AI-powered development environments where code authenticity and quality validation are critical success factors.
 

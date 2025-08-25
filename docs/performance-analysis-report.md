@@ -1,4 +1,4 @@
-# Performance Analysis Report - Claude TIU System
+# Performance Analysis Report - Claude TUI System
 
 **Report Generated:** 2025-08-25T09:33:00Z  
 **Analysis Duration:** 24h  
@@ -10,7 +10,7 @@
 
 ### Performance Score: 87/100 (Good)
 
-The Claude TIU system demonstrates solid performance metrics with a **87% task success rate** and **12.8ms average execution time**. While the overall system health is good, several optimization opportunities have been identified to improve performance and scalability.
+The Claude TUI system demonstrates solid performance metrics with a **87% task success rate** and **12.8ms average execution time**. While the overall system health is good, several optimization opportunities have been identified to improve performance and scalability.
 
 ### Key Findings
 - **Memory Usage**: System utilizing 942MB/1915MB RAM (49%) - within acceptable range

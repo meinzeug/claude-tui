@@ -1,8 +1,8 @@
-# Claude-TIU Quick Start Guide
+# Claude-TUI Quick Start Guide
 
 ## 🚀 Get Up and Running in 10 Minutes
 
-Welcome to Claude-TIU, the AI-powered terminal user interface that revolutionizes software development! This guide will have you creating AI-powered projects in just 10 minutes.
+Welcome to Claude-TUI, the AI-powered terminal user interface that revolutionizes software development! This guide will have you creating AI-powered projects in just 10 minutes.
 
 ---
 
@@ -15,7 +15,7 @@ Welcome to Claude-TIU, the AI-powered terminal user interface that revolutionize
 - **4GB+ RAM** recommended
 
 ### Get Your API Key
-1. Visit [https://claude-tiu.dev/signup](https://claude-tiu.dev/signup)
+1. Visit [https://claude-tui.dev/signup](https://claude-tui.dev/signup)
 2. Create your free account (30-day trial)
 3. Copy your API key from the dashboard
 4. Keep it handy - you'll need it in step 3!
@@ -34,30 +34,35 @@ git --version     # Should show 2.0+
 
 ### Option A: Quick Install (Recommended)
 ```bash
-# Install Claude-TIU with all dependencies
-curl -sSL https://install.claude-tiu.dev | bash
+# Install Claude-TUI with all dependencies
+curl -sSL https://install.claude-tui.dev | bash
 
 # Or via pip
-pip install claude-tiu[all]
+pip install claude-tui[all]
 ```
 
 ### Option B: Manual Install
 ```bash
 # Clone and install
-git clone https://github.com/claude-tiu/claude-tiu.git
-cd claude-tiu
-pip install -r requirements.txt
-pip install -e .
+git clone https://github.com/your-username/claude-tui.git
+cd claude-tui
 
-# Install Claude Flow
-npm install -g claude-flow@alpha
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package in development mode
+pip install -e .
 ```
 
 ### Verify Installation
 ```bash
-# Check Claude-TIU installation
-claude-tiu --version
-# Expected: claude-tiu 1.0.0
+# Check Claude-TUI installation
+claude-tui --version
+# Expected: claude-tui 1.0.0
 
 # Check Claude Flow installation  
 npx claude-flow@alpha --version
@@ -74,13 +79,13 @@ npx claude-flow@alpha --version
 export CLAUDE_API_KEY="your_api_key_here"
 
 # Or create config file
-claude-tiu config set api-key YOUR_API_KEY
+claude-tui config set api-key YOUR_API_KEY
 ```
 
 ### Quick Configuration Check
 ```bash
 # Test your setup
-claude-tiu doctor
+claude-tui doctor
 
 # Expected output:
 # ✅ Python environment: OK
@@ -97,7 +102,7 @@ claude-tiu doctor
 ### Option 1: Interactive Mode (Recommended for beginners)
 ```bash
 # Launch interactive project creator
-claude-tiu create --interactive
+claude-tui create --interactive
 
 # Follow the prompts:
 # 📝 Project name: My First AI Project
@@ -109,7 +114,7 @@ claude-tiu create --interactive
 ### Option 2: Command Line (For experienced developers)
 ```bash
 # Create a React TypeScript project with AI features
-claude-tiu create \
+claude-tui create \
   --name "AI-Powered Dashboard" \
   --type react \
   --template react-typescript-advanced \
@@ -118,7 +123,7 @@ claude-tiu create \
   --ai-creativity 0.8
 
 # Create a FastAPI backend with AI endpoints
-claude-tiu create \
+claude-tui create \
   --name "Intelligent API" \
   --type fastapi \
   --template api-microservices \
@@ -150,13 +155,19 @@ claude-tiu create \
 # Navigate to your project
 cd ./ai-dashboard
 
-# Launch Claude-TIU interface
-claude-tiu
+# Launch Claude-TUI interface
+python -m claude_tui
+
+# Or use the run script
+python run_tui.py
+
+# Or if installed globally
+claude-tui
 ```
 
 ### TUI Interface Overview
 ```
-┌─ Claude-TIU AI Development Environment ─────────────────────────────────┐
+┌─ Claude-TUI AI Development Environment ─────────────────────────────────┐
 │                                                                         │
 │ 📊 Dashboard    📁 Projects    🤖 AI Tools    ⚙️ Settings             │
 │ ────────────────────────────────────────────────────────────────────── │
@@ -188,7 +199,7 @@ claude-tiu
 | `V` | Validate | Anti-hallucination validation |
 | `D` | Deploy | Deploy to cloud platforms |
 | `?` | Help | Show all shortcuts |
-| `Q` | Quit | Exit Claude-TIU |
+| `Q` | Quit | Exit Claude-TUI |
 
 ---
 
@@ -203,7 +214,7 @@ claude-tiu
 ### Using Command Line
 ```bash
 # Generate a React component with AI
-claude-tiu generate \
+claude-tui generate \
   --prompt "Create a responsive user dashboard with data visualization" \
   --type component \
   --language typescript \
@@ -211,7 +222,7 @@ claude-tiu generate \
   --include-tests true
 
 # Generate API endpoints
-claude-tiu generate \
+claude-tui generate \
   --prompt "Create REST API for user management with authentication" \
   --type api \
   --language python \
@@ -221,7 +232,7 @@ claude-tiu generate \
 
 ### Example AI Generated Code
 ```typescript
-// Generated in seconds by Claude-TIU AI
+// Generated in seconds by Claude-TUI AI
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
@@ -274,7 +285,7 @@ export const UserDashboard: React.FC = () => {
 ## Congratulations! 🎉
 
 You've successfully:
-- ✅ Installed Claude-TIU in under 10 minutes
+- ✅ Installed Claude-TUI in under 10 minutes
 - ✅ Created your first AI-powered project
 - ✅ Generated intelligent code with comprehensive tests
 - ✅ Learned the essential TUI navigation
@@ -287,34 +298,34 @@ You've successfully:
 npx claude-flow sparc tdd "user authentication system"
 
 # Create a workflow for full-stack development  
-claude-tiu workflow create \
+claude-tui workflow create \
   --name "Full Stack Feature" \
   --steps "backend,frontend,tests,docs"
 
 # Validate your code for authenticity
-claude-tiu validate --level comprehensive --auto-fix
+claude-tui validate --level comprehensive --auto-fix
 ```
 
 ### Join the Community
-- 💬 [Discord Community](https://discord.gg/claude-tiu)
-- 📚 [Complete Documentation](https://docs.claude-tiu.dev)
-- 🎥 [Video Tutorials](https://learn.claude-tiu.dev)
-- 🐛 [Report Issues](https://github.com/claude-tiu/issues)
+- 💬 [Discord Community](https://discord.gg/claude-tui)
+- 📚 [Complete Documentation](https://docs.claude-tui.dev)
+- 🎥 [Video Tutorials](https://learn.claude-tui.dev)
+- 🐛 [Report Issues](https://github.com/claude-tui/issues)
 
 ---
 
 ## Common Quick Start Issues & Solutions
 
-### "Command not found: claude-tiu"
+### "Command not found: claude-tui"
 ```bash
 # Solution 1: Add to PATH
 export PATH=$PATH:~/.local/bin
 
 # Solution 2: Reinstall with --user flag
-pip install --user claude-tiu[all]
+pip install --user claude-tui[all]
 
 # Solution 3: Use python -m
-python -m claude_tiu --version
+python -m claude_tui --version
 ```
 
 ### "API Key Invalid"
@@ -323,10 +334,10 @@ python -m claude_tiu --version
 echo $CLAUDE_API_KEY
 
 # Set key explicitly
-claude-tiu config set api-key sk-your-actual-key-here
+claude-tui config set api-key sk-your-actual-key-here
 
 # Test connection
-claude-tiu test-connection
+claude-tui test-connection
 ```
 
 ### "Port Already in Use"
@@ -335,19 +346,19 @@ claude-tiu test-connection
 lsof -ti:8000 | xargs kill -9
 
 # Or use different port
-claude-tiu --port 8001
+claude-tui --port 8001
 ```
 
 ### "Memory Issues"
 ```bash
 # Check available memory
-claude-tiu doctor --memory
+claude-tui doctor --memory
 
 # Use lightweight mode for systems <4GB RAM
-claude-tiu --mode lightweight
+claude-tui --mode lightweight
 
 # Clear cache if needed
-claude-tiu cache clear
+claude-tui cache clear
 ```
 
 ---
@@ -370,12 +381,12 @@ claude-tiu cache clear
 ### Create from Custom Template
 ```bash
 # Use community template
-claude-tiu create \
+claude-tui create \
   --template community/ecommerce-fullstack \
   --name "My Store"
 
 # Create from GitHub repository
-claude-tiu create \
+claude-tui create \
   --template github:username/template-repo \
   --name "Custom Project"
 ```
@@ -387,29 +398,29 @@ claude-tiu create \
 ### Optimize for Your Hardware
 ```bash
 # For systems with 8GB+ RAM (recommended)
-claude-tiu config set performance-mode high
-claude-tiu config set ai-creativity 0.8
-claude-tiu config set parallel-tasks 4
+claude-tui config set performance-mode high
+claude-tui config set ai-creativity 0.8
+claude-tui config set parallel-tasks 4
 
 # For systems with 4GB RAM
-claude-tiu config set performance-mode balanced
-claude-tiu config set ai-creativity 0.6
-claude-tiu config set parallel-tasks 2
+claude-tui config set performance-mode balanced
+claude-tui config set ai-creativity 0.6
+claude-tui config set parallel-tasks 2
 
 # For systems with <4GB RAM
-claude-tiu config set performance-mode low
-claude-tiu config set ai-creativity 0.4
-claude-tiu config set parallel-tasks 1
+claude-tui config set performance-mode low
+claude-tui config set ai-creativity 0.4
+claude-tui config set parallel-tasks 1
 ```
 
 ### Caching for Speed
 ```bash
 # Enable intelligent caching (recommended)
-claude-tiu config set cache-enabled true
-claude-tiu config set cache-ttl 3600
+claude-tui config set cache-enabled true
+claude-tui config set cache-ttl 3600
 
 # Pre-warm cache with common patterns
-claude-tiu cache warm --patterns "react,fastapi,authentication"
+claude-tui cache warm --patterns "react,fastapi,authentication"
 ```
 
 ---
@@ -463,28 +474,28 @@ cd ./ai-dashboard
 npm test
 
 # Validate code quality
-claude-tiu validate --comprehensive
+claude-tui validate --comprehensive
 ```
 
 ### Minute 5-6: Try Advanced AI Features
 ```bash
 # Generate a complex feature
-claude-tiu generate \
+claude-tui generate \
   --prompt "Add user authentication with social login" \
   --type feature \
   --include-tests true
 
 # Review generated code with AI
-claude-tiu review --ai-powered
+claude-tui review --ai-powered
 ```
 
 ### Minute 7-8: Customize and Extend
 ```bash
 # Modify AI creativity for different results
-claude-tiu config set ai-creativity 0.9
+claude-tui config set ai-creativity 0.9
 
 # Regenerate with higher creativity
-claude-tiu generate \
+claude-tui generate \
   --prompt "Create an innovative data visualization" \
   --regenerate
 ```
@@ -495,7 +506,7 @@ claude-tiu generate \
 npm run build
 
 # Deploy to Vercel/Netlify (if configured)
-claude-tiu deploy --platform vercel
+claude-tui deploy --platform vercel
 
 # Or preview locally
 npm run preview
@@ -505,10 +516,10 @@ npm run preview
 
 ## Welcome to the Future of Development! 🚀
 
-You're now equipped with Claude-TIU, the most advanced AI-powered development environment. Whether you're building web apps, APIs, mobile apps, or complex systems, Claude-TIU accelerates your development while maintaining the highest quality standards.
+You're now equipped with Claude-TUI, the most advanced AI-powered development environment. Whether you're building web apps, APIs, mobile apps, or complex systems, Claude-TUI accelerates your development while maintaining the highest quality standards.
 
 **Happy coding!** 🎉
 
 ---
 
-*Need help? Join our [Discord community](https://discord.gg/claude-tiu) or check the [full documentation](https://docs.claude-tiu.dev) for advanced features.*
+*Need help? Join our [Discord community](https://discord.gg/claude-tui) or check the [full documentation](https://docs.claude-tui.dev) for advanced features.*

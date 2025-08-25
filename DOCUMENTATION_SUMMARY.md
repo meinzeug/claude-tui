@@ -211,7 +211,7 @@ The Claude-TIU project now has comprehensive documentation covering all aspects 
 
 ### Documentation Structure
 ```
-claude-tiu/
+claude-tui/
 ├── README.md                           # Main project overview ✅
 ├── QUICK_START.md                      # New user tutorial ✅
 ├── PROJECT_STATUS.md                   # Current status ✅

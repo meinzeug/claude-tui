@@ -1,4 +1,4 @@
-# Scalability Plan - Claude TIU System
+# Scalability Plan - Claude TUI System
 
 **Document Version:** 1.0  
 **Created:** 2025-08-25  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This scalability plan outlines the strategic approach to scale the Claude TIU system from current capacity to enterprise-level performance. The plan addresses horizontal scaling, vertical scaling, auto-scaling mechanisms, and performance optimization strategies to handle increased load and user growth.
+This scalability plan outlines the strategic approach to scale the Claude TUI system from current capacity to enterprise-level performance. The plan addresses horizontal scaling, vertical scaling, auto-scaling mechanisms, and performance optimization strategies to handle increased load and user growth.
 
 ### Current System State
 - **Memory Usage**: 942MB/1915MB (49%)
@@ -34,8 +34,8 @@ This scalability plan outlines the strategic approach to scale the Claude TIU sy
 # docker-compose.scale.yml
 version: '3.8'
 services:
-  claude-tiu-app:
-    image: claude-tiu:latest
+  claude-tui-app:
+    image: claude-tui:latest
     deploy:
       replicas: 3
       resources:
@@ -59,17 +59,17 @@ services:
     volumes:
       - ./config/nginx-scale.conf:/etc/nginx/nginx.conf
     depends_on:
-      - claude-tiu-app
+      - claude-tui-app
 ```
 
 #### Load Balancer Configuration
 ```nginx
 # config/nginx-scale.conf
-upstream claude_tiu_backend {
+upstream claude_tui_backend {
     least_conn;  # Distribute based on active connections
-    server claude-tiu-app:8000 max_fails=3 fail_timeout=30s;
-    server claude-tiu-app:8001 max_fails=3 fail_timeout=30s;
-    server claude-tiu-app:8002 max_fails=3 fail_timeout=30s;
+    server claude-tui-app:8000 max_fails=3 fail_timeout=30s;
+    server claude-tui-app:8001 max_fails=3 fail_timeout=30s;
+    server claude-tui-app:8002 max_fails=3 fail_timeout=30s;
     
     # Health check
     keepalive 32;
@@ -80,12 +80,12 @@ server {
     
     location /health {
         access_log off;
-        proxy_pass http://claude_tiu_backend/health;
+        proxy_pass http://claude_tui_backend/health;
         proxy_set_header Host $host;
     }
     
     location / {
-        proxy_pass http://claude_tiu_backend;
+        proxy_pass http://claude_tui_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -123,7 +123,7 @@ class DistributedTaskQueue:
     def __init__(self, redis_url: str, instance_id: str):
         self.redis = redis.from_url(redis_url)
         self.instance_id = instance_id
-        self.task_prefix = "claude_tiu:tasks"
+        self.task_prefix = "claude_tui:tasks"
         self.assignment_ttl = 300  # 5 minutes
         
     async def enqueue_task(self, task_type: str, payload: dict, priority: int = 1) -> str:
@@ -259,7 +259,7 @@ class ServiceRegistry:
     def __init__(self, redis_client, instance_id: str):
         self.redis = redis_client
         self.instance_id = instance_id
-        self.service_prefix = "claude_tiu:services"
+        self.service_prefix = "claude_tui:services"
         self.heartbeat_interval = 30  # seconds
         self.service_timeout = 90  # seconds
         
@@ -522,13 +522,13 @@ class AdaptiveThreadPoolManager:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-hpa
-  namespace: claude-tiu
+  name: claude-tui-hpa
+  namespace: claude-tui
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu-app
+    name: claude-tui-app
   minReplicas: 2
   maxReplicas: 10
   metrics:
@@ -588,7 +588,7 @@ class KubernetesMetricsPublisher:
             config.load_kube_config()
         
         self.custom_api = client.CustomObjectsApi()
-        self.namespace = "claude-tiu"
+        self.namespace = "claude-tui"
         
     async def publish_custom_metric(self, metric_name: str, value: float):
         """Publish custom metric to Kubernetes"""
@@ -1075,4 +1075,4 @@ class SLAMonitor:
 
 ---
 
-*This scalability plan provides a comprehensive roadmap for scaling the Claude TIU system to enterprise levels while maintaining performance, reliability, and cost efficiency.*
+*This scalability plan provides a comprehensive roadmap for scaling the Claude TUI system to enterprise levels while maintaining performance, reliability, and cost efficiency.*

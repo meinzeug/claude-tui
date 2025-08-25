@@ -1,4 +1,4 @@
-# Claude-TIU Database Schema
+# Claude-TUI Database Schema
 
 ## Database Choice Rationale
 
@@ -787,8 +787,8 @@ DATABASE_CONFIG = {
     'postgresql': {
         'host': os.getenv('DB_HOST', 'localhost'),
         'port': int(os.getenv('DB_PORT', 5432)),
-        'database': os.getenv('DB_NAME', 'claude_tiu'),
-        'user': os.getenv('DB_USER', 'claude_tiu'),
+        'database': os.getenv('DB_NAME', 'claude_tui'),
+        'user': os.getenv('DB_USER', 'claude_tui'),
         'password': os.getenv('DB_PASSWORD', ''),
         'pool_size': 20,
         'max_overflow': 30,
@@ -796,7 +796,7 @@ DATABASE_CONFIG = {
         'pool_recycle': 3600,
     },
     'sqlite': {
-        'path': os.getenv('SQLITE_PATH', 'data/claude_tiu.db'),
+        'path': os.getenv('SQLITE_PATH', 'data/claude_tui.db'),
         'timeout': 20.0,
         'check_same_thread': False,
     }
@@ -870,21 +870,21 @@ ORDER BY idx_scan DESC;
 #!/bin/bash
 # Daily backup script for PostgreSQL
 
-BACKUP_DIR="/backups/claude-tiu"
+BACKUP_DIR="/backups/claude-tui"
 DATE=$(date +%Y%m%d_%H%M%S)
-DB_NAME="claude_tiu"
+DB_NAME="claude_tui"
 
 # Full database backup
-pg_dump -h localhost -U claude_tiu -d $DB_NAME -f "$BACKUP_DIR/full_backup_$DATE.sql"
+pg_dump -h localhost -U claude_tui -d $DB_NAME -f "$BACKUP_DIR/full_backup_$DATE.sql"
 
 # Compressed backup
-pg_dump -h localhost -U claude_tiu -d $DB_NAME | gzip > "$BACKUP_DIR/compressed_backup_$DATE.sql.gz"
+pg_dump -h localhost -U claude_tui -d $DB_NAME | gzip > "$BACKUP_DIR/compressed_backup_$DATE.sql.gz"
 
 # Schema-only backup
-pg_dump -h localhost -U claude_tiu -d $DB_NAME --schema-only -f "$BACKUP_DIR/schema_backup_$DATE.sql"
+pg_dump -h localhost -U claude_tui -d $DB_NAME --schema-only -f "$BACKUP_DIR/schema_backup_$DATE.sql"
 
 # Cleanup old backups (keep 30 days)
 find $BACKUP_DIR -name "*.sql*" -mtime +30 -delete
 ```
 
-This comprehensive database schema provides a robust foundation for the claude-tiu project management tool, with proper normalization, indexing, validation, and maintenance procedures for both development and production environments.
+This comprehensive database schema provides a robust foundation for the claude-tui project management tool, with proper normalization, indexing, validation, and maintenance procedures for both development and production environments.

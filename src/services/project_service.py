@@ -1,5 +1,5 @@
 """
-Project Service for claude-tiu.
+Project Service for claude-tui.
 
 Manages project lifecycle, configuration, and operations:
 - Project creation and initialization

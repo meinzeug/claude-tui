@@ -7,8 +7,8 @@ jwt:
   algorithm: "HS256"
   access_token_expire_minutes: 30
   refresh_token_expire_days: 30
-  issuer: "claude-tiu"
-  audience: "claude-tiu-api"
+  issuer: "claude-tui"
+  audience: "claude-tui-api"
 
 # Session Management Configuration
 session:
@@ -74,7 +74,7 @@ security:
       - "password"
       - "123456"
       - "admin"
-      - "claude-tiu"
+      - "claude-tui"
   
   # Account Lockout
   account_lockout:
@@ -166,19 +166,19 @@ email:
   smtp_username: ${SMTP_USERNAME}
   smtp_password: ${SMTP_PASSWORD}
   smtp_tls: true
-  from_email: "noreply@claude-tiu.com"
-  from_name: "Claude-TIU Authentication"
+  from_email: "noreply@claude-tui.com"
+  from_name: "Claude-TUI Authentication"
   
   # Email Templates
   templates:
     password_reset:
-      subject: "Password Reset Request - Claude-TIU"
+      subject: "Password Reset Request - Claude-TUI"
       template_file: "templates/password_reset.html"
     welcome:
-      subject: "Welcome to Claude-TIU"
+      subject: "Welcome to Claude-TUI"
       template_file: "templates/welcome.html"
     security_alert:
-      subject: "Security Alert - Claude-TIU"
+      subject: "Security Alert - Claude-TUI"
       template_file: "templates/security_alert.html"
 
 # Development/Testing Configuration
@@ -192,15 +192,15 @@ development:
   # Test Users (only in development mode)
   test_users:
     - username: "admin"
-      email: "admin@claude-tiu.dev"
+      email: "admin@claude-tui.dev"
       password: "admin123456"
       role: "admin"
     - username: "developer"
-      email: "dev@claude-tiu.dev"
+      email: "dev@claude-tui.dev"
       password: "dev123456"
       role: "developer"
     - username: "viewer"
-      email: "viewer@claude-tiu.dev"
+      email: "viewer@claude-tui.dev"
       password: "viewer123456"
       role: "viewer"
 

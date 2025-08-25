@@ -1,7 +1,7 @@
 """
-claude-tiu test suite.
+claude-tui test suite.
 
-This package contains all tests for the claude-tiu project:
+This package contains all tests for the claude-tui project:
 - Unit tests for individual components
 - Integration tests for system interactions  
 - UI tests for terminal interface components
@@ -42,7 +42,7 @@ Test markers:
 """
 
 __version__ = "0.1.0"
-__author__ = "Claude TIU Team"
+__author__ = "Claude TUI Team"
 
 # Test configuration constants
 TEST_TIMEOUT = 30  # Default test timeout in seconds
@@ -51,7 +51,7 @@ BENCHMARK_ROUNDS = 10  # Default benchmark rounds
 
 # Test data directories
 TEST_DATA_DIR = "tests/fixtures/data"
-TEST_TEMP_DIR = "/tmp/claude-tiu-tests"
+TEST_TEMP_DIR = "/tmp/claude-tui-tests"
 
 # Coverage requirements by module
 COVERAGE_REQUIREMENTS = {

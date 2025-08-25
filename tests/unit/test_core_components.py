@@ -1,4 +1,4 @@
-"""Unit tests for core components of claude-tiu."""
+"""Unit tests for core components of claude-tui."""
 
 import pytest
 import asyncio
@@ -66,7 +66,7 @@ class TestProjectManager:
     async def test_load_project_success(self, project_manager, test_project_dir):
         """Test successful project loading."""
         # Arrange
-        config_file = test_project_dir / "claude-tiu.yaml"
+        config_file = test_project_dir / "claude-tui.yaml"
         config_content = """
 name: test-project
 description: Test project

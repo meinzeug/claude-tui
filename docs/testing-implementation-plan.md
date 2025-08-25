@@ -1,4 +1,4 @@
-# Comprehensive Testing Implementation Plan - Claude-TIU
+# Comprehensive Testing Implementation Plan - Claude-TUI
 ## Test-Strategie-Experte Hive Mind Analysis & Implementation
 
 **Dokument-Status**: COMPREHENSIVE TESTING FRAMEWORK IMPLEMENTATION PLAN  
@@ -117,7 +117,7 @@ pip install python-jose[cryptography]==3.3.0 passlib[bcrypt]==1.7.4
 #### 1.2 Enhanced requirements-test.txt Creation
 
 ```ini
-# Enhanced Testing Dependencies for claude-tiu
+# Enhanced Testing Dependencies for claude-tui
 # Core Testing Framework
 pytest>=7.4.3
 pytest-asyncio>=0.21.1

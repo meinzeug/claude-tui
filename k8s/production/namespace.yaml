@@ -4,8 +4,8 @@ metadata:
   name: production
   labels:
     environment: production
-    app.kubernetes.io/name: claude-tiu
-    app.kubernetes.io/instance: claude-tiu-production
+    app.kubernetes.io/name: claude-tui
+    app.kubernetes.io/instance: claude-tui-production
 ---
 apiVersion: v1
 kind: ResourceQuota

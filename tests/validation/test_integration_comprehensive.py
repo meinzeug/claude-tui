@@ -13,15 +13,15 @@ from pathlib import Path
 from unittest.mock import Mock, AsyncMock, patch
 from datetime import datetime
 
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.validation.integration_manager import AntiHallucinationIntegrationManager
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.validation.real_time_validator import RealTimeValidator, ValidationMode
-from claude_tiu.validation.workflow_integration_manager import WorkflowIntegrationManager
-from claude_tiu.validation.auto_correction_engine import AutoCorrectionEngine
-from claude_tiu.validation.validation_dashboard import ValidationDashboard
-from claude_tiu.models.project import Project
-from claude_tiu.models.task import DevelopmentTask, TaskType, TaskPriority
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.validation.integration_manager import AntiHallucinationIntegrationManager
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.validation.real_time_validator import RealTimeValidator, ValidationMode
+from claude_tui.validation.workflow_integration_manager import WorkflowIntegrationManager
+from claude_tui.validation.auto_correction_engine import AutoCorrectionEngine
+from claude_tui.validation.validation_dashboard import ValidationDashboard
+from claude_tui.models.project import Project
+from claude_tui.models.task import DevelopmentTask, TaskType, TaskPriority
 
 
 @pytest.fixture
@@ -113,8 +113,8 @@ async def integration_manager(config_manager):
     manager = AntiHallucinationIntegrationManager(config_manager)
     
     # Mock external dependencies to avoid actual AI calls
-    with patch('claude_tiu.validation.anti_hallucination_engine.joblib.load'):
-        with patch('claude_tiu.validation.anti_hallucination_engine.joblib.dump'):
+    with patch('claude_tui.validation.anti_hallucination_engine.joblib.load'):
+        with patch('claude_tui.validation.anti_hallucination_engine.joblib.dump'):
             await manager.initialize(enable_all_components=False)
     
     yield manager
@@ -514,8 +514,8 @@ if __name__ == "__main__":
             manager = AntiHallucinationIntegrationManager(config_manager)
             
             try:
-                with patch('claude_tiu.validation.anti_hallucination_engine.joblib.load'):
-                    with patch('claude_tiu.validation.anti_hallucination_engine.joblib.dump'):
+                with patch('claude_tui.validation.anti_hallucination_engine.joblib.load'):
+                    with patch('claude_tui.validation.anti_hallucination_engine.joblib.dump'):
                         await manager.initialize(enable_all_components=False)
                 
                 print("✅ System initialized successfully")

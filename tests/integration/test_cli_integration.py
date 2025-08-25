@@ -1,7 +1,7 @@
 """
 Integration tests for CLI tools and external tool integration.
 
-Tests the integration between claude-tiu and external tools like
+Tests the integration between claude-tui and external tools like
 Claude Code, Claude Flow, and other CLI utilities.
 """
 
@@ -448,7 +448,7 @@ class TestDatabaseIntegration:
         """Create test database."""
         db_path = tmp_path / "test.db"
         
-        # This would be: from claude_tiu.database import create_engine, Base
+        # This would be: from claude_tui.database import create_engine, Base
         # For now, create mock database setup
         
         class MockDatabase:

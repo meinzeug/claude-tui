@@ -227,7 +227,7 @@ def setup_emergency_lazy_imports():
     tensorflow = lazy_import('tensorflow', 'tf', min_usage=3)
     
     # Heavy validation modules
-    validation_engine = lazy_import('claude_tiu.validation.anti_hallucination_engine', min_usage=2)
+    validation_engine = lazy_import('claude_tui.validation.anti_hallucination_engine', min_usage=2)
     
     # Heavy AI modules  
     neural_trainer = lazy_import('ai.neural_trainer', min_usage=2)

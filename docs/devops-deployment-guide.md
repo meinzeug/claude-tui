@@ -1,4 +1,4 @@
-# 🚀 Claude TIU DevOps & Deployment Guide
+# 🚀 Claude TUI DevOps & Deployment Guide
 
 ## Table of Contents
 - [Overview](#overview)
@@ -12,7 +12,7 @@
 
 ## Overview
 
-This guide provides comprehensive information about the Claude TIU DevOps practices, CI/CD pipelines, and deployment strategies.
+This guide provides comprehensive information about the Claude TUI DevOps practices, CI/CD pipelines, and deployment strategies.
 
 ### Key Features
 - **Multi-architecture builds** (AMD64, ARM64, ARMv7)
@@ -81,7 +81,7 @@ graph TB
 ### 1. Rolling Deployment (Default)
 ```bash
 ./scripts/devops/deploy-production.sh \
-  --image ghcr.io/claude-tiu/claude-tiu:v1.0.0 \
+  --image ghcr.io/claude-tui/claude-tui:v1.0.0 \
   --strategy rolling
 ```
 
@@ -94,7 +94,7 @@ graph TB
 ### 2. Blue-Green Deployment
 ```bash
 ./scripts/devops/deploy-production.sh \
-  --image ghcr.io/claude-tiu/claude-tiu:v1.0.0 \
+  --image ghcr.io/claude-tui/claude-tui:v1.0.0 \
   --strategy blue-green
 ```
 
@@ -107,7 +107,7 @@ graph TB
 ### 3. Canary Deployment
 ```bash
 ./scripts/devops/deploy-production.sh \
-  --image ghcr.io/claude-tiu/claude-tiu:v1.0.0 \
+  --image ghcr.io/claude-tui/claude-tui:v1.0.0 \
   --strategy canary
 ```
 
@@ -127,12 +127,12 @@ graph TB
 - **Features**: Hot reload, debug mode, extended logging
 
 #### Staging
-- **URL**: `https://staging.claude-tiu.dev`
+- **URL**: `https://staging.claude-tui.dev`
 - **Purpose**: Pre-production testing and validation
 - **Features**: Production-like configuration, performance testing
 
 #### Production
-- **URL**: `https://claude-tiu.dev`
+- **URL**: `https://claude-tui.dev`
 - **Purpose**: Live user-facing environment
 - **Features**: High availability, monitoring, security hardening
 
@@ -213,23 +213,23 @@ CODECOV_TOKEN               # Code coverage reporting
 ```bash
 # Check deployment status
 kubectl get deployments -n production
-kubectl rollout status deployment/claude-tiu-app -n production
+kubectl rollout status deployment/claude-tui-app -n production
 
 # View logs
-kubectl logs -f deployment/claude-tiu-app -n production
+kubectl logs -f deployment/claude-tui-app -n production
 
 # Rollback if needed
-kubectl rollout undo deployment/claude-tiu-app -n production
+kubectl rollout undo deployment/claude-tui-app -n production
 ```
 
 #### 2. Performance Issues
 ```bash
 # Run manual performance test
-./scripts/devops/smoke-tests.sh https://claude-tiu.dev --verbose
+./scripts/devops/smoke-tests.sh https://claude-tui.dev --verbose
 
 # Check resource usage
 kubectl top pods -n production
-kubectl describe hpa claude-tiu-hpa -n production
+kubectl describe hpa claude-tui-hpa -n production
 ```
 
 #### 3. Security Scan Failures
@@ -243,8 +243,8 @@ semgrep --config=auto src/
 #### 4. Build Failures
 ```bash
 # Test local build
-docker build -t claude-tiu:test .
-docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
+docker build -t claude-tui:test .
+docker run --rm claude-tui:test python -c "import claude_tui; print('OK')"
 ```
 
 ### Log Locations
@@ -266,17 +266,17 @@ docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
 2. **Immediate Rollback**
    ```bash
    # Rolling deployment rollback
-   kubectl rollout undo deployment/claude-tiu-app -n production
+   kubectl rollout undo deployment/claude-tui-app -n production
    
    # Blue-green rollback (manual traffic switch)
-   kubectl patch service claude-tiu-service -n production \
+   kubectl patch service claude-tui-service -n production \
      -p '{"spec":{"selector":{"color":"blue"}}}'
    ```
 
 3. **Verification**
    ```bash
    # Verify rollback success
-   ./scripts/devops/smoke-tests.sh https://claude-tiu.dev
+   ./scripts/devops/smoke-tests.sh https://claude-tui.dev
    ```
 
 4. **Post-Incident**
@@ -294,16 +294,16 @@ docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
 2. **Initial Assessment**
    ```bash
    # Quick health check
-   curl -w "@curl-format.txt" -o /dev/null -s https://claude-tiu.dev/health
+   curl -w "@curl-format.txt" -o /dev/null -s https://claude-tui.dev/health
    
    # Check error rates
-   kubectl logs --tail=1000 deployment/claude-tiu-app -n production | grep ERROR
+   kubectl logs --tail=1000 deployment/claude-tui-app -n production | grep ERROR
    ```
 
 3. **Scaling Response**
    ```bash
    # Increase replicas temporarily
-   kubectl scale deployment claude-tiu-app --replicas=10 -n production
+   kubectl scale deployment claude-tui-app --replicas=10 -n production
    
    # Check HPA settings
    kubectl get hpa -n production
@@ -323,17 +323,17 @@ docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
    gh run list --workflow="Security Monitoring"
    
    # Check for suspicious activity
-   kubectl logs deployment/claude-tiu-app -n production | grep -E "(403|404|500)"
+   kubectl logs deployment/claude-tui-app -n production | grep -E "(403|404|500)"
    ```
 
 2. **Isolation (if needed)**
    ```bash
    # Temporarily block traffic
-   kubectl scale deployment claude-tiu-app --replicas=0 -n production
+   kubectl scale deployment claude-tui-app --replicas=0 -n production
    
    # Or redirect to maintenance page
-   kubectl patch ingress claude-tiu-ingress -n production \
-     --patch '{"spec":{"rules":[{"host":"claude-tiu.dev","http":{"paths":[{"path":"/","backend":{"serviceName":"maintenance-service","servicePort":80}}]}}]}}'
+   kubectl patch ingress claude-tui-ingress -n production \
+     --patch '{"spec":{"rules":[{"host":"claude-tui.dev","http":{"paths":[{"path":"/","backend":{"serviceName":"maintenance-service","servicePort":80}}]}}]}}'
    ```
 
 3. **Investigation and Remediation**
@@ -348,20 +348,20 @@ docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
    ```bash
    # Check database backups
    kubectl get cronjobs -n production
-   kubectl logs job/claude-tiu-backup -n production
+   kubectl logs job/claude-tui-backup -n production
    ```
 
 2. **Recovery Procedures**
    ```bash
    # Restore from backup (example)
-   kubectl create job claude-tiu-restore --from=cronjob/claude-tiu-backup -n production
+   kubectl create job claude-tui-restore --from=cronjob/claude-tui-backup -n production
    ```
 
 3. **Service Restoration**
    ```bash
    # Redeploy application
    ./scripts/devops/deploy-production.sh \
-     --image ghcr.io/claude-tiu/claude-tiu:latest \
+     --image ghcr.io/claude-tui/claude-tui:latest \
      --strategy rolling
    ```
 
@@ -381,9 +381,9 @@ docker run --rm claude-tiu:test python -c "import claude_tiu; print('OK')"
 - **Throughput**: Handle 1000+ concurrent requests
 
 ### Dashboard Links
-- **Production Monitoring**: `https://monitoring.claude-tiu.dev`
+- **Production Monitoring**: `https://monitoring.claude-tui.dev`
 - **GitHub Actions**: Repository Actions tab
-- **Container Registry**: `ghcr.io/claude-tiu/claude-tiu`
+- **Container Registry**: `ghcr.io/claude-tui/claude-tui`
 
 ## Best Practices
 

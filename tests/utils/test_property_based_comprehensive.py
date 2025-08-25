@@ -16,11 +16,11 @@ except ImportError:
     pytest.skip("Hypothesis not available", allow_module_level=True)
 
 # Import application components
-from claude_tiu.core.config_manager import ConfigManager, AIServiceConfig, UIPreferences
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.models.task import DevelopmentTask, TaskType, TaskPriority
-from claude_tiu.models.project import Project
-from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity
+from claude_tui.core.config_manager import ConfigManager, AIServiceConfig, UIPreferences
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.models.task import DevelopmentTask, TaskType, TaskPriority
+from claude_tui.models.project import Project
+from claude_tui.validation.progress_validator import ValidationResult, ValidationSeverity
 
 
 # Custom strategies for application-specific data
@@ -198,8 +198,8 @@ class TestValidationProperties:
     @settings(max_examples=20, deadline=10000)
     def test_code_validation_deterministic(self, code_sample):
         """Test that code validation is deterministic for the same input."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -230,8 +230,8 @@ class TestValidationProperties:
     @settings(max_examples=30)
     def test_content_length_validation(self, content):
         """Test that validation handles content of any length appropriately."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -262,8 +262,8 @@ class TestValidationProperties:
     @settings(max_examples=20)
     def test_batch_validation_consistency(self, content_list):
         """Test that batch validation is consistent with individual validation."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -392,7 +392,7 @@ class TestFileHandlingProperties:
     def test_file_path_validation_properties(self, file_path):
         """Test file path validation properties."""
         # Mock security middleware
-        from claude_tiu.middleware.security_middleware import SecurityMiddleware
+        from claude_tui.middleware.security_middleware import SecurityMiddleware
         
         security = SecurityMiddleware(Mock())
         
@@ -421,7 +421,7 @@ class TestFileHandlingProperties:
     @settings(max_examples=20, deadline=10000)
     def test_file_content_validation_properties(self, file_content):
         """Test file content validation properties."""
-        from claude_tiu.middleware.security_middleware import SecurityMiddleware
+        from claude_tui.middleware.security_middleware import SecurityMiddleware
         
         security = SecurityMiddleware(Mock())
         
@@ -461,8 +461,8 @@ class AIValidationStateMachine(RuleBasedStateMachine):
     @initialize()
     def init_engine(self):
         """Initialize the validation engine."""
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             self.engine = AntiHallucinationEngine(Mock())
             self.engine_initialized = True
@@ -639,8 +639,8 @@ class TestEdgeCaseProperties:
         assert len(empty_input) == 0
         
         # Mock validation of empty input
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -666,8 +666,8 @@ class TestEdgeCaseProperties:
         assume(len(large_input) >= 10000)
         
         # Mock handling of large content
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -696,8 +696,8 @@ class TestEdgeCaseProperties:
         assume(whitespace_input.strip() == "")
         
         # Whitespace-only input should be handled appropriately
-        with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-             patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+        with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+             patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
             
             engine = AntiHallucinationEngine(Mock())
             
@@ -727,7 +727,7 @@ class TestCriticalScenarios:
     @settings(max_examples=30)
     def test_security_validation_with_attacks(self, potentially_malicious_input):
         """Test security validation against known attack patterns."""
-        from claude_tiu.middleware.security_middleware import SecurityMiddleware
+        from claude_tui.middleware.security_middleware import SecurityMiddleware
         
         security = SecurityMiddleware(Mock())
         

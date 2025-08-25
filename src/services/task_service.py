@@ -1,5 +1,5 @@
 """
-Task Service for claude-tiu.
+Task Service for claude-tui.
 
 Manages task lifecycle, execution, and coordination:
 - Task creation and configuration

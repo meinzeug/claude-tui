@@ -1,4 +1,4 @@
-# Testing Strategy - claude-tiu
+# Testing Strategy - claude-tui
 
 ## Table of Contents
 1. [Testing Philosophy](#testing-philosophy)
@@ -397,7 +397,7 @@ class TestScreens:
         """Test welcome screen user flow"""
         async with AppTest.create_app(WelcomeScreen) as pilot:
             # Verify initial state
-            assert "Welcome to claude-tiu" in pilot.screen.render()
+            assert "Welcome to claude-tui" in pilot.screen.render()
             
             # Test navigation options
             await pilot.press("n")  # New project
@@ -1009,4 +1009,4 @@ def create_mock_validation_result(real_progress=70, fake_progress=30):
 - Test auto-completion workflows
 - Measure accuracy of real vs fake progress detection
 
-This comprehensive testing strategy ensures the claude-tiu project maintains high quality, reliability, and security standards throughout development and deployment.
+This comprehensive testing strategy ensures the claude-tui project maintains high quality, reliability, and security standards throughout development and deployment.

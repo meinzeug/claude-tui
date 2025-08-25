@@ -40,17 +40,18 @@ Claude TUI is an intelligent AI-powered Terminal User Interface tool that revolu
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/claude-tui.git
+git clone https://github.com/your-username/claude-tui.git
 cd claude-tui
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Install Claude Flow
-npm install -g claude-flow@alpha
-
-# Setup Claude Flow MCP server
-claude mcp add claude-flow npx claude-flow@alpha mcp start
+# Install the package in development mode
+pip install -e .
 
 # Configure API keys
 export CLAUDE_API_KEY="your_claude_api_key"
@@ -59,17 +60,14 @@ export CLAUDE_API_KEY="your_claude_api_key"
 ### Basic Usage
 
 ```bash
-# Start the TUI
-python -m claude_tiu
+# Run the TUI application
+python -m claude_tui
 
-# Create a new project
-claude-tui create --template react-typescript --name my-project
+# Or use the run script
+python run_tui.py
 
-# Run SPARC workflow
-npx claude-flow sparc tdd "user authentication system"
-
-# Check system status
-npx claude-flow@alpha hive-mind status
+# Or if installed globally
+claude-tui
 ```
 
 ## 🏗️ Project Structure

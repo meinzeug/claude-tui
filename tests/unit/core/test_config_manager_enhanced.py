@@ -9,7 +9,7 @@ from unittest.mock import patch, mock_open, Mock, AsyncMock
 from pathlib import Path
 from cryptography.fernet import Fernet
 
-from claude_tiu.core.config_manager import (
+from claude_tui.core.config_manager import (
     ConfigManager, AppConfig, AIServiceConfig, 
     ProjectDefaults, UIPreferences, SecurityConfig
 )
@@ -18,7 +18,7 @@ from claude_tiu.core.config_manager import (
 @pytest.fixture
 def temp_config_dir(tmp_path):
     """Create temporary configuration directory."""
-    config_dir = tmp_path / "claude-tiu-test"
+    config_dir = tmp_path / "claude-tui-test"
     config_dir.mkdir()
     return config_dir
 
@@ -69,7 +69,7 @@ class TestConfigManagerInitialization:
         manager = ConfigManager()
         
         # Should use platform-appropriate default directory
-        expected_name = 'claude-tiu'
+        expected_name = 'claude-tui'
         assert manager.config_dir.name == expected_name
         assert manager.config_dir.exists()
     
@@ -466,7 +466,7 @@ class TestPlatformSpecific:
         """Test default config directory on Windows."""
         manager = ConfigManager()
         
-        assert '/windows/appdata/claude-tiu' in str(manager.config_dir)
+        assert '/windows/appdata/claude-tui' in str(manager.config_dir)
     
     @patch('os.name', 'posix')
     @patch.dict(os.environ, {'XDG_CONFIG_HOME': '/unix/config'})
@@ -474,7 +474,7 @@ class TestPlatformSpecific:
         """Test default config directory on Unix-like systems."""
         manager = ConfigManager()
         
-        assert '/unix/config/claude-tiu' in str(manager.config_dir)
+        assert '/unix/config/claude-tui' in str(manager.config_dir)
     
     @patch('os.name', 'posix')
     @patch.dict(os.environ, {}, clear=True)
@@ -484,7 +484,7 @@ class TestPlatformSpecific:
             mock_home.return_value = Path('/home/user')
             manager = ConfigManager()
             
-            assert '/home/user/.config/claude-tiu' in str(manager.config_dir)
+            assert '/home/user/.config/claude-tui' in str(manager.config_dir)
 
 
 class TestConfigurationValidation:

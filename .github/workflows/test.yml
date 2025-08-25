@@ -66,7 +66,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
         ports:
@@ -102,9 +102,9 @@ jobs:
         
     - name: Run integration tests
       env:
-        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/claude_tiu_test
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/claude_tui_test
         CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
-        CLAUDE_TIU_ENV: test
+        CLAUDE_TUI_ENV: test
       run: |
         pytest tests/integration/ -v --timeout=60 --maxfail=5
     

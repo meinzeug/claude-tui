@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - Claude TIU Production
+name: CI/CD Pipeline - Claude TUI Production
 
 on:
   push:
@@ -122,7 +122,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         ports:
           - 5432:5432
         options: >-
@@ -161,17 +161,17 @@ jobs:
       - name: Run unit tests
         env:
           REDIS_URL: redis://localhost:6379
-          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tiu_test
-          CLAUDE_TIU_ENV: testing
+          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tui_test
+          CLAUDE_TUI_ENV: testing
         run: |
-          pytest tests/unit/ -v --cov=claude_tiu --cov-report=xml --cov-report=html
+          pytest tests/unit/ -v --cov=claude_tui --cov-report=xml --cov-report=html
           coverage report --show-missing
 
       - name: Run integration tests
         env:
           REDIS_URL: redis://localhost:6379
-          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tiu_test
-          CLAUDE_TIU_ENV: testing
+          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tui_test
+          CLAUDE_TUI_ENV: testing
         run: |
           pytest tests/integration/ -v --maxfail=5
 
@@ -281,18 +281,18 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --region us-west-2 --name claude-tiu-staging
+          aws eks update-kubeconfig --region us-west-2 --name claude-tui-staging
 
       - name: Deploy to staging
         run: |
           envsubst < k8s/staging/deployment.yaml | kubectl apply -f -
-          kubectl set image deployment/claude-tiu-app claude-tiu=${{ needs.build.outputs.image-tag }} -n staging
-          kubectl rollout status deployment/claude-tiu-app -n staging --timeout=300s
+          kubectl set image deployment/claude-tui-app claude-tui=${{ needs.build.outputs.image-tag }} -n staging
+          kubectl rollout status deployment/claude-tui-app -n staging --timeout=300s
 
       - name: Run smoke tests
         run: |
-          kubectl wait --for=condition=ready pod -l app=claude-tiu -n staging --timeout=120s
-          STAGING_URL=$(kubectl get service claude-tiu-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          kubectl wait --for=condition=ready pod -l app=claude-tui -n staging --timeout=120s
+          STAGING_URL=$(kubectl get service claude-tui-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           curl -f http://$STAGING_URL/health || exit 1
 
   # Job 5: Performance & Load Testing
@@ -317,12 +317,12 @@ jobs:
           aws-region: us-west-2
 
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region us-west-2 --name claude-tiu-staging
+        run: aws eks update-kubeconfig --region us-west-2 --name claude-tui-staging
 
       - name: Get staging URL
         id: staging-url
         run: |
-          STAGING_URL=$(kubectl get service claude-tiu-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          STAGING_URL=$(kubectl get service claude-tui-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           echo "url=http://$STAGING_URL" >> $GITHUB_OUTPUT
 
       - name: Install k6
@@ -371,12 +371,12 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --region us-west-2 --name claude-tiu-production
+          aws eks update-kubeconfig --region us-west-2 --name claude-tui-production
 
       - name: Blue-Green Deployment
         run: |
           # Determine current and new colors
-          CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}' || echo "blue")
+          CURRENT_COLOR=$(kubectl get service claude-tui-service -n production -o jsonpath='{.spec.selector.color}' || echo "blue")
           NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
           
           echo "Current color: $CURRENT_COLOR"
@@ -384,28 +384,28 @@ jobs:
           
           # Deploy new version to inactive color
           envsubst < k8s/production/deployment-$NEW_COLOR.yaml | kubectl apply -f -
-          kubectl set image deployment/claude-tiu-$NEW_COLOR claude-tiu=${{ needs.build.outputs.image-tag }} -n production
+          kubectl set image deployment/claude-tui-$NEW_COLOR claude-tui=${{ needs.build.outputs.image-tag }} -n production
           
           # Wait for new deployment to be ready
-          kubectl rollout status deployment/claude-tiu-$NEW_COLOR -n production --timeout=600s
+          kubectl rollout status deployment/claude-tui-$NEW_COLOR -n production --timeout=600s
           
           # Run health checks
-          kubectl wait --for=condition=ready pod -l app=claude-tiu,color=$NEW_COLOR -n production --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=claude-tui,color=$NEW_COLOR -n production --timeout=300s
           
           # Switch traffic to new version
-          kubectl patch service claude-tiu-service -n production -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+          kubectl patch service claude-tui-service -n production -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
           
           # Wait and verify
           sleep 30
-          PROD_URL=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          PROD_URL=$(kubectl get service claude-tui-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           curl -f http://$PROD_URL/health || exit 1
           
           # Scale down old version after successful switch
-          kubectl scale deployment claude-tiu-$CURRENT_COLOR --replicas=0 -n production
+          kubectl scale deployment claude-tui-$CURRENT_COLOR --replicas=0 -n production
 
       - name: Post-deployment tests
         run: |
-          PROD_URL=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          PROD_URL=$(kubectl get service claude-tui-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           
           # Basic health check
           curl -f http://$PROD_URL/health
@@ -418,12 +418,12 @@ jobs:
         if: failure()
         run: |
           echo "Deployment failed, initiating rollback..."
-          CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}')
+          CURRENT_COLOR=$(kubectl get service claude-tui-service -n production -o jsonpath='{.spec.selector.color}')
           OLD_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
           
           # Switch back to previous version
-          kubectl patch service claude-tiu-service -n production -p '{"spec":{"selector":{"color":"'$OLD_COLOR'"}}}'
-          kubectl scale deployment claude-tiu-$OLD_COLOR --replicas=3 -n production
+          kubectl patch service claude-tui-service -n production -p '{"spec":{"selector":{"color":"'$OLD_COLOR'"}}}'
+          kubectl scale deployment claude-tui-$OLD_COLOR --replicas=3 -n production
 
   # Job 7: Monitoring & Alerts Setup
   setup-monitoring:
@@ -445,11 +445,11 @@ jobs:
 
       - name: Update CloudWatch dashboard
         run: |
-          aws cloudwatch put-dashboard --dashboard-name "claude-tiu-production" --dashboard-body file://monitoring/cloudwatch-dashboard.json
+          aws cloudwatch put-dashboard --dashboard-name "claude-tui-production" --dashboard-body file://monitoring/cloudwatch-dashboard.json
 
       - name: Setup alerts
         run: |
-          aws cloudwatch put-metric-alarm --alarm-name "claude-tiu-high-error-rate" \
+          aws cloudwatch put-metric-alarm --alarm-name "claude-tui-high-error-rate" \
             --alarm-description "High error rate detected" \
             --metric-name "HTTPCode_5XX_Count" \
             --namespace "AWS/ApplicationELB" \
@@ -457,7 +457,7 @@ jobs:
             --period 300 \
             --threshold 10 \
             --comparison-operator GreaterThanThreshold \
-            --alarm-actions arn:aws:sns:us-west-2:${{ secrets.AWS_ACCOUNT_ID }}:claude-tiu-alerts
+            --alarm-actions arn:aws:sns:us-west-2:${{ secrets.AWS_ACCOUNT_ID }}:claude-tui-alerts
 
   # Job 8: Security Compliance Check
   security-compliance:
@@ -473,7 +473,7 @@ jobs:
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.7.0
         with:
-          target: 'https://claude-tiu.com'
+          target: 'https://claude-tui.com'
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'
 
@@ -494,7 +494,7 @@ jobs:
       - name: Clean up old images
         uses: actions/delete-package-versions@v4
         with:
-          package-name: claude-tiu
+          package-name: claude-tui
           package-type: container
           min-versions-to-keep: 5
           delete-only-untagged-versions: true

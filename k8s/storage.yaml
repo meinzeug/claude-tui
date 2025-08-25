@@ -1,9 +1,9 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: claude-tiu-storage
+  name: claude-tui-storage
   labels:
-    app: claude-tiu
+    app: claude-tui
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Retain
@@ -13,26 +13,26 @@ allowVolumeExpansion: true
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: claude-tiu-pvc
-  namespace: claude-tiu
+  name: claude-tui-pvc
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
 spec:
   accessModes:
   - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
-  storageClassName: claude-tiu-storage
+  storageClassName: claude-tui-storage
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: claude-tiu-logs-pvc
-  namespace: claude-tiu
+  name: claude-tui-logs-pvc
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
     type: logs
 spec:
   accessModes:
@@ -40,16 +40,16 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: claude-tiu-storage
+  storageClassName: claude-tui-storage
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: claude-tiu-backup-pvc
-  namespace: claude-tiu
+  name: claude-tui-backup-pvc
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
     type: backup
 spec:
   accessModes:
@@ -57,4 +57,4 @@ spec:
   resources:
     requests:
       storage: 20Gi
-  storageClassName: claude-tiu-storage
+  storageClassName: claude-tui-storage

@@ -1,4 +1,4 @@
-# YAML Linting Configuration for Claude TIU
+# YAML Linting Configuration for Claude TUI
 extends: default
 
 rules:

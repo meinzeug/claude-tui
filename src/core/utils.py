@@ -1,5 +1,5 @@
 """
-Utility functions and helpers for claude-tiu core modules.
+Utility functions and helpers for claude-tui core modules.
 
 This module provides common utilities for file operations, error handling,
 logging setup, and other supporting functionality needed across core components.
@@ -63,7 +63,7 @@ def setup_logging(
         Configured root logger
     """
     # Create root logger
-    logger = logging.getLogger('claude-tiu')
+    logger = logging.getLogger('claude-tui')
     logger.setLevel(getattr(logging, level.upper()))
     
     # Clear existing handlers to avoid duplicates
@@ -704,7 +704,7 @@ def format_file_size(size_bytes: int) -> str:
 def create_temp_file(
     content: str = "",
     suffix: str = ".tmp",
-    prefix: str = "claude-tiu-",
+    prefix: str = "claude-tui-",
     encoding: str = 'utf-8'
 ) -> Path:
     """
@@ -739,7 +739,7 @@ def create_temp_file(
         raise
 
 
-def create_temp_directory(prefix: str = "claude-tiu-") -> Path:
+def create_temp_directory(prefix: str = "claude-tui-") -> Path:
     """
     Create temporary directory.
     
@@ -896,7 +896,7 @@ def normalize_path(path: PathStr, relative_to: Optional[PathStr] = None) -> str:
 # Initialize default logger
 _default_logger = None
 
-def get_logger(name: str = 'claude-tiu') -> logging.Logger:
+def get_logger(name: str = 'claude-tui') -> logging.Logger:
     """Get logger instance with default configuration."""
     global _default_logger
     

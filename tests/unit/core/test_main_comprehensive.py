@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock, Mock, patch, MagicMock
 from pathlib import Path
 from click.testing import CliRunner
 
-from claude_tiu.main import (
+from claude_tui.main import (
     cli, launch_tui, main,
     _create_project_cli, _ask_claude_cli, _run_doctor, _run_workflow_cli
 )
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.ui.main_app import ClaudeTIUApp
-from claude_tiu.utils.system_check import SystemChecker
-from claude_tiu.core.project_manager import ProjectManager
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.ui.main_app import ClaudeTUIApp
+from claude_tui.utils.system_check import SystemChecker
+from claude_tui.core.project_manager import ProjectManager
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def mock_system_checker():
 @pytest.fixture
 def mock_app():
     """Mock TUI application."""
-    app = Mock(spec=ClaudeTIUApp)
+    app = Mock(spec=ClaudeTUIApp)
     app.run_async = AsyncMock()
     return app
 
@@ -66,7 +66,7 @@ class TestCLICommands:
         """Test --debug flag is stored in context."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main.launch_tui') as mock_launch:
+        with patch('claude_tui.main.launch_tui') as mock_launch:
             mock_launch.return_value = asyncio.coroutine(lambda: None)()
             
             result = runner.invoke(cli, ['--debug'])
@@ -81,7 +81,7 @@ class TestCLICommands:
         runner = CliRunner()
         config_dir = '/custom/config'
         
-        with patch('claude_tiu.main.launch_tui') as mock_launch:
+        with patch('claude_tui.main.launch_tui') as mock_launch:
             mock_launch.return_value = asyncio.coroutine(lambda: None)()
             
             result = runner.invoke(cli, ['--config-dir', config_dir])
@@ -94,7 +94,7 @@ class TestCLICommands:
         """Test create command parameter handling."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main._create_project_cli') as mock_create:
+        with patch('claude_tui.main._create_project_cli') as mock_create:
             mock_create.return_value = asyncio.coroutine(lambda *args: None)()
             
             result = runner.invoke(cli, [
@@ -112,7 +112,7 @@ class TestCLICommands:
         """Test ask command with context files."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main._ask_claude_cli') as mock_ask:
+        with patch('claude_tui.main._ask_claude_cli') as mock_ask:
             mock_ask.return_value = asyncio.coroutine(lambda *args: None)()
             
             with runner.isolated_filesystem():
@@ -135,7 +135,7 @@ class TestCLICommands:
         """Test doctor command execution."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main._run_doctor') as mock_doctor:
+        with patch('claude_tui.main._run_doctor') as mock_doctor:
             mock_doctor.return_value = asyncio.coroutine(lambda *args: None)()
             
             result = runner.invoke(cli, ['doctor'])
@@ -146,7 +146,7 @@ class TestCLICommands:
         """Test workflow command with JSON variables."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main._run_workflow_cli') as mock_workflow:
+        with patch('claude_tui.main._run_workflow_cli') as mock_workflow:
             mock_workflow.return_value = asyncio.coroutine(lambda *args: None)()
             
             with runner.isolated_filesystem():
@@ -171,9 +171,9 @@ class TestLaunchTUI:
         """Test successful TUI launch."""
         checker, check_result = mock_system_checker
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ClaudeTIUApp', return_value=mock_app):
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ClaudeTUIApp', return_value=mock_app):
             
             await launch_tui(debug=False, config_dir=None, project_dir=None)
             
@@ -187,10 +187,10 @@ class TestLaunchTUI:
         checker, check_result = mock_system_checker
         check_result.warnings = ['Warning 1', 'Warning 2']
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ClaudeTIUApp', return_value=mock_app), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ClaudeTUIApp', return_value=mock_app), \
+             patch('claude_tui.main.console') as mock_console:
             
             await launch_tui(debug=False, config_dir=None, project_dir=None)
             
@@ -205,8 +205,8 @@ class TestLaunchTUI:
         check_result.all_passed = False
         check_result.errors = ['Critical Error 1']
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.console') as mock_console, \
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.console') as mock_console, \
              patch('sys.exit') as mock_exit:
             
             await launch_tui(debug=False, config_dir=None, project_dir=None)
@@ -220,10 +220,10 @@ class TestLaunchTUI:
         checker, check_result = mock_system_checker
         mock_app.run_async.side_effect = KeyboardInterrupt()
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ClaudeTIUApp', return_value=mock_app), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ClaudeTUIApp', return_value=mock_app), \
+             patch('claude_tui.main.console') as mock_console:
             
             await launch_tui(debug=False, config_dir=None, project_dir=None)
             
@@ -235,10 +235,10 @@ class TestLaunchTUI:
         checker, check_result = mock_system_checker
         mock_app.run_async.side_effect = Exception("Test error")
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ClaudeTIUApp', return_value=mock_app), \
-             patch('claude_tiu.main.console') as mock_console, \
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ClaudeTUIApp', return_value=mock_app), \
+             patch('claude_tui.main.console') as mock_console, \
              patch('sys.exit') as mock_exit:
             
             await launch_tui(debug=False, config_dir=None, project_dir=None)
@@ -260,9 +260,9 @@ class TestCLIImplementations:
         
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ProjectManager', return_value=mock_project_manager), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ProjectManager', return_value=mock_project_manager), \
+             patch('claude_tui.main.console') as mock_console:
             
             await _create_project_cli('template', 'project', Path('/output'), ctx_obj)
             
@@ -283,8 +283,8 @@ class TestCLIImplementations:
         
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.console') as mock_console, \
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.console') as mock_console, \
              patch('sys.exit') as mock_exit:
             
             await _create_project_cli('template', 'project', Path('/output'), ctx_obj)
@@ -304,9 +304,9 @@ class TestCLIImplementations:
         
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.AIInterface', return_value=mock_ai_interface), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.AIInterface', return_value=mock_ai_interface), \
+             patch('claude_tui.main.console') as mock_console:
             
             await _ask_claude_cli('Test question', [Path('/file.py')], ctx_obj)
             
@@ -325,8 +325,8 @@ class TestCLIImplementations:
         
         ctx_obj = {'debug': False}
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.console') as mock_console:
             
             await _run_doctor(ctx_obj)
             
@@ -347,9 +347,9 @@ class TestCLIImplementations:
         
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.TaskEngine', return_value=mock_task_engine), \
-             patch('claude_tiu.main.console') as mock_console:
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.TaskEngine', return_value=mock_task_engine), \
+             patch('claude_tui.main.console') as mock_console:
             
             await _run_workflow_cli(
                 Path('/workflow.yaml'), 
@@ -366,7 +366,7 @@ class TestMainFunction:
     
     def test_main_calls_cli_main(self):
         """Test main function calls CLI main."""
-        with patch('claude_tiu.main.cli_main') as mock_cli_main:
+        with patch('claude_tui.main.cli_main') as mock_cli_main:
             main()
             mock_cli_main.assert_called_once()
 
@@ -378,7 +378,7 @@ class TestEdgeCases:
         """Test CLI with invalid config directory."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main.launch_tui') as mock_launch:
+        with patch('claude_tui.main.launch_tui') as mock_launch:
             mock_launch.return_value = asyncio.coroutine(lambda: None)()
             
             # This should work - click will validate the path
@@ -408,9 +408,9 @@ class TestEdgeCases:
         
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.TaskEngine', return_value=mock_task_engine), \
-             patch('claude_tiu.main.console') as mock_console, \
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.TaskEngine', return_value=mock_task_engine), \
+             patch('claude_tui.main.console') as mock_console, \
              patch('sys.exit') as mock_exit:
             
             # Invalid JSON should cause error
@@ -431,8 +431,8 @@ class TestEdgeCases:
         """Test ask Claude CLI with nonexistent context files."""
         ctx_obj = {'config_dir': None, 'debug': False}
         
-        with patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.console') as mock_console, \
+        with patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.console') as mock_console, \
              patch('sys.exit') as mock_exit:
             
             await _ask_claude_cli(
@@ -456,7 +456,7 @@ class TestParameterValidation:
         """Test project directory validation."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main.launch_tui') as mock_launch:
+        with patch('claude_tui.main.launch_tui') as mock_launch:
             mock_launch.return_value = asyncio.coroutine(lambda: None)()
             
             # Nonexistent project directory should fail validation
@@ -469,7 +469,7 @@ class TestParameterValidation:
         """Test create command output directory validation."""
         runner = CliRunner()
         
-        with patch('claude_tiu.main._create_project_cli') as mock_create:
+        with patch('claude_tui.main._create_project_cli') as mock_create:
             mock_create.return_value = asyncio.coroutine(lambda *args: None)()
             
             # Should accept any path for output directory
@@ -487,9 +487,9 @@ class TestParameterValidation:
         config_dir = Path('/custom/config')
         project_dir = Path('/custom/project')
         
-        with patch('claude_tiu.main.SystemChecker', return_value=checker), \
-             patch('claude_tiu.main.ConfigManager', return_value=mock_config_manager), \
-             patch('claude_tiu.main.ClaudeTIUApp', return_value=mock_app):
+        with patch('claude_tui.main.SystemChecker', return_value=checker), \
+             patch('claude_tui.main.ConfigManager', return_value=mock_config_manager), \
+             patch('claude_tui.main.ClaudeTUIApp', return_value=mock_app):
             
             await launch_tui(
                 debug=True,

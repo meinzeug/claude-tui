@@ -220,7 +220,7 @@ class TestProjectLoading:
         project_path.mkdir()
         
         # Create project config
-        config_dir = project_path / '.claude-tiu'
+        config_dir = project_path / '.claude-tui'
         config_dir.mkdir()
         config_file = config_dir / 'project.json'
         
@@ -375,7 +375,7 @@ class TestProjectConfiguration:
         """Test successful project configuration update."""
         project_path = temp_directory / "config_project"
         project_path.mkdir()
-        config_dir = project_path / '.claude-tiu'
+        config_dir = project_path / '.claude-tui'
         config_dir.mkdir()
         
         project_id = str(uuid4())

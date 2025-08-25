@@ -58,7 +58,7 @@ class SecurityConfig(BaseSettings):
 class DatabaseConfig(BaseSettings):
     """Database configuration with connection security"""
     
-    database_url: str = "sqlite+aiosqlite:///./claude_tiu.db"
+    database_url: str = "sqlite+aiosqlite:///./claude_tui.db"
     database_echo: bool = False
     database_pool_size: int = 20
     database_max_overflow: int = 30
@@ -85,9 +85,9 @@ class DatabaseConfig(BaseSettings):
 class AppConfig(BaseSettings):
     """Main application configuration"""
     
-    app_name: str = "Claude TIU API"
+    app_name: str = "Claude TUI API"
     app_version: str = "1.0.0"
-    app_description: str = "Secure Claude TIU Backend API"
+    app_description: str = "Secure Claude TUI Backend API"
     debug: bool = False
     environment: str = "production"
     

@@ -17,7 +17,7 @@ terraform {
   }
   
   backend "s3" {
-    bucket = "claude-tiu-terraform-state"
+    bucket = "claude-tui-terraform-state"
     key    = "production/terraform.tfstate"
     region = "us-west-2"
   }
@@ -27,7 +27,7 @@ terraform {
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "claude-tiu-production"
+  default     = "claude-tui-production"
 }
 
 variable "region" {
@@ -77,7 +77,7 @@ resource "aws_vpc" "main" {
     Name                                        = "${var.cluster_name}-vpc"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     Environment                                 = "production"
-    Project                                     = "claude-tiu"
+    Project                                     = "claude-tui"
   }
 }
 

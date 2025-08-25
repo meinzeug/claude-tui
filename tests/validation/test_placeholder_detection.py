@@ -19,7 +19,7 @@ class TestPlaceholderDetection:
     @pytest.fixture
     def detector(self):
         """Create placeholder detector instance."""
-        # This will be: from claude_tiu.core.validators import PlaceholderDetector
+        # This will be: from claude_tui.core.validators import PlaceholderDetector
         
         class MockPlaceholderDetector:
             def __init__(self):
@@ -402,7 +402,7 @@ class TestProgressValidation:
     @pytest.fixture
     def validator(self):
         """Create progress validator instance."""
-        # This will be: from claude_tiu.core.validators import ProgressValidator
+        # This will be: from claude_tui.core.validators import ProgressValidator
         
         class MockProgressValidator:
             def __init__(self, ai_interface=None, code_analyzer=None):

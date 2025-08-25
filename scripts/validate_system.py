@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-System Validation Script for Claude TIU.
+System Validation Script for Claude TUI.
 
 Validates that all major components are working correctly and can integrate together.
 This script tests the complete implementation pipeline.
@@ -14,11 +14,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root / "src"))
 
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.services.validation_service import ValidationService, ValidationLevel
-from claude_tiu.validation.placeholder_detector import PlaceholderDetector
-from claude_tiu.validation.semantic_analyzer import SemanticAnalyzer
-from claude_tiu.validation.auto_completion_engine import AutoCompletionEngine
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.services.validation_service import ValidationService, ValidationLevel
+from claude_tui.validation.placeholder_detector import PlaceholderDetector
+from claude_tui.validation.semantic_analyzer import SemanticAnalyzer
+from claude_tui.validation.auto_completion_engine import AutoCompletionEngine
 
 
 async def test_component_initialization():
@@ -348,7 +348,7 @@ async def cleanup_components(components):
 
 async def main():
     """Main validation function."""
-    print("🚀 Claude TIU System Validation")
+    print("🚀 Claude TUI System Validation")
     print("=" * 50)
     
     # Test results

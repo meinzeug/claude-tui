@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for claude-tiu.
+Setup script for claude-tui.
 
 This is a minimal setup.py for compatibility with older tools.
 The main configuration is in pyproject.toml.

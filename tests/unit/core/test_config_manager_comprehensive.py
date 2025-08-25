@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from framework.enhanced_test_framework import PerformanceMonitor, TestDataFactory
 
 # Import the component under test (will be implemented)
-# from claude_tiu.core.config_manager import ConfigManager, ConfigError
+# from claude_tui.core.config_manager import ConfigManager, ConfigError
 
 
 class MockConfigManager:
@@ -86,7 +86,7 @@ class MockConfigManager:
                 "max_retries": 3
             },
             "database": {
-                "url": "sqlite:///claude_tiu.db",
+                "url": "sqlite:///claude_tui.db",
                 "echo": False
             },
             "security": {

@@ -1,5 +1,5 @@
 """
-Enterprise Rate Limiting and DDoS Protection System for claude-tiu.
+Enterprise Rate Limiting and DDoS Protection System for claude-tui.
 
 This module provides comprehensive protection against abuse with:
 - Multi-tier rate limiting (IP, user, endpoint)

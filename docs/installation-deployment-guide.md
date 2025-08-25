@@ -1,8 +1,8 @@
-# Claude-TIU Installation & Deployment Guide
+# Claude-TUI Installation & Deployment Guide
 
 ## 🚀 Complete Installation & Deployment Documentation
 
-This comprehensive guide covers all installation methods and deployment options for Claude-TIU, from local development to enterprise-scale production deployments.
+This comprehensive guide covers all installation methods and deployment options for Claude-TUI, from local development to enterprise-scale production deployments.
 
 ---
 
@@ -59,11 +59,11 @@ This comprehensive guide covers all installation methods and deployment options 
 
 ### One-Line Install (Recommended)
 ```bash
-# Install Claude-TIU with all dependencies
-curl -sSL https://install.claude-tiu.dev/quick | bash
+# Install Claude-TUI with all dependencies
+curl -sSL https://install.claude-tui.dev/quick | bash
 
 # Or using wget
-wget -qO- https://install.claude-tiu.dev/quick | bash
+wget -qO- https://install.claude-tui.dev/quick | bash
 ```
 
 This installer will:
@@ -76,16 +76,16 @@ This installer will:
 
 ### Verify Installation
 ```bash
-# Check Claude-TIU version
-claude-tiu --version
-# Expected: claude-tiu 1.0.0
+# Check Claude-TUI version
+claude-tui --version
+# Expected: claude-tui 1.0.0
 
 # Run system check
-claude-tiu doctor
+claude-tui doctor
 # Should show all green checkmarks
 
 # Test AI connectivity
-claude-tiu test-connection
+claude-tui test-connection
 # Verifies Claude API access
 ```
 
@@ -96,9 +96,9 @@ claude-tiu test-connection
 ### Step 1: Environment Setup
 ```bash
 # Create virtual environment
-python -m venv claude-tiu-env
-source claude-tiu-env/bin/activate  # Linux/macOS
-# claude-tiu-env\Scripts\activate   # Windows
+python -m venv claude-tui-env
+source claude-tui-env/bin/activate  # Linux/macOS
+# claude-tui-env\Scripts\activate   # Windows
 
 # Upgrade pip
 pip install --upgrade pip setuptools wheel
@@ -107,14 +107,18 @@ pip install --upgrade pip setuptools wheel
 ### Step 2: Install from Source
 ```bash
 # Clone repository
-git clone https://github.com/claude-tiu/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/your-username/claude-tui.git
+cd claude-tui
 
-# Install development dependencies
-pip install -r requirements-dev.txt
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install in development mode
-pip install -e .[dev]
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package in development mode
+pip install -e .
 ```
 
 ### Step 3: Configure Environment
@@ -138,8 +142,8 @@ LOG_LEVEL=DEBUG
 MAX_CONCURRENT_TASKS=5
 
 # Database Configuration (Optional for development)
-DATABASE_URL=sqlite:///./claude_tiu.db
-# DATABASE_URL=postgresql://user:pass@localhost:5432/claude_tiu
+DATABASE_URL=sqlite:///./claude_tui.db
+# DATABASE_URL=postgresql://user:pass@localhost:5432/claude_tui
 
 # Cache Configuration (Optional)
 REDIS_URL=redis://localhost:6379/0
@@ -152,19 +156,22 @@ JWT_SECRET_KEY=your-jwt-secret-here
 ### Step 4: Initialize Database
 ```bash
 # Initialize database
-claude-tiu db init
+claude-tui db init
 
 # Run migrations
-claude-tiu db upgrade
+claude-tui db upgrade
 
 # Create admin user (optional)
-claude-tiu create-user --email admin@example.com --role admin
+claude-tui create-user --email admin@example.com --role admin
 ```
 
 ### Step 5: Start Development Services
 ```bash
 # Terminal 1: Start main application
-claude-tiu run --debug
+python -m claude_tui --debug
+
+# Or use the run script
+python run_tui.py
 
 # Terminal 2: Start Claude Flow (if using)
 npx claude-flow@alpha serve --port 3000
@@ -229,13 +236,13 @@ RUN pip install -e .
 EXPOSE 8000
 
 # Start command
-CMD ["claude-tiu", "run", "--host", "0.0.0.0"]
+CMD ["claude-tui", "run", "--host", "0.0.0.0"]
 ```
 
 ```bash
 # Build and run development container
-docker build -f Dockerfile.dev -t claude-tiu:dev .
-docker run -p 8000:8000 -e CLAUDE_API_KEY=your-key claude-tiu:dev
+docker build -f Dockerfile.dev -t claude-tui:dev .
+docker run -p 8000:8000 -e CLAUDE_API_KEY=your-key claude-tui:dev
 ```
 
 ### Multi-Container Production (Docker Compose)
@@ -244,14 +251,14 @@ docker run -p 8000:8000 -e CLAUDE_API_KEY=your-key claude-tiu:dev
 version: '3.8'
 
 services:
-  claude-tiu:
+  claude-tui:
     build:
       context: .
       dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/claude_tiu
+      - DATABASE_URL=postgresql://postgres:password@db:5432/claude_tui
       - REDIS_URL=redis://redis:6379/0
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}
     depends_on:
@@ -270,7 +277,7 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=claude_tiu
+      - POSTGRES_DB=claude_tui
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
@@ -302,7 +309,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/ssl/certs
     depends_on:
-      - claude-tiu
+      - claude-tui
     restart: unless-stopped
 
 volumes:
@@ -382,7 +389,7 @@ docker-compose up -d
 docker-compose logs -f
 
 # Scale services
-docker-compose up -d --scale claude-tiu=3
+docker-compose up -d --scale claude-tui=3
 
 # Update services
 docker-compose pull
@@ -399,21 +406,21 @@ docker-compose up -d
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: claude-tiu
+  name: claude-tui
   labels:
-    name: claude-tiu
+    name: claude-tui
 ---
 # k8s/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: claude-tiu-config
-  namespace: claude-tiu
+  name: claude-tui-config
+  namespace: claude-tui
 data:
   DEBUG: "false"
   LOG_LEVEL: "INFO"
   MAX_CONCURRENT_TASKS: "10"
-  DATABASE_URL: "postgresql://postgres:password@postgres:5432/claude_tiu"
+  DATABASE_URL: "postgresql://postgres:password@postgres:5432/claude_tui"
   REDIS_URL: "redis://redis:6379/0"
 ```
 
@@ -423,8 +430,8 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: claude-tiu-secrets
-  namespace: claude-tiu
+  name: claude-tui-secrets
+  namespace: claude-tui
 type: Opaque
 data:
   claude-api-key: <base64-encoded-key>
@@ -435,11 +442,11 @@ data:
 
 ```bash
 # Create secrets from command line
-kubectl create secret generic claude-tiu-secrets \
+kubectl create secret generic claude-tui-secrets \
   --from-literal=claude-api-key=sk-your-key-here \
   --from-literal=secret-key=your-secret-key \
   --from-literal=jwt-secret-key=your-jwt-secret \
-  --namespace=claude-tiu
+  --namespace=claude-tui
 ```
 
 ### PostgreSQL Deployment
@@ -449,7 +456,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   replicas: 1
   selector:
@@ -467,13 +474,13 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_DB
-          value: claude_tiu
+          value: claude_tui
         - name: POSTGRES_USER
           value: postgres
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: db-password
         volumeMounts:
         - name: postgres-storage
@@ -494,7 +501,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   selector:
     app: postgres
@@ -506,7 +513,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   accessModes:
     - ReadWriteOnce
@@ -522,7 +529,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   replicas: 1
   selector:
@@ -557,7 +564,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   selector:
     app: redis
@@ -569,7 +576,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redis-pvc
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   accessModes:
     - ReadWriteOnce
@@ -578,50 +585,50 @@ spec:
       storage: 5Gi
 ```
 
-### Claude-TIU Application Deployment
+### Claude-TUI Application Deployment
 ```yaml
-# k8s/claude-tiu.yaml
+# k8s/claude-tui.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: claude-tiu
-  namespace: claude-tiu
+  name: claude-tui
+  namespace: claude-tui
   labels:
-    app: claude-tiu
+    app: claude-tui
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: claude-tiu
+      app: claude-tui
   template:
     metadata:
       labels:
-        app: claude-tiu
+        app: claude-tui
     spec:
       containers:
-      - name: claude-tiu
-        image: claude-tiu/claude-tiu:1.0.0
+      - name: claude-tui
+        image: claude-tui/claude-tui:1.0.0
         ports:
         - containerPort: 8000
         env:
         - name: CLAUDE_API_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: claude-api-key
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: secret-key
         - name: JWT_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: jwt-secret-key
         envFrom:
         - configMapRef:
-            name: claude-tiu-config
+            name: claude-tui-config
         resources:
           requests:
             memory: "512Mi"
@@ -657,11 +664,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: claude-tiu-service
-  namespace: claude-tiu
+  name: claude-tui-service
+  namespace: claude-tui
 spec:
   selector:
-    app: claude-tiu
+    app: claude-tui
   ports:
   - port: 80
     targetPort: 8000
@@ -672,7 +679,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: projects-pvc
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   accessModes:
     - ReadWriteMany
@@ -684,7 +691,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: logs-pvc
-  namespace: claude-tiu
+  namespace: claude-tui
 spec:
   accessModes:
     - ReadWriteMany
@@ -699,8 +706,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: claude-tiu-ingress
-  namespace: claude-tiu
+  name: claude-tui-ingress
+  namespace: claude-tui
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -712,17 +719,17 @@ metadata:
 spec:
   tls:
   - hosts:
-    - claude-tiu.your-domain.com
-    secretName: claude-tiu-tls
+    - claude-tui.your-domain.com
+    secretName: claude-tui-tls
   rules:
-  - host: claude-tiu.your-domain.com
+  - host: claude-tui.your-domain.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: claude-tiu-service
+            name: claude-tui-service
             port:
               number: 80
 ```
@@ -733,13 +740,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: claude-tiu-hpa
-  namespace: claude-tiu
+  name: claude-tui-hpa
+  namespace: claude-tui
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: claude-tiu
+    name: claude-tui
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -763,16 +770,16 @@ spec:
 kubectl apply -f k8s/
 
 # Check deployment status
-kubectl get pods -n claude-tiu
+kubectl get pods -n claude-tui
 
 # View logs
-kubectl logs -f deployment/claude-tiu -n claude-tiu
+kubectl logs -f deployment/claude-tui -n claude-tui
 
 # Scale deployment
-kubectl scale deployment claude-tiu --replicas=5 -n claude-tiu
+kubectl scale deployment claude-tui --replicas=5 -n claude-tui
 
 # Port forward for testing
-kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
+kubectl port-forward service/claude-tui-service 8080:80 -n claude-tui
 ```
 
 ---
@@ -784,7 +791,7 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
 #### ECS Deployment
 ```json
 {
-  "family": "claude-tiu",
+  "family": "claude-tui",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "1024",
@@ -793,8 +800,8 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
   "taskRoleArn": "arn:aws:iam::account:role/ecsTaskRole",
   "containerDefinitions": [
     {
-      "name": "claude-tiu",
-      "image": "your-account.dkr.ecr.region.amazonaws.com/claude-tiu:latest",
+      "name": "claude-tui",
+      "image": "your-account.dkr.ecr.region.amazonaws.com/claude-tui:latest",
       "portMappings": [
         {
           "containerPort": 8000,
@@ -805,7 +812,7 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/claude-tiu",
+          "awslogs-group": "/ecs/claude-tui",
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }
@@ -813,7 +820,7 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
       "environment": [
         {
           "name": "DATABASE_URL",
-          "value": "postgresql://username:password@your-rds-endpoint:5432/claude_tiu"
+          "value": "postgresql://username:password@your-rds-endpoint:5432/claude_tui"
         },
         {
           "name": "REDIS_URL",
@@ -823,7 +830,7 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
       "secrets": [
         {
           "name": "CLAUDE_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:region:account:secret:claude-tiu/api-key"
+          "valueFrom": "arn:aws:secretsmanager:region:account:secret:claude-tui/api-key"
         }
       ],
       "healthCheck": {
@@ -847,7 +854,7 @@ kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu
 replicaCount: 3
 
 image:
-  repository: your-account.dkr.ecr.region.amazonaws.com/claude-tiu
+  repository: your-account.dkr.ecr.region.amazonaws.com/claude-tui
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -863,7 +870,7 @@ ingress:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
   hosts:
-    - host: claude-tiu.your-domain.com
+    - host: claude-tui.your-domain.com
       paths:
         - path: /
           pathType: Prefix
@@ -886,7 +893,7 @@ postgresql:
   enabled: false
   external:
     host: your-rds-endpoint
-    database: claude_tiu
+    database: claude_tui
 
 redis:
   enabled: false
@@ -902,7 +909,7 @@ redis:
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: claude-tiu
+  name: claude-tui
   annotations:
     run.googleapis.com/ingress: all
 spec:
@@ -916,19 +923,19 @@ spec:
       containerConcurrency: 10
       timeoutSeconds: 600
       containers:
-      - image: gcr.io/your-project/claude-tiu:latest
+      - image: gcr.io/your-project/claude-tui:latest
         ports:
         - containerPort: 8000
         env:
         - name: DATABASE_URL
-          value: "postgresql://username:password@your-cloud-sql-ip:5432/claude_tiu"
+          value: "postgresql://username:password@your-cloud-sql-ip:5432/claude_tui"
         - name: REDIS_URL
           value: "redis://your-memorystore-ip:6379/0"
         - name: CLAUDE_API_KEY
           valueFrom:
             secretKeyRef:
               key: claude-api-key
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
         resources:
           limits:
             cpu: "2000m"
@@ -949,7 +956,7 @@ spec:
 #### GKE Deployment
 ```bash
 # Create GKE cluster
-gcloud container clusters create claude-tiu-cluster \
+gcloud container clusters create claude-tui-cluster \
   --zone=us-central1-a \
   --num-nodes=3 \
   --enable-autoscaling \
@@ -961,8 +968,8 @@ gcloud container clusters create claude-tiu-cluster \
 kubectl apply -f k8s/
 
 # Setup ingress with SSL
-gcloud compute ssl-certificates create claude-tiu-ssl \
-  --domains=claude-tiu.your-domain.com
+gcloud compute ssl-certificates create claude-tui-ssl \
+  --domains=claude-tui.your-domain.com
 ```
 
 ### Microsoft Azure
@@ -972,12 +979,12 @@ gcloud compute ssl-certificates create claude-tiu-ssl \
 # azure-container-instances.yaml
 apiVersion: 2021-09-01
 location: East US
-name: claude-tiu-container-group
+name: claude-tui-container-group
 properties:
   containers:
-  - name: claude-tiu
+  - name: claude-tui
     properties:
-      image: your-registry.azurecr.io/claude-tiu:latest
+      image: your-registry.azurecr.io/claude-tui:latest
       resources:
         requests:
           cpu: 1.0
@@ -987,7 +994,7 @@ properties:
         port: 8000
       environmentVariables:
       - name: DATABASE_URL
-        value: "postgresql://username@your-postgres:password@your-postgres.postgres.database.azure.com:5432/claude_tiu"
+        value: "postgresql://username@your-postgres:password@your-postgres.postgres.database.azure.com:5432/claude_tui"
       - name: REDIS_URL
         value: "redis://your-redis.redis.cache.windows.net:6380"
       - name: CLAUDE_API_KEY
@@ -1006,14 +1013,14 @@ type: Microsoft.ContainerInstance/containerGroups
 ```bash
 # Create AKS cluster
 az aks create \
-  --resource-group claude-tiu-rg \
-  --name claude-tiu-aks \
+  --resource-group claude-tui-rg \
+  --name claude-tui-aks \
   --node-count 3 \
   --enable-addons monitoring \
   --generate-ssh-keys
 
 # Get credentials
-az aks get-credentials --resource-group claude-tiu-rg --name claude-tiu-aks
+az aks get-credentials --resource-group claude-tui-rg --name claude-tui-aks
 
 # Deploy application
 kubectl apply -f k8s/
@@ -1029,7 +1036,7 @@ kubectl apply -f k8s/
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: claude-tiu-ha-config
+  name: claude-tui-ha-config
 data:
   # Load balancing
   LOAD_BALANCER_ALGORITHM: "round_robin"
@@ -1076,15 +1083,15 @@ for region in "${REGIONS[@]}"; do
     
     # Configure cross-region replication
     aws rds create-db-cluster-snapshot \
-        --db-cluster-snapshot-identifier "claude-tiu-snapshot-$(date +%Y%m%d)" \
-        --db-cluster-identifier "claude-tiu-cluster-$region"
+        --db-cluster-snapshot-identifier "claude-tui-snapshot-$(date +%Y%m%d)" \
+        --db-cluster-identifier "claude-tui-cluster-$region"
     
     echo "Deployment to $region completed"
 done
 
 # Setup global load balancer
 aws route53 create-hosted-zone \
-    --name claude-tiu.com \
+    --name claude-tui.com \
     --caller-reference "$(date +%s)"
 
 # Configure failover routing
@@ -1101,7 +1108,7 @@ done
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: claude-tiu-security-config
+  name: claude-tui-security-config
 data:
   # Authentication
   JWT_ALGORITHM: "RS256"
@@ -1116,7 +1123,7 @@ data:
   SESSION_TIMEOUT: "1800"
   
   # Network Security
-  ALLOWED_ORIGINS: "https://claude-tiu.com,https://app.claude-tiu.com"
+  ALLOWED_ORIGINS: "https://claude-tui.com,https://app.claude-tui.com"
   RATE_LIMIT_REQUESTS: "1000"
   RATE_LIMIT_WINDOW: "3600"
   
@@ -1144,12 +1151,12 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "claude-tiu-rules.yml"
+  - "claude-tui-rules.yml"
 
 scrape_configs:
-  - job_name: 'claude-tiu'
+  - job_name: 'claude-tui'
     static_configs:
-      - targets: ['claude-tiu:8000']
+      - targets: ['claude-tui:8000']
     metrics_path: /metrics
     scrape_interval: 10s
 
@@ -1176,7 +1183,7 @@ alerting:
 ```json
 {
   "dashboard": {
-    "title": "Claude-TIU Monitoring",
+    "title": "Claude-TUI Monitoring",
     "panels": [
       {
         "title": "Request Rate",
@@ -1238,12 +1245,12 @@ alerting:
     Name              tail
     Path              /app/logs/*.log
     Parser            json
-    Tag               claude-tiu.*
+    Tag               claude-tui.*
     Refresh_Interval  5
 
 [FILTER]
     Name                kubernetes
-    Match               claude-tiu.*
+    Match               claude-tui.*
     Use_Journal         Off
     Merge_Log           On
     K8S-Logging.Parser  On
@@ -1254,7 +1261,7 @@ alerting:
     Match *
     Host  elasticsearch
     Port  9200
-    Index claude-tiu-logs
+    Index claude-tui-logs
     Type  _doc
 ```
 
@@ -1334,11 +1341,11 @@ async def comprehensive_health_check() -> Dict[str, Any]:
 # nginx/ssl.conf
 server {
     listen 443 ssl http2;
-    server_name claude-tiu.your-domain.com;
+    server_name claude-tui.your-domain.com;
 
     # SSL Configuration
-    ssl_certificate /etc/ssl/certs/claude-tiu.crt;
-    ssl_certificate_key /etc/ssl/private/claude-tiu.key;
+    ssl_certificate /etc/ssl/certs/claude-tui.crt;
+    ssl_certificate_key /etc/ssl/private/claude-tui.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
@@ -1363,7 +1370,7 @@ server {
     limit_req zone=api burst=20 nodelay;
 
     location / {
-        proxy_pass http://claude-tiu-backend;
+        proxy_pass http://claude-tui-backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -1384,7 +1391,7 @@ server {
 # Redirect HTTP to HTTPS
 server {
     listen 80;
-    server_name claude-tiu.your-domain.com;
+    server_name claude-tui.your-domain.com;
     return 301 https://$server_name$request_uri;
 }
 ```
@@ -1418,16 +1425,16 @@ filter = sshd
 logpath = /var/log/auth.log
 maxretry = 3
 
-[claude-tiu]
+[claude-tui]
 enabled = true
 port = http,https
-filter = claude-tiu
+filter = claude-tui
 logpath = /app/logs/access.log
 maxretry = 10
 EOF
 
-# Create Claude-TIU filter
-cat > /etc/fail2ban/filter.d/claude-tiu.conf << EOF
+# Create Claude-TUI filter
+cat > /etc/fail2ban/filter.d/claude-tui.conf << EOF
 [Definition]
 failregex = ^.*"(POST|GET|PUT|DELETE).*" 4[0-9]{2} .*$
 ignoreregex =
@@ -1442,7 +1449,7 @@ systemctl restart fail2ban
 # secrets-setup.sh
 
 # Using HashiCorp Vault
-vault kv put secret/claude-tiu/production \
+vault kv put secret/claude-tui/production \
     claude_api_key="sk-your-secure-key" \
     secret_key="your-super-secret-key" \
     jwt_secret="your-jwt-secret" \
@@ -1450,8 +1457,8 @@ vault kv put secret/claude-tiu/production \
 
 # Using AWS Secrets Manager
 aws secretsmanager create-secret \
-    --name "claude-tiu/production" \
-    --description "Claude-TIU production secrets" \
+    --name "claude-tui/production" \
+    --description "Claude-TUI production secrets" \
     --secret-string '{
         "claude_api_key": "sk-your-secure-key",
         "secret_key": "your-super-secret-key",
@@ -1460,12 +1467,12 @@ aws secretsmanager create-secret \
     }'
 
 # Using Kubernetes Secrets
-kubectl create secret generic claude-tiu-secrets \
+kubectl create secret generic claude-tui-secrets \
     --from-literal=claude-api-key="sk-your-secure-key" \
     --from-literal=secret-key="your-super-secret-key" \
     --from-literal=jwt-secret="your-jwt-secret" \
     --from-literal=db-password="your-db-password" \
-    --namespace=claude-tiu
+    --namespace=claude-tui
 ```
 
 ---
@@ -1477,8 +1484,8 @@ kubectl create secret generic claude-tiu-secrets \
 #### 1. Installation Issues
 ```bash
 # Permission denied
-sudo chown -R $USER:$USER ~/.local/bin/claude-tiu
-chmod +x ~/.local/bin/claude-tiu
+sudo chown -R $USER:$USER ~/.local/bin/claude-tui
+chmod +x ~/.local/bin/claude-tui
 
 # Python version conflicts
 pyenv install 3.11.0
@@ -1515,8 +1522,8 @@ psql $DATABASE_URL -c "SELECT version();"
 sudo tail -f /var/log/postgresql/postgresql-15-main.log
 
 # Reset database
-claude-tiu db reset --confirm
-claude-tiu db init
+claude-tui db reset --confirm
+claude-tui db init
 ```
 
 #### 4. Performance Issues
@@ -1526,14 +1533,14 @@ htop
 free -h
 df -h
 
-# Monitor Claude-TIU processes
-ps aux | grep claude-tiu
+# Monitor Claude-TUI processes
+ps aux | grep claude-tui
 
 # Check application logs
-tail -f /app/logs/claude-tiu.log
+tail -f /app/logs/claude-tui.log
 
 # Clear caches
-claude-tiu cache clear
+claude-tui cache clear
 redis-cli flushall
 ```
 
@@ -1541,7 +1548,7 @@ redis-cli flushall
 ```bash
 # Check container status
 docker ps -a
-docker logs claude-tiu
+docker logs claude-tui
 
 # Restart containers
 docker-compose restart
@@ -1553,14 +1560,14 @@ docker system prune -a
 #### 6. Kubernetes Issues
 ```bash
 # Check pod status
-kubectl get pods -n claude-tiu
-kubectl describe pod <pod-name> -n claude-tiu
+kubectl get pods -n claude-tui
+kubectl describe pod <pod-name> -n claude-tui
 
 # Check logs
-kubectl logs -f deployment/claude-tiu -n claude-tiu
+kubectl logs -f deployment/claude-tui -n claude-tui
 
 # Debug networking
-kubectl exec -it <pod-name> -n claude-tiu -- curl localhost:8000/health
+kubectl exec -it <pod-name> -n claude-tui -- curl localhost:8000/health
 ```
 
 ### Performance Tuning
@@ -1634,9 +1641,9 @@ save 60 10000
 #!/bin/bash
 # backup-database.sh
 
-BACKUP_DIR="/backups/claude-tiu"
+BACKUP_DIR="/backups/claude-tui"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="$BACKUP_DIR/claude_tiu_$TIMESTAMP.sql"
+BACKUP_FILE="$BACKUP_DIR/claude_tui_$TIMESTAMP.sql"
 
 # Create backup directory
 mkdir -p $BACKUP_DIR
@@ -1648,7 +1655,7 @@ pg_dump $DATABASE_URL > $BACKUP_FILE
 gzip $BACKUP_FILE
 
 # Upload to S3 (optional)
-aws s3 cp $BACKUP_FILE.gz s3://your-backup-bucket/claude-tiu/
+aws s3 cp $BACKUP_FILE.gz s3://your-backup-bucket/claude-tui/
 
 # Keep only last 30 days of backups
 find $BACKUP_DIR -name "*.gz" -mtime +30 -delete
@@ -1661,7 +1668,7 @@ echo "Backup completed: $BACKUP_FILE.gz"
 #!/bin/bash
 # backup-application.sh
 
-BACKUP_DIR="/backups/claude-tiu"
+BACKUP_DIR="/backups/claude-tui"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # Backup projects directory
@@ -1682,7 +1689,7 @@ echo "Application backup completed"
 # recovery.sh
 
 # Restore database
-gunzip -c claude_tiu_20240115_120000.sql.gz | psql $DATABASE_URL
+gunzip -c claude_tui_20240115_120000.sql.gz | psql $DATABASE_URL
 
 # Restore projects
 tar -xzf projects_20240115_120000.tar.gz -C /
@@ -1693,7 +1700,7 @@ tar -xzf config_20240115_120000.tar.gz -C /
 # Restart services
 docker-compose restart
 # or
-kubectl rollout restart deployment/claude-tiu -n claude-tiu
+kubectl rollout restart deployment/claude-tui -n claude-tui
 
 echo "Recovery completed"
 ```
@@ -1702,7 +1709,7 @@ echo "Recovery completed"
 
 ## Conclusion
 
-This comprehensive installation and deployment guide provides everything needed to run Claude-TIU from local development to enterprise-scale production deployments. Choose the deployment method that best fits your requirements:
+This comprehensive installation and deployment guide provides everything needed to run Claude-TUI from local development to enterprise-scale production deployments. Choose the deployment method that best fits your requirements:
 
 - **Local Development**: Use the quick installation or source setup
 - **Small Teams**: Docker Compose deployment  
@@ -1710,10 +1717,10 @@ This comprehensive installation and deployment guide provides everything needed 
 - **Enterprise**: Multi-region with high availability and comprehensive monitoring
 
 For additional support:
-- 📚 [Full Documentation](https://docs.claude-tiu.dev)
-- 💬 [Community Forum](https://community.claude-tiu.dev)
-- 📧 [Enterprise Support](mailto:enterprise@claude-tiu.dev)
+- 📚 [Full Documentation](https://docs.claude-tui.dev)
+- 💬 [Community Forum](https://community.claude-tui.dev)
+- 📧 [Enterprise Support](mailto:enterprise@claude-tui.dev)
 
 ---
 
-**Ready to deploy Claude-TIU at scale! 🚀**
+**Ready to deploy Claude-TUI at scale! 🚀**

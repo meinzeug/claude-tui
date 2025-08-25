@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude-TIU Development Runner
+Claude TUI Development Runner
 Quick runner for testing the TUI during development
 """
 

@@ -41,7 +41,7 @@ exclude_lines =
 
 [html]
 directory = htmlcov
-title = claude-tiu Test Coverage Report
+title = claude-tui Test Coverage Report
 
 [xml]
 output = coverage.xml

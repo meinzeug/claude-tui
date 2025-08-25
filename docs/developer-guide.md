@@ -1,4 +1,4 @@
-# Claude TIU - Developer Guide
+# Claude TUI - Developer Guide
 
 ## Table of Contents
 1. [Development Environment Setup](#development-environment-setup)
@@ -46,22 +46,24 @@ pip install rich     # Enhanced terminal output
 #### 1. Clone and Setup Repository
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/your-username/claude-tui.git
+cd claude-tui
 
 # Create virtual environment
-python -m venv venv
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Activate virtual environment
-source venv/bin/activate  # Linux/Mac
-# or
-venv\Scripts\activate     # Windows
+# Install dependencies
+pip install -r requirements.txt
 
 # Install development dependencies
 pip install -r requirements-dev.txt
 
-# Install pre-commit hooks
-pre-commit install
+# Install the package in development mode
+pip install -e .
+
+# Run tests
+pytest
 ```
 
 #### 2. Development Configuration
@@ -75,16 +77,22 @@ cp config/development.yaml.template config/development.yaml
 # - Local paths
 ```
 
-#### 3. Install Claude TIU in Development Mode
+#### 3. Install Claude TUI in Development Mode
 ```bash
 # Install in editable mode
 pip install -e .
 
 # Verify installation
-python -c "import claude_tiu; print('Installation successful')"
+python -c "import claude_tui; print('Installation successful')"
 
 # Test CLI
-python main.py --version
+python -m claude_tui --version
+
+# Or use the run script
+python run_tui.py --version
+
+# Or if installed globally
+claude-tui --version
 ```
 
 #### 4. IDE Setup
@@ -120,9 +128,9 @@ python main.py --version
 #### 5. Environment Variables
 ```bash
 # .env file for development
-CLAUDE_TIU_DEBUG=1
-CLAUDE_TIU_LOG_LEVEL=DEBUG
-CLAUDE_TIU_CONFIG_PATH=./config/development.yaml
+CLAUDE_TUI_DEBUG=1
+CLAUDE_TUI_LOG_LEVEL=DEBUG
+CLAUDE_TUI_CONFIG_PATH=./config/development.yaml
 CLAUDE_API_KEY=your_test_api_key
 PYTHONPATH=./src
 ```
@@ -133,7 +141,7 @@ PYTHONPATH=./src
 
 ### High-Level Architecture
 
-Claude TIU follows a modular, layered architecture designed for extensibility and maintainability:
+Claude TUI follows a modular, layered architecture designed for extensibility and maintainability:
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -171,9 +179,9 @@ Claude TIU follows a modular, layered architecture designed for extensibility an
 ### Directory Structure
 
 ```
-claude-tiu/
+claude-tui/
 ├── src/                          # Source code
-│   ├── claude_tiu/              # Main package
+│   ├── claude_tui/              # Main package
 │   │   ├── __init__.py
 │   │   ├── main.py              # Application entry point
 │   │   ├── cli/                 # CLI interface
@@ -285,9 +293,9 @@ from typing import Optional, List, Dict, Any
 from pathlib import Path
 import asyncio
 
-from claude_tiu.models.project import Project, ProjectConfig
-from claude_tiu.core.workflow_engine import WorkflowEngine
-from claude_tiu.core.validation_engine import ValidationEngine
+from claude_tui.models.project import Project, ProjectConfig
+from claude_tui.core.workflow_engine import WorkflowEngine
+from claude_tui.core.validation_engine import ValidationEngine
 
 class ProjectManager:
     """
@@ -339,8 +347,8 @@ import json
 from typing import Dict, Any, List, Optional
 import subprocess
 
-from claude_tiu.models.ai_request import AIRequest, AIResponse
-from claude_tiu.utils.async_utils import run_subprocess_async
+from claude_tui.models.ai_request import AIRequest, AIResponse
+from claude_tui.utils.async_utils import run_subprocess_async
 
 class AIInterface:
     """
@@ -390,7 +398,7 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 from dataclasses import dataclass
 
-from claude_tiu.models.validation import ValidationResult, ValidationRule
+from claude_tui.models.validation import ValidationResult, ValidationRule
 
 @dataclass
 class ProgressReport:
@@ -467,8 +475,8 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
-from claude_tiu.models.workflow import Workflow, Task, TaskStatus
-from claude_tiu.core.ai_interface import AIInterface
+from claude_tui.models.workflow import Workflow, Task, TaskStatus
+from claude_tui.core.ai_interface import AIInterface
 
 class TaskStatus(Enum):
     PENDING = "pending"
@@ -550,11 +558,11 @@ class WorkflowEngine:
 ```bash
 # Fork the repository on GitHub
 # Then clone your fork
-git clone https://github.com/YOUR_USERNAME/claude-tiu.git
-cd claude-tiu
+git clone https://github.com/YOUR_USERNAME/claude-tui.git
+cd claude-tui
 
 # Add upstream remote
-git remote add upstream https://github.com/original/claude-tiu.git
+git remote add upstream https://github.com/original/claude-tui.git
 ```
 
 #### 2. Create Feature Branch
@@ -745,7 +753,7 @@ def validate_project_progress(
 Use specific exception types and proper error handling:
 
 ```python
-from claude_tiu.exceptions import (
+from claude_tui.exceptions import (
     ProjectError, 
     ValidationError, 
     WorkflowError
@@ -943,9 +951,9 @@ from textual.app import App
 from rich.console import Console
 
 # Local imports
-from claude_tiu.core.project_manager import ProjectManager
-from claude_tiu.models.project import Project
-from claude_tiu.utils.logging_utils import get_logger
+from claude_tui.core.project_manager import ProjectManager
+from claude_tui.models.project import Project
+from claude_tui.utils.logging_utils import get_logger
 
 # Relative imports (avoid when possible)
 from .validation_engine import ValidationEngine
@@ -969,7 +977,7 @@ Before implementing a new feature:
 
 **Step 1: Core Logic**
 ```python
-# src/claude_tiu/core/new_feature.py
+# src/claude_tui/core/new_feature.py
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
@@ -996,8 +1004,8 @@ class NewFeature:
 
 **Step 2: Integration**
 ```python
-# src/claude_tiu/core/project_manager.py
-from claude_tiu.core.new_feature import NewFeature
+# src/claude_tui/core/project_manager.py
+from claude_tui.core.new_feature import NewFeature
 
 class ProjectManager:
     def __init__(self, ...):
@@ -1011,7 +1019,7 @@ class ProjectManager:
 
 **Step 3: CLI Integration**
 ```python
-# src/claude_tiu/cli/commands.py
+# src/claude_tui/cli/commands.py
 @click.command()
 @click.option('--option', help='Feature option')
 def new_feature_command(option: str):
@@ -1025,7 +1033,7 @@ main.add_command(new_feature_command)
 
 **Step 4: TUI Integration**
 ```python
-# src/claude_tiu/tui/screens/new_feature_screen.py
+# src/claude_tui/tui/screens/new_feature_screen.py
 from textual.screen import Screen
 from textual.widgets import Button, Input
 
@@ -1048,7 +1056,7 @@ class NewFeatureScreen(Screen):
 ```python
 # tests/unit/test_new_feature.py
 import pytest
-from claude_tiu.core.new_feature import NewFeature, FeatureConfig
+from claude_tui.core.new_feature import NewFeature, FeatureConfig
 
 class TestNewFeature:
     """Test suite for the new feature."""
@@ -1076,7 +1084,7 @@ class TestNewFeature:
 ```python
 # tests/integration/test_new_feature_integration.py
 import pytest
-from claude_tiu.core.project_manager import ProjectManager
+from claude_tui.core.project_manager import ProjectManager
 
 class TestNewFeatureIntegration:
     """Integration tests for new feature."""
@@ -1104,7 +1112,7 @@ tags: ["framework", "typescript", "modern"]
 metadata:
   author: "Your Name"
   license: "MIT"
-  min_claude_tiu_version: "1.0.0"
+  min_claude_tui_version: "1.0.0"
   
 # Variables for customization
 variables:
@@ -1171,7 +1179,7 @@ files:
       {
         "name": "{project_name}",
         "version": "1.0.0",
-        "description": "Generated by Claude TIU",
+        "description": "Generated by Claude TUI",
         "main": "index.js",
         "scripts": {
           "start": "react-scripts start",
@@ -1231,7 +1239,7 @@ hooks:
       working_dir: "{project_root}"
       
     - name: "initial_commit"
-      command: "git init && git add . && git commit -m 'Initial commit from Claude TIU'"
+      command: "git init && git add . && git commit -m 'Initial commit from Claude TUI'"
       working_dir: "{project_root}"
       
     - name: "setup_development"
@@ -1291,20 +1299,20 @@ mkdir -p templates/category/template-name/example
 **Step 2: Test Template**
 ```bash
 # Test template generation
-python -m claude_tiu.cli create-project \
+python -m claude_tui.cli create-project \
   --template category/template-name \
   --name test-project \
   --output ./test-output
 
 # Validate generated project
-python -m claude_tiu.cli validate-project ./test-output/test-project
+python -m claude_tui.cli validate-project ./test-output/test-project
 ```
 
 **Step 3: Add Template Tests**
 ```python
 # tests/unit/test_templates.py
 import pytest
-from claude_tiu.core.template_manager import TemplateManager
+from claude_tui.core.template_manager import TemplateManager
 
 class TestNewTemplate:
     """Test suite for new template."""
@@ -1428,7 +1436,7 @@ validation:
 
 ### Plugin Architecture
 
-Claude TIU uses a flexible plugin architecture that allows extending functionality without modifying core code. Plugins can add new:
+Claude TUI uses a flexible plugin architecture that allows extending functionality without modifying core code. Plugins can add new:
 
 - Templates and workflows
 - Validation rules  
@@ -1440,7 +1448,7 @@ Claude TIU uses a flexible plugin architecture that allows extending functionali
 #### Plugin Interface
 
 ```python
-# src/claude_tiu/plugins/base.py
+# src/claude_tui/plugins/base.py
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
@@ -1454,11 +1462,11 @@ class PluginMetadata:
     author: str
     license: str
     homepage: Optional[str] = None
-    min_claude_tiu_version: str = "1.0.0"
+    min_claude_tui_version: str = "1.0.0"
     dependencies: List[str] = None
 
 class Plugin(ABC):
-    """Base class for all Claude TIU plugins."""
+    """Base class for all Claude TUI plugins."""
     
     @property
     @abstractmethod
@@ -1502,7 +1510,7 @@ class Plugin(ABC):
 #### 1. Plugin Project Structure
 
 ```
-my-claude-tiu-plugin/
+my-claude-tui-plugin/
 ├── src/
 │   └── my_plugin/
 │       ├── __init__.py
@@ -1533,23 +1541,23 @@ import asyncio
 from pathlib import Path
 from typing import Dict, Any, List
 
-from claude_tiu.plugins.base import Plugin, PluginMetadata
-from claude_tiu.models.template import Template
-from claude_tiu.models.workflow import Workflow
+from claude_tui.plugins.base import Plugin, PluginMetadata
+from claude_tui.models.template import Template
+from claude_tui.models.workflow import Workflow
 
 class MyPlugin(Plugin):
-    """Example plugin for Claude TIU."""
+    """Example plugin for Claude TUI."""
     
     @property
     def metadata(self) -> PluginMetadata:
         return PluginMetadata(
-            name="my-claude-tiu-plugin",
+            name="my-claude-tui-plugin",
             version="1.0.0",
-            description="Example plugin demonstrating Claude TIU extensibility",
+            description="Example plugin demonstrating Claude TUI extensibility",
             author="Your Name",
             license="MIT",
-            homepage="https://github.com/yourname/my-claude-tiu-plugin",
-            min_claude_tiu_version="1.0.0"
+            homepage="https://github.com/yourname/my-claude-tui-plugin",
+            min_claude_tui_version="1.0.0"
         )
     
     async def initialize(self, app_context) -> None:
@@ -1598,8 +1606,8 @@ class MyPlugin(Plugin):
 
 ```python
 # src/my_plugin/templates.py
-from claude_tiu.plugins.base import Plugin
-from claude_tiu.models.template import Template
+from claude_tui.plugins.base import Plugin
+from claude_tui.models.template import Template
 
 class CustomTemplatePlugin(Plugin):
     """Plugin providing custom project templates."""
@@ -1656,7 +1664,7 @@ class CustomTemplatePlugin(Plugin):
                 
                 app = FastAPI(
                     title="{service_name}",
-                    description="Generated by Claude TIU",
+                    description="Generated by Claude TUI",
                     version="1.0.0"
                 )
                 
@@ -1684,8 +1692,8 @@ class CustomTemplatePlugin(Plugin):
 
 ```python
 # src/my_plugin/validation.py
-from claude_tiu.plugins.base import Plugin
-from claude_tiu.models.validation import ValidationRule
+from claude_tui.plugins.base import Plugin
+from claude_tui.models.validation import ValidationRule
 
 class SecurityValidationPlugin(Plugin):
     """Plugin providing security validation rules."""
@@ -1728,7 +1736,7 @@ class SecurityValidationPlugin(Plugin):
 ```python
 # src/my_plugin/cli.py
 import click
-from claude_tiu.plugins.base import Plugin
+from claude_tui.plugins.base import Plugin
 
 class CLIExtensionPlugin(Plugin):
     """Plugin adding custom CLI commands."""
@@ -1771,7 +1779,7 @@ class CLIExtensionPlugin(Plugin):
 # src/my_plugin/tui.py
 from textual.screen import Screen
 from textual.widgets import Button, Label
-from claude_tiu.plugins.base import Plugin
+from claude_tui.plugins.base import Plugin
 
 class CustomScreen(Screen):
     """Custom TUI screen provided by plugin."""
@@ -1804,9 +1812,9 @@ class TUIExtensionPlugin(Plugin):
 from setuptools import setup, find_packages
 
 setup(
-    name="my-claude-tiu-plugin",
+    name="my-claude-tui-plugin",
     version="1.0.0",
-    description="Custom plugin for Claude TIU",
+    description="Custom plugin for Claude TUI",
     author="Your Name",
     author_email="your.email@example.com",
     packages=find_packages("src"),
@@ -1818,10 +1826,10 @@ setup(
         ]
     },
     install_requires=[
-        "claude-tiu>=1.0.0",
+        "claude-tui>=1.0.0",
     ],
     entry_points={
-        "claude_tiu.plugins": [
+        "claude_tui.plugins": [
             "my_plugin = my_plugin.plugin:MyPlugin",
         ],
     },
@@ -1839,28 +1847,28 @@ setup(
 
 ```bash
 # Install from PyPI
-pip install my-claude-tiu-plugin
+pip install my-claude-tui-plugin
 
 # Install from source
-pip install git+https://github.com/yourname/my-claude-tiu-plugin.git
+pip install git+https://github.com/yourname/my-claude-tui-plugin.git
 
 # Install in development mode
-git clone https://github.com/yourname/my-claude-tiu-plugin.git
-cd my-claude-tiu-plugin
+git clone https://github.com/yourname/my-claude-tui-plugin.git
+cd my-claude-tui-plugin
 pip install -e .
 ```
 
 #### 3. Plugin Configuration
 
 ```yaml
-# ~/.claude-tiu/config.yaml
+# ~/.claude-tui/config.yaml
 plugins:
   enabled:
-    - "my-claude-tiu-plugin"
+    - "my-claude-tui-plugin"
     - "another-plugin"
     
   settings:
-    my-claude-tiu-plugin:
+    my-claude-tui-plugin:
       custom_setting: "value"
       enable_feature_x: true
       
@@ -1876,7 +1884,7 @@ plugins:
 # tests/test_plugin.py
 import pytest
 from my_plugin.plugin import MyPlugin
-from claude_tiu.core.app_context import AppContext
+from claude_tui.core.app_context import AppContext
 
 class TestMyPlugin:
     """Test suite for the plugin."""
@@ -1892,7 +1900,7 @@ class TestMyPlugin:
     async def test_plugin_metadata(self, plugin):
         """Test plugin metadata is correct."""
         metadata = plugin.metadata
-        assert metadata.name == "my-claude-tiu-plugin"
+        assert metadata.name == "my-claude-tui-plugin"
         assert metadata.version == "1.0.0"
         
     async def test_templates_loaded(self, plugin):
@@ -1907,20 +1915,20 @@ class TestMyPlugin:
 ```python
 # tests/test_integration.py
 import pytest
-from claude_tiu.core.plugin_manager import PluginManager
-from claude_tiu.core.app_context import AppContext
+from claude_tui.core.plugin_manager import PluginManager
+from claude_tui.core.app_context import AppContext
 
 class TestPluginIntegration:
-    """Integration tests for plugin with Claude TIU."""
+    """Integration tests for plugin with Claude TUI."""
     
     async def test_plugin_registration(self):
         """Test plugin registers correctly."""
         app_context = AppContext()
         plugin_manager = PluginManager(app_context)
         
-        await plugin_manager.load_plugin("my-claude-tiu-plugin")
+        await plugin_manager.load_plugin("my-claude-tui-plugin")
         
-        assert "my-claude-tiu-plugin" in plugin_manager.loaded_plugins
+        assert "my-claude-tui-plugin" in plugin_manager.loaded_plugins
         
     async def test_template_availability(self):
         """Test plugin templates are available in app."""
@@ -1934,7 +1942,7 @@ class TestPluginIntegration:
 
 ### Test Suite Organization
 
-Claude TIU uses pytest for comprehensive testing across multiple layers:
+Claude TUI uses pytest for comprehensive testing across multiple layers:
 
 ```
 tests/
@@ -1978,7 +1986,7 @@ pytest tests/integration/             # Integration tests
 pytest tests/e2e/                     # End-to-end tests
 
 # Run tests with coverage
-pytest --cov=claude_tiu --cov-report=html
+pytest --cov=claude_tui --cov-report=html
 
 # Run tests in parallel (faster)
 pytest -n auto
@@ -1997,7 +2005,7 @@ addopts =
     --strict-markers
     --disable-warnings
     --tb=short
-    --cov=claude_tiu
+    --cov=claude_tui
     --cov-report=term-missing
     --cov-report=html:htmlcov
     --cov-fail-under=80
@@ -2021,9 +2029,9 @@ from pathlib import Path
 import tempfile
 import shutil
 
-from claude_tiu.core.project_manager import ProjectManager
-from claude_tiu.core.ai_interface import AIInterface
-from claude_tiu.models.project import Project
+from claude_tui.core.project_manager import ProjectManager
+from claude_tui.core.ai_interface import AIInterface
+from claude_tui.models.project import Project
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -2076,9 +2084,9 @@ import pytest
 from unittest.mock import AsyncMock, Mock
 from pathlib import Path
 
-from claude_tiu.core.project_manager import ProjectManager
-from claude_tiu.models.project import Project, ProjectConfig
-from claude_tiu.exceptions import ProjectError
+from claude_tui.core.project_manager import ProjectManager
+from claude_tui.models.project import Project, ProjectConfig
+from claude_tui.exceptions import ProjectError
 
 class TestProjectManager:
     """Test suite for ProjectManager."""
@@ -2132,8 +2140,8 @@ import pytest
 from unittest.mock import patch, Mock
 import json
 
-from claude_tiu.core.ai_interface import AIInterface
-from claude_tiu.models.ai_request import AIRequest
+from claude_tui.core.ai_interface import AIInterface
+from claude_tui.models.ai_request import AIRequest
 
 class TestAIInterface:
     """Test suite for AI integration."""
@@ -2143,7 +2151,7 @@ class TestAIInterface:
         config = {"api_key": "test-key"}
         return AIInterface(config)
     
-    @patch('claude_tiu.core.ai_interface.run_subprocess_async')
+    @patch('claude_tui.core.ai_interface.run_subprocess_async')
     async def test_generate_code_success(self, mock_subprocess, ai_interface):
         """Test successful code generation."""
         # Mock subprocess response
@@ -2165,7 +2173,7 @@ class TestAIInterface:
         assert response.code == "print('Hello, World!')"
         assert response.status == "success"
         
-    @patch('claude_tiu.core.ai_interface.run_subprocess_async')
+    @patch('claude_tui.core.ai_interface.run_subprocess_async')
     async def test_generate_code_failure(self, mock_subprocess, ai_interface):
         """Test AI generation failure handling."""
         mock_result = Mock()
@@ -2186,8 +2194,8 @@ class TestAIInterface:
 import pytest
 from pathlib import Path
 
-from claude_tiu.core.validation_engine import ValidationEngine
-from claude_tiu.models.validation import ValidationResult
+from claude_tui.core.validation_engine import ValidationEngine
+from claude_tui.models.validation import ValidationResult
 
 class TestValidationEngine:
     """Test suite for ValidationEngine."""
@@ -2241,8 +2249,8 @@ def another_function():
 import pytest
 from pathlib import Path
 
-from claude_tiu.core.workflow_engine import WorkflowEngine
-from claude_tiu.models.workflow import Workflow
+from claude_tui.core.workflow_engine import WorkflowEngine
+from claude_tui.models.workflow import Workflow
 
 class TestWorkflowIntegration:
     """Integration tests for workflow execution."""
@@ -2321,8 +2329,8 @@ class TestWorkflowIntegration:
 import pytest
 from pathlib import Path
 
-from claude_tiu.core.project_manager import ProjectManager
-from claude_tiu.models.project import ProjectConfig
+from claude_tui.core.project_manager import ProjectManager
+from claude_tui.models.project import ProjectConfig
 
 class TestProjectGeneration:
     """Integration tests for project file generation."""
@@ -2371,7 +2379,7 @@ class TestCLIEndToEnd:
     def test_create_project_command(self, temp_dir):
         """Test project creation via CLI."""
         result = subprocess.run([
-            "python", "-m", "claude_tiu.cli",
+            "python", "-m", "claude_tui.cli",
             "create-project",
             "--name", "cli-test-project",
             "--template", "python-cli",
@@ -2388,7 +2396,7 @@ class TestCLIEndToEnd:
     def test_validate_project_command(self, temp_dir, sample_project):
         """Test project validation via CLI."""
         result = subprocess.run([
-            "python", "-m", "claude_tiu.cli",
+            "python", "-m", "claude_tui.cli",
             "validate",
             str(sample_project.path),
             "--format", "json"
@@ -2408,7 +2416,7 @@ class TestCLIEndToEnd:
 import pytest
 from textual.pilot import Pilot
 
-from claude_tiu.tui.app import ClaudeTIUApp
+from claude_tui.tui.app import ClaudeTIUApp
 
 class TestTUIEndToEnd:
     """End-to-end tests for TUI interface."""
@@ -2450,7 +2458,7 @@ import pytest
 import time
 from pathlib import Path
 
-from claude_tiu.core.project_manager import ProjectManager
+from claude_tui.core.project_manager import ProjectManager
 
 class TestGenerationPerformance:
     """Performance benchmarks for project generation."""
@@ -2488,7 +2496,7 @@ import pytest
 import time
 from pathlib import Path
 
-from claude_tiu.core.validation_engine import ValidationEngine
+from claude_tui.core.validation_engine import ValidationEngine
 
 class TestValidationPerformance:
     """Performance benchmarks for validation."""
@@ -2588,7 +2596,7 @@ async def wait_for_condition(condition, timeout: float = 5.0):
 ```python
 # tests/mocks.py
 from unittest.mock import Mock, AsyncMock
-from claude_tiu.models.ai_request import AIResponse
+from claude_tui.models.ai_request import AIResponse
 
 class MockAIInterface:
     """Mock AI interface for testing."""
@@ -2632,7 +2640,7 @@ def create_mock_project(name: str = "test-project") -> Mock:
 #### 1. Debug Configuration
 
 ```python
-# src/claude_tiu/utils/logging_utils.py
+# src/claude_tui/utils/logging_utils.py
 import logging
 import sys
 from pathlib import Path
@@ -2651,16 +2659,16 @@ def setup_debug_logging(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(log_file or Path.home() / ".claude-tiu" / "debug.log")
+            logging.FileHandler(log_file or Path.home() / ".claude-tui" / "debug.log")
         ]
     )
     
     # Configure specific loggers
     loggers = [
-        "claude_tiu.core",
-        "claude_tiu.tui",
-        "claude_tiu.cli",
-        "claude_tiu.integrations"
+        "claude_tui.core",
+        "claude_tui.tui",
+        "claude_tui.cli",
+        "claude_tui.integrations"
     ]
     
     for logger_name in loggers:
@@ -2669,10 +2677,10 @@ def setup_debug_logging(
     
     if include_ai_interactions:
         # Special handler for AI interactions
-        ai_logger = logging.getLogger("claude_tiu.ai_interactions")
+        ai_logger = logging.getLogger("claude_tui.ai_interactions")
         ai_handler = logging.FileHandler(
             log_file.parent / "ai_interactions.log" if log_file 
-            else Path.home() / ".claude-tiu" / "ai_interactions.log"
+            else Path.home() / ".claude-tui" / "ai_interactions.log"
         )
         ai_handler.setFormatter(
             logging.Formatter('%(asctime)s - AI - %(levelname)s - %(message)s')
@@ -2700,9 +2708,9 @@ PYTHONASYNCIODEBUG=1
 #### 3. Debug CLI Options
 
 ```python
-# src/claude_tiu/cli/commands.py
+# src/claude_tui/cli/commands.py
 import click
-from claude_tiu.utils.logging_utils import setup_debug_logging
+from claude_tui.utils.logging_utils import setup_debug_logging
 
 @click.group()
 @click.option('--debug', is_flag=True, help='Enable debug mode')
@@ -2710,7 +2718,7 @@ from claude_tiu.utils.logging_utils import setup_debug_logging
 @click.option('--trace-ai', is_flag=True, help='Trace AI interactions')
 @click.pass_context
 def main(ctx, debug, verbose, trace_ai):
-    """Claude TIU main CLI."""
+    """Claude TUI main CLI."""
     if debug:
         setup_debug_logging(
             level="DEBUG",
@@ -2726,7 +2734,7 @@ def main(ctx, debug, verbose, trace_ai):
 #### 1. Project Manager Debugging
 
 ```python
-# src/claude_tiu/core/project_manager.py
+# src/claude_tui/core/project_manager.py
 import logging
 from typing import Any, Dict
 
@@ -2784,14 +2792,14 @@ class ProjectManager:
 #### 2. AI Interface Debugging
 
 ```python
-# src/claude_tiu/core/ai_interface.py
+# src/claude_tui/core/ai_interface.py
 import logging
 import json
 import time
 from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
-ai_logger = logging.getLogger("claude_tiu.ai_interactions")
+ai_logger = logging.getLogger("claude_tui.ai_interactions")
 
 class AIInterface:
     """AI interface with comprehensive debugging."""
@@ -2860,13 +2868,13 @@ class AIInterface:
 #### 3. Validation Engine Debugging
 
 ```python
-# src/claude_tiu/core/validation_engine.py
+# src/claude_tui/core/validation_engine.py
 import logging
 from typing import List, Dict, Any
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
-validation_logger = logging.getLogger("claude_tiu.validation")
+validation_logger = logging.getLogger("claude_tui.validation")
 
 class ValidationEngine:
     """Validation engine with debug instrumentation."""
@@ -2938,13 +2946,13 @@ class ValidationEngine:
 #### 1. Workflow Execution Debugging
 
 ```python
-# src/claude_tiu/core/workflow_engine.py
+# src/claude_tui/core/workflow_engine.py
 import logging
 from typing import Dict, Any
 import asyncio
 
 logger = logging.getLogger(__name__)
-workflow_logger = logging.getLogger("claude_tiu.workflows")
+workflow_logger = logging.getLogger("claude_tui.workflows")
 
 class WorkflowEngine:
     """Workflow engine with debug instrumentation."""
@@ -3046,7 +3054,7 @@ class WorkflowEngine:
 #### 1. TUI Screen Debugging
 
 ```python
-# src/claude_tiu/tui/screens/project_wizard.py
+# src/claude_tui/tui/screens/project_wizard.py
 import logging
 from textual.screen import Screen
 from textual.widgets import Input, Select, Button
@@ -3111,7 +3119,7 @@ class ProjectWizardScreen(Screen):
 #### 2. Widget State Debugging
 
 ```python
-# src/claude_tiu/tui/widgets/progress_widget.py
+# src/claude_tui/tui/widgets/progress_widget.py
 import logging
 from textual.widget import Widget
 from rich.progress import Progress, TaskID
@@ -3176,7 +3184,7 @@ class ProgressWidget(Widget):
 #### 1. Performance Profiling
 
 ```python
-# src/claude_tiu/utils/profiling.py
+# src/claude_tui/utils/profiling.py
 import cProfile
 import pstats
 import functools
@@ -3228,7 +3236,7 @@ async def debug_ai_generation(request):
 #### 2. Memory Usage Tracking
 
 ```python
-# src/claude_tiu/utils/memory_debug.py
+# src/claude_tui/utils/memory_debug.py
 import psutil
 import logging
 from typing import Dict, Any
@@ -3285,7 +3293,7 @@ def track_memory(operation_name: str):
 #### 3. State Inspection Tools
 
 ```python
-# src/claude_tiu/utils/debug_tools.py
+# src/claude_tui/utils/debug_tools.py
 import json
 import logging
 from typing import Any, Dict
@@ -3356,9 +3364,9 @@ def debug_project_state(project_manager):
     StateInspector.dump_object_state(project_manager, "ProjectManager")
     
     # Save snapshot for later analysis
-    snapshot_path = Path.home() / ".claude-tiu" / "debug" / "project_manager_state.json"
+    snapshot_path = Path.home() / ".claude-tui" / "debug" / "project_manager_state.json"
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     StateInspector.save_state_snapshot(project_manager, snapshot_path)
 ```
 
-This comprehensive developer guide provides everything needed to understand, contribute to, and extend Claude TIU effectively.
+This comprehensive developer guide provides everything needed to understand, contribute to, and extend Claude TUI effectively.

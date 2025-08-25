@@ -1,4 +1,4 @@
-# claude-tiu - Projekt Konzept
+# claude-tui - Projekt Konzept
 
 # Auto-Coding Projektmanager Tool - Entwicklungsauftrag
 

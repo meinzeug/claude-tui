@@ -16,7 +16,7 @@
         }
       ]
     },
-    "description": "Claude-TIU Production Monitoring Dashboard",
+    "description": "Claude-TUI Production Monitoring Dashboard",
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
@@ -79,7 +79,7 @@
         "pluginVersion": "9.0.0",
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(claude_tiu_http_request_duration_seconds_bucket[5m]))",
+            "expr": "histogram_quantile(0.95, rate(claude_tui_http_request_duration_seconds_bucket[5m]))",
             "interval": "",
             "legendFormat": "95th percentile",
             "refId": "A"
@@ -145,7 +145,7 @@
         "pluginVersion": "9.0.0",
         "targets": [
           {
-            "expr": "kube_deployment_status_replicas_available{deployment=\"claude-tiu-app\"}",
+            "expr": "kube_deployment_status_replicas_available{deployment=\"claude-tui-app\"}",
             "interval": "",
             "legendFormat": "Available Replicas",
             "refId": "A"
@@ -211,7 +211,7 @@
         "pluginVersion": "9.0.0",
         "targets": [
           {
-            "expr": "rate(claude_tiu_http_requests_total{status=~\"5..\"}[5m]) / rate(claude_tiu_http_requests_total[5m]) * 100",
+            "expr": "rate(claude_tui_http_requests_total{status=~\"5..\"}[5m]) / rate(claude_tui_http_requests_total[5m]) * 100",
             "interval": "",
             "legendFormat": "Error Rate",
             "refId": "A"
@@ -224,7 +224,7 @@
     "refresh": "5s",
     "schemaVersion": 36,
     "style": "dark",
-    "tags": ["claude-tiu", "production", "monitoring"],
+    "tags": ["claude-tui", "production", "monitoring"],
     "templating": {
       "list": []
     },
@@ -234,8 +234,8 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "Claude-TIU Production Dashboard",
-    "uid": "claude-tiu-prod",
+    "title": "Claude-TUI Production Dashboard",
+    "uid": "claude-tui-prod",
     "version": 1,
     "weekStart": ""
   }

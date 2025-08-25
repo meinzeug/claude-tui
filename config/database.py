@@ -107,8 +107,8 @@ class DatabaseConfigurationManager:
         """Build production database URL."""
         host = os.getenv('DB_HOST', 'localhost')
         port = os.getenv('DB_PORT', '5432')
-        database = os.getenv('DB_NAME', 'claude_tiu_prod')
-        username = os.getenv('DB_USER', 'claude_tiu')
+        database = os.getenv('DB_NAME', 'claude_tui_prod')
+        username = os.getenv('DB_USER', 'claude_tui')
         password = os.getenv('DB_PASSWORD')
         
         if not password:
@@ -120,8 +120,8 @@ class DatabaseConfigurationManager:
         """Build staging database URL."""
         host = os.getenv('DB_HOST', 'localhost')
         port = os.getenv('DB_PORT', '5432')
-        database = os.getenv('DB_NAME', 'claude_tiu_staging')
-        username = os.getenv('DB_USER', 'claude_tiu')
+        database = os.getenv('DB_NAME', 'claude_tui_staging')
+        username = os.getenv('DB_USER', 'claude_tui')
         password = os.getenv('DB_PASSWORD')
         
         if not password:
@@ -138,12 +138,12 @@ class DatabaseConfigurationManager:
         """Build development database URL."""
         # Use local PostgreSQL or SQLite
         if os.getenv('USE_SQLITE', 'false').lower() == 'true':
-            return "sqlite+aiosqlite:///./claude_tiu_dev.db"
+            return "sqlite+aiosqlite:///./claude_tui_dev.db"
         else:
             host = os.getenv('DB_HOST', 'localhost')
             port = os.getenv('DB_PORT', '5432')
-            database = os.getenv('DB_NAME', 'claude_tiu_dev')
-            username = os.getenv('DB_USER', 'claude_tiu')
+            database = os.getenv('DB_NAME', 'claude_tui_dev')
+            username = os.getenv('DB_USER', 'claude_tui')
             password = os.getenv('DB_PASSWORD', 'development')
             
             return f"postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
@@ -182,7 +182,7 @@ class DatabaseConfigurationManager:
             # Security settings
             connect_args={
                 'server_settings': {
-                    'application_name': 'claude-tiu-prod',
+                    'application_name': 'claude-tui-prod',
                     'jit': 'off',  # Disable JIT for predictable performance
                 },
                 'command_timeout': 60,
@@ -218,7 +218,7 @@ class DatabaseConfigurationManager:
             # Security settings
             connect_args={
                 'server_settings': {
-                    'application_name': 'claude-tiu-staging',
+                    'application_name': 'claude-tui-staging',
                 },
                 'command_timeout': 120,
                 'ssl': 'prefer',
@@ -253,7 +253,7 @@ class DatabaseConfigurationManager:
             # Security settings (relaxed for development)
             connect_args={
                 'server_settings': {
-                    'application_name': 'claude-tiu-dev',
+                    'application_name': 'claude-tui-dev',
                 },
                 'command_timeout': 300,  # 5 minutes for debugging
             } if 'postgresql' in self.get_database_url() else {},

@@ -2,9 +2,9 @@
 
 ## Interactive API Documentation
 
-**🌐 Try it Live:** [https://api.claude-tiu.dev/docs](https://api.claude-tiu.dev/docs)  
+**🌐 Try it Live:** [https://api.claude-tui.dev/docs](https://api.claude-tui.dev/docs)  
 **📋 OpenAPI Spec:** [Download YAML](./openapi-specification.yaml)  
-**🔗 Postman Collection:** [Download Collection](https://api.claude-tiu.dev/postman)
+**🔗 Postman Collection:** [Download Collection](https://api.claude-tui.dev/postman)
 
 ---
 
@@ -27,15 +27,15 @@
 
 | Environment | Base URL | Description |
 |-------------|----------|-------------|
-| Production | `https://api.claude-tiu.dev/v1` | Production API server |
-| Staging | `https://staging-api.claude-tiu.dev/v1` | Staging environment |
+| Production | `https://api.claude-tui.dev/v1` | Production API server |
+| Staging | `https://staging-api.claude-tui.dev/v1` | Staging environment |
 | Local | `http://localhost:8000/api/v1` | Local development |
 
 ### Quick Test
 
 ```bash
 # Health check (no authentication required)
-curl -X GET "https://api.claude-tiu.dev/v1/health"
+curl -X GET "https://api.claude-tui.dev/v1/health"
 
 # Expected response:
 {
@@ -56,7 +56,7 @@ Claude-TIU uses JWT tokens for authentication. Obtain a token via the login endp
 
 ```bash
 # Login to get JWT token
-curl -X POST "https://api.claude-tiu.dev/v1/auth/login" \
+curl -X POST "https://api.claude-tui.dev/v1/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "developer@company.com",
@@ -85,7 +85,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/auth/login" \
 Include the token in the Authorization header for all API requests:
 
 ```bash
-curl -X GET "https://api.claude-tiu.dev/v1/projects" \
+curl -X GET "https://api.claude-tui.dev/v1/projects" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -94,7 +94,7 @@ curl -X GET "https://api.claude-tiu.dev/v1/projects" \
 For service-to-service communication, use API keys:
 
 ```bash
-curl -X GET "https://api.claude-tiu.dev/v1/projects" \
+curl -X GET "https://api.claude-tui.dev/v1/projects" \
   -H "X-API-Key: your-api-key-here"
 ```
 
@@ -103,7 +103,7 @@ curl -X GET "https://api.claude-tiu.dev/v1/projects" \
 Refresh expired tokens using the refresh endpoint:
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/auth/refresh" \
+curl -X POST "https://api.claude-tui.dev/v1/auth/refresh" \
   -H "Content-Type: application/json" \
   -d '{
     "refresh_token": "your-refresh-token-here"
@@ -124,7 +124,7 @@ Create an AI-powered development project with intelligent scaffolding:
 **Rate Limit:** 5 requests/minute
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/projects" \
+curl -X POST "https://api.claude-tui.dev/v1/projects" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -183,11 +183,11 @@ curl -X POST "https://api.claude-tiu.dev/v1/projects" \
 
 ```bash
 # Get all projects with pagination
-curl -X GET "https://api.claude-tiu.dev/v1/projects?page=1&page_size=20" \
+curl -X GET "https://api.claude-tui.dev/v1/projects?page=1&page_size=20" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # Filter by type and status
-curl -X GET "https://api.claude-tiu.dev/v1/projects?type=fastapi&status=active&page=1" \
+curl -X GET "https://api.claude-tui.dev/v1/projects?type=fastapi&status=active&page=1" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -221,7 +221,7 @@ curl -X GET "https://api.claude-tiu.dev/v1/projects?type=fastapi&status=active&p
 **Endpoint:** `POST /projects/{project_id}/validate`
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/projects/proj-ecom-abc123/validate" \
+curl -X POST "https://api.claude-tui.dev/v1/projects/proj-ecom-abc123/validate" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -272,7 +272,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/projects/proj-ecom-abc123/validate" 
 **Rate Limit:** 10 requests/minute
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/ai/code/generate" \
+curl -X POST "https://api.claude-tui.dev/v1/ai/code/generate" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -323,7 +323,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/ai/code/generate" \
 **Endpoint:** `POST /ai/code/review`
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/ai/code/review" \
+curl -X POST "https://api.claude-tui.dev/v1/ai/code/review" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -377,7 +377,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/ai/code/review" \
 **Rate Limit:** 10 requests/minute
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/tasks" \
+curl -X POST "https://api.claude-tui.dev/v1/tasks" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -430,7 +430,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/tasks" \
 **Endpoint:** `POST /tasks/{task_id}/execute`
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/tasks/task-user-mgmt-xyz789/execute" \
+curl -X POST "https://api.claude-tui.dev/v1/tasks/task-user-mgmt-xyz789/execute" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -451,7 +451,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/tasks/task-user-mgmt-xyz789/execute"
   "progress": 0.0,
   "current_step": "analyzing_requirements",
   "agents_assigned": ["coder-001", "tester-002", "reviewer-003"],
-  "monitoring_url": "wss://api.claude-tiu.dev/v1/ws/tasks/task-user-mgmt-xyz789/status"
+  "monitoring_url": "wss://api.claude-tui.dev/v1/ws/tasks/task-user-mgmt-xyz789/status"
 }
 ```
 
@@ -462,7 +462,7 @@ curl -X POST "https://api.claude-tiu.dev/v1/tasks/task-user-mgmt-xyz789/execute"
 **Endpoint:** `POST /validation/analyze`
 
 ```bash
-curl -X POST "https://api.claude-tiu.dev/v1/validation/analyze" \
+curl -X POST "https://api.claude-tui.dev/v1/validation/analyze" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -515,13 +515,13 @@ curl -X POST "https://api.claude-tiu.dev/v1/validation/analyze" \
 
 ```python
 import asyncio
-from claude_tiu_sdk import ClaudeTIUClient, ProjectConfig, TaskConfig
+from claude_tui_sdk import ClaudeTIUClient, ProjectConfig, TaskConfig
 
 async def main():
     # Initialize client
     client = ClaudeTIUClient(
         api_key="your-api-key",
-        base_url="https://api.claude-tiu.dev/v1"
+        base_url="https://api.claude-tui.dev/v1"
     )
     
     # Create project
@@ -561,11 +561,11 @@ asyncio.run(main())
 ### JavaScript/TypeScript SDK
 
 ```typescript
-import { ClaudeTIUClient, ProjectType } from '@claude-tiu/sdk';
+import { ClaudeTIUClient, ProjectType } from '@claude-tui/sdk';
 
 const client = new ClaudeTIUClient({
   apiKey: process.env.CLAUDE_TIU_API_KEY,
-  baseUrl: 'https://api.claude-tiu.dev/v1'
+  baseUrl: 'https://api.claude-tui.dev/v1'
 });
 
 async function createReactApp() {
@@ -622,7 +622,7 @@ createReactApp();
 #!/bin/bash
 
 # Set base URL
-BASE_URL="https://api.claude-tiu.dev/v1"
+BASE_URL="https://api.claude-tui.dev/v1"
 
 # 1. Register new user
 curl -X POST "$BASE_URL/auth/register" \
@@ -661,7 +661,7 @@ curl -X POST "$BASE_URL/projects" \
 
 # Create and execute a complete development workflow
 TOKEN="your-jwt-token-here"
-BASE_URL="https://api.claude-tiu.dev/v1"
+BASE_URL="https://api.claude-tui.dev/v1"
 
 # 1. Create workflow
 WORKFLOW_ID=$(curl -s -X POST "$BASE_URL/workflows" \
@@ -885,7 +885,7 @@ def handle_api_errors(response):
 try:
     session = create_session_with_retries()
     response = session.post(
-        "https://api.claude-tiu.dev/v1/projects",
+        "https://api.claude-tui.dev/v1/projects",
         headers={"Authorization": f"Bearer {token}"},
         json=project_data
     )
@@ -915,7 +915,7 @@ Connect to receive live updates about project creation and modification:
 
 ```javascript
 const ws = new WebSocket(
-  'wss://api.claude-tiu.dev/v1/ws/projects/proj-abc123/progress',
+  'wss://api.claude-tui.dev/v1/ws/projects/proj-abc123/progress',
   ['token', 'your-jwt-token-here']
 );
 
@@ -948,7 +948,7 @@ ws.onmessage = function(event) {
 
 ```javascript
 const taskWs = new WebSocket(
-  'wss://api.claude-tiu.dev/v1/ws/tasks/task-xyz789/status',
+  'wss://api.claude-tui.dev/v1/ws/tasks/task-xyz789/status',
   ['token', 'your-jwt-token-here']
 );
 
@@ -984,7 +984,7 @@ taskWs.onmessage = function(event) {
 
 ```javascript
 const coordinationWs = new WebSocket(
-  'wss://api.claude-tiu.dev/v1/ws/workflows/workflow-123/coordination'
+  'wss://api.claude-tui.dev/v1/ws/workflows/workflow-123/coordination'
 );
 
 coordinationWs.onmessage = function(event) {
@@ -1008,52 +1008,52 @@ coordinationWs.onmessage = function(event) {
 
 | Language | Package | Installation | Documentation |
 |----------|---------|-------------|---------------|
-| Python | `claude-tiu-sdk` | `pip install claude-tiu-sdk` | [Python Docs](https://docs.claude-tiu.dev/sdk/python) |
-| JavaScript/TypeScript | `@claude-tiu/sdk` | `npm install @claude-tiu/sdk` | [JS/TS Docs](https://docs.claude-tiu.dev/sdk/javascript) |
-| Go | `github.com/claude-tiu/go-sdk` | `go get github.com/claude-tiu/go-sdk` | [Go Docs](https://docs.claude-tiu.dev/sdk/go) |
-| Java | `com.claudetiu:claude-tiu-sdk` | Maven/Gradle | [Java Docs](https://docs.claude-tiu.dev/sdk/java) |
+| Python | `claude-tui-sdk` | `pip install claude-tui-sdk` | [Python Docs](https://docs.claude-tui.dev/sdk/python) |
+| JavaScript/TypeScript | `@claude-tui/sdk` | `npm install @claude-tui/sdk` | [JS/TS Docs](https://docs.claude-tui.dev/sdk/javascript) |
+| Go | `github.com/claude-tui/go-sdk` | `go get github.com/claude-tui/go-sdk` | [Go Docs](https://docs.claude-tui.dev/sdk/go) |
+| Java | `com.claudetiu:claude-tui-sdk` | Maven/Gradle | [Java Docs](https://docs.claude-tui.dev/sdk/java) |
 
 ### Community SDKs
 
 | Language | Repository | Maintainer | Status |
 |----------|------------|------------|--------|
-| Ruby | [claude-tiu-ruby](https://github.com/community/claude-tiu-ruby) | @rubydev | Active |
-| PHP | [claude-tiu-php](https://github.com/community/claude-tiu-php) | @phpmaster | Active |
-| C# | [ClaudeTIU.NET](https://github.com/community/claude-tiu-dotnet) | @dotnetguru | Beta |
-| Rust | [claude-tiu-rs](https://github.com/community/claude-tiu-rust) | @rustacean | Alpha |
+| Ruby | [claude-tui-ruby](https://github.com/community/claude-tui-ruby) | @rubydev | Active |
+| PHP | [claude-tui-php](https://github.com/community/claude-tui-php) | @phpmaster | Active |
+| C# | [ClaudeTIU.NET](https://github.com/community/claude-tui-dotnet) | @dotnetguru | Beta |
+| Rust | [claude-tui-rs](https://github.com/community/claude-tui-rust) | @rustacean | Alpha |
 
 ### CLI Tool
 
 ```bash
 # Install CLI
-npm install -g @claude-tiu/cli
+npm install -g @claude-tui/cli
 
 # Configure
-claude-tiu config set api-key YOUR_API_KEY
-claude-tiu config set base-url https://api.claude-tiu.dev/v1
+claude-tui config set api-key YOUR_API_KEY
+claude-tui config set base-url https://api.claude-tui.dev/v1
 
 # Create project
-claude-tiu projects create \
+claude-tui projects create \
   --name "My API Project" \
   --type fastapi \
   --template advanced-api \
   --features auth,database,testing
 
 # Execute task
-claude-tiu tasks create \
+claude-tui tasks create \
   --name "Implement user management" \
   --type code_generation \
   --config features=crud,auth,validation
 
 # Monitor progress
-claude-tiu tasks watch task-abc123
+claude-tui tasks watch task-abc123
 ```
 
 ### Postman Collection
 
 Import our comprehensive Postman collection for easy API testing:
 
-**Import URL:** `https://api.claude-tiu.dev/postman/collection.json`
+**Import URL:** `https://api.claude-tui.dev/postman/collection.json`
 
 The collection includes:
 - All API endpoints with example requests
@@ -1069,15 +1069,15 @@ Generate client SDKs from our OpenAPI specification:
 ```bash
 # Generate Python client
 openapi-generator generate \
-  -i https://api.claude-tiu.dev/v1/openapi.json \
+  -i https://api.claude-tui.dev/v1/openapi.json \
   -g python \
-  -o ./claude-tiu-python-client
+  -o ./claude-tui-python-client
 
 # Generate JavaScript client  
 openapi-generator generate \
-  -i https://api.claude-tiu.dev/v1/openapi.json \
+  -i https://api.claude-tui.dev/v1/openapi.json \
   -g javascript \
-  -o ./claude-tiu-js-client
+  -o ./claude-tui-js-client
 ```
 
 ---
@@ -1086,17 +1086,17 @@ openapi-generator generate \
 
 ### Documentation Links
 
-- **🏠 Main Documentation:** [https://docs.claude-tiu.dev](https://docs.claude-tiu.dev)
-- **📖 API Reference:** [https://api.claude-tiu.dev/docs](https://api.claude-tiu.dev/docs)
-- **🔧 SDK Documentation:** [https://docs.claude-tiu.dev/sdks](https://docs.claude-tiu.dev/sdks)
-- **📊 Status Page:** [https://status.claude-tiu.dev](https://status.claude-tiu.dev)
+- **🏠 Main Documentation:** [https://docs.claude-tui.dev](https://docs.claude-tui.dev)
+- **📖 API Reference:** [https://api.claude-tui.dev/docs](https://api.claude-tui.dev/docs)
+- **🔧 SDK Documentation:** [https://docs.claude-tui.dev/sdks](https://docs.claude-tui.dev/sdks)
+- **📊 Status Page:** [https://status.claude-tui.dev](https://status.claude-tui.dev)
 
 ### Support Channels
 
-- **📧 Email Support:** support@claude-tiu.dev
-- **💬 Discord Community:** [https://discord.gg/claude-tiu](https://discord.gg/claude-tiu)  
-- **🐛 Issue Tracker:** [https://github.com/claude-tiu/issues](https://github.com/claude-tiu/issues)
-- **📚 Knowledge Base:** [https://help.claude-tiu.dev](https://help.claude-tiu.dev)
+- **📧 Email Support:** support@claude-tui.dev
+- **💬 Discord Community:** [https://discord.gg/claude-tui](https://discord.gg/claude-tui)  
+- **🐛 Issue Tracker:** [https://github.com/claude-tui/issues](https://github.com/claude-tui/issues)
+- **📚 Knowledge Base:** [https://help.claude-tui.dev](https://help.claude-tui.dev)
 
 ### Rate Limiting & Fair Use
 
@@ -1106,4 +1106,4 @@ We implement intelligent rate limiting to ensure optimal performance for all use
 
 **Happy Coding with Claude-TIU! 🚀**
 
-*This API reference is automatically updated with each release. For the latest version, visit our [documentation site](https://docs.claude-tiu.dev).*
+*This API reference is automatically updated with each release. For the latest version, visit our [documentation site](https://docs.claude-tui.dev).*

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automated Security Audit Script for claude-tiu
+Automated Security Audit Script for claude-tui
 Performs comprehensive security scanning and generates reports.
 """
 

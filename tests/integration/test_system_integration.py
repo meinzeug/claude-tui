@@ -1,5 +1,5 @@
 """
-Comprehensive System Integration Tests for Claude TIU.
+Comprehensive System Integration Tests for Claude TUI.
 
 Tests the integration of all major components:
 - Authentication System with JWT refresh tokens
@@ -18,20 +18,20 @@ from pathlib import Path
 from unittest.mock import Mock, AsyncMock, patch
 
 # Core components
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.services.validation_service import ValidationService, ValidationLevel
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.services.validation_service import ValidationService, ValidationLevel
 
 # Authentication components
 from auth.jwt_auth import JWTAuthenticator, TokenResponse
 from auth.models import User, Session
 
 # Validation components  
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.validation.placeholder_detector import PlaceholderDetector
-from claude_tiu.validation.semantic_analyzer import SemanticAnalyzer
-from claude_tiu.validation.auto_completion_engine import AutoCompletionEngine
-from claude_tiu.validation.execution_tester import ExecutionTester
-from claude_tiu.validation.progress_validator import ValidationSeverity
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.validation.placeholder_detector import PlaceholderDetector
+from claude_tui.validation.semantic_analyzer import SemanticAnalyzer
+from claude_tui.validation.auto_completion_engine import AutoCompletionEngine
+from claude_tui.validation.execution_tester import ExecutionTester
+from claude_tui.validation.progress_validator import ValidationSeverity
 
 # API components
 from api.v1.validation import (
@@ -40,9 +40,9 @@ from api.v1.validation import (
 )
 
 # TUI components
-from claude_tiu.ui.main_app import ClaudeTIUApp
-from claude_tiu.ui.screens.file_picker import FilePickerScreen
-from claude_tiu.ui.screens.clone_project_dialog import CloneProjectDialog
+from claude_tui.ui.main_app import ClaudeTIUApp
+from claude_tui.ui.screens.file_picker import FilePickerScreen
+from claude_tui.ui.screens.clone_project_dialog import CloneProjectDialog
 
 
 @pytest.fixture
@@ -158,7 +158,7 @@ def problematic_function():
         await engine.initialize()
         
         # Create a mock validation issue
-        from claude_tiu.validation.progress_validator import ValidationIssue
+        from claude_tui.validation.progress_validator import ValidationIssue
         
         issue = ValidationIssue(
             id="test_placeholder",

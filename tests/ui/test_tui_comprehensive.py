@@ -1,4 +1,4 @@
-"""Comprehensive TUI component tests for claude-tiu using Textual framework."""
+"""Comprehensive TUI component tests for claude-tui using Textual framework."""
 
 import pytest
 import asyncio

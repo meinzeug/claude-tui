@@ -524,7 +524,7 @@ def format_health_results(results: Dict[str, Any], output_format: str = 'human')
             'unhealthy': 0
         }.get(results.get('overall_status'), 0)
         
-        metrics.append(f'claude_tiu_database_health{{environment="{results.get("environment", "unknown")}"}} {status_value}')
+        metrics.append(f'claude_tui_database_health{{environment="{results.get("environment", "unknown")}"}} {status_value}')
         
         # Individual check statuses
         for check_name, check_result in results.get('checks', {}).items():
@@ -534,7 +534,7 @@ def format_health_results(results: Dict[str, Any], output_format: str = 'human')
                 'unhealthy': 0
             }.get(check_result.get('status'), 0)
             
-            metrics.append(f'claude_tiu_database_check_health{{check="{check_name}",environment="{results.get("environment", "unknown")}"}} {check_status_value}')
+            metrics.append(f'claude_tui_database_check_health{{check="{check_name}",environment="{results.get("environment", "unknown")}"}} {check_status_value}')
         
         return '\n'.join(metrics)
     

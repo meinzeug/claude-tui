@@ -2,7 +2,7 @@
 UI tests for TUI components using Textual testing framework.
 
 Tests the terminal user interface components, screens, and interactions
-for the claude-tiu application.
+for the claude-tui application.
 """
 
 import pytest

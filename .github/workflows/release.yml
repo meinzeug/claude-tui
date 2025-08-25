@@ -81,7 +81,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -117,9 +117,9 @@ jobs:
 
       - name: 🧪 Run Complete Test Suite
         run: |
-          pytest --cov=src/claude_tiu --cov-report=term --cov-report=xml --cov-fail-under=80
+          pytest --cov=src/claude_tui --cov-report=term --cov-report=xml --cov-fail-under=80
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
 
       - name: 🔒 Security Scan
@@ -279,7 +279,7 @@ jobs:
           ### 📦 Installation
           ```bash
           # PyPI
-          pip install claude-tiu==${{ needs.validate-version.outputs.version }}
+          pip install claude-tui==${{ needs.validate-version.outputs.version }}
           
           # Docker
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}
@@ -361,7 +361,7 @@ jobs:
           find docs/ -name "*.md" -exec sed -i "s/version: .*/version: $VERSION/g" {} \;
           
           # Update installation commands
-          sed -i "s/claude-tiu==[0-9.]*/claude-tiu==$VERSION/g" docs/installation.md || true
+          sed -i "s/claude-tui==[0-9.]*/claude-tui==$VERSION/g" docs/installation.md || true
 
       - name: 📤 Commit Documentation Updates
         run: |
@@ -381,7 +381,7 @@ jobs:
       - name: 📢 Send Release Notification
         run: |
           echo "🎉 Release ${{ needs.validate-version.outputs.version }} completed!"
-          echo "📦 PyPI: https://pypi.org/project/claude-tiu/${{ needs.validate-version.outputs.version }}/"
+          echo "📦 PyPI: https://pypi.org/project/claude-tui/${{ needs.validate-version.outputs.version }}/"
           echo "🐳 Docker: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}"
           echo "📋 Release Notes: https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-version.outputs.version }}"
 

@@ -60,7 +60,7 @@ class GitHubOAuthProvider(OAuthProvider):
             headers = {
                 'Authorization': f'Bearer {access_token}',
                 'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'claude-tiu-app'
+                'User-Agent': 'claude-tui-app'
             }
             
             # Get user profile
@@ -150,7 +150,7 @@ class GitHubOAuthProvider(OAuthProvider):
             headers = {
                 'Authorization': f'Bearer {access_token}',
                 'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'claude-tiu-app'
+                'User-Agent': 'claude-tui-app'
             }
             
             response = await self.http_client.get(
@@ -189,7 +189,7 @@ class GitHubOAuthProvider(OAuthProvider):
             headers = {
                 'Authorization': f'Bearer {access_token}',
                 'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'claude-tiu-app'
+                'User-Agent': 'claude-tui-app'
             }
             
             params = {

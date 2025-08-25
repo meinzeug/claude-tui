@@ -51,7 +51,7 @@ src/core/
 
 #### 3. **Anti-Hallucination System** ✅ (Weltneuheit)
 ```
-src/claude_tiu/validation/
+src/claude_tui/validation/
 ├── anti_hallucination_engine.py    # Hauptvalidierungsengine
 ├── placeholder_detector.py         # Platzhalter-Erkennung (95%+)
 ├── semantic_analyzer.py           # AST-basierte Analyse
@@ -253,7 +253,7 @@ src/database/
 1. **Docker Container:** Production-ready Images
 2. **Kubernetes:** Auto-scaling Manifests
 3. **Standalone Binary:** PyInstaller Build
-4. **Python Package:** pip install claude-tiu
+4. **Python Package:** pip install claude-tui
 
 ### **Production Monitoring** ✅
 - **Health Checks:** Comprehensive Service Monitoring

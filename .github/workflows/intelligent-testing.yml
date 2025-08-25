@@ -97,7 +97,7 @@ jobs:
           -n auto \
           --dist=loadfile
       env:
-        CLAUDE_TIU_ENV: test
+        CLAUDE_TUI_ENV: test
         CLAUDE_API_KEY: test-key
     
     - name: Upload test results
@@ -127,7 +127,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: test_password
           POSTGRES_USER: test_user
-          POSTGRES_DB: test_claude_tiu
+          POSTGRES_DB: test_claude_tui
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -164,10 +164,10 @@ jobs:
     
     - name: Setup test database
       run: |
-        export DATABASE_URL="postgresql://test_user:test_password@localhost:5432/test_claude_tiu"
+        export DATABASE_URL="postgresql://test_user:test_password@localhost:5432/test_claude_tui"
         python scripts/init_database.py
       env:
-        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_claude_tiu
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_claude_tui
     
     - name: Run integration tests
       run: |
@@ -178,9 +178,9 @@ jobs:
           --timeout=60 \
           --maxfail=3
       env:
-        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_claude_tiu
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_claude_tui
         REDIS_URL: redis://localhost:6379/0
-        CLAUDE_TIU_ENV: integration_test
+        CLAUDE_TUI_ENV: integration_test
     
     - name: Upload integration test results
       uses: actions/upload-artifact@v3

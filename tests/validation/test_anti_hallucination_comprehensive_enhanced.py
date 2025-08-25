@@ -8,12 +8,12 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 
-from claude_tiu.validation.anti_hallucination_engine import AntiHallucinationEngine
-from claude_tiu.validation.real_time_validator import RealTimeValidator
-from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity, ValidationIssue
-from claude_tiu.models.task import DevelopmentTask, TaskType, TaskPriority
-from claude_tiu.models.project import Project
-from claude_tiu.core.config_manager import ConfigManager
+from claude_tui.validation.anti_hallucination_engine import AntiHallucinationEngine
+from claude_tui.validation.real_time_validator import RealTimeValidator
+from claude_tui.validation.progress_validator import ValidationResult, ValidationSeverity, ValidationIssue
+from claude_tui.models.task import DevelopmentTask, TaskType, TaskPriority
+from claude_tui.models.project import Project
+from claude_tui.core.config_manager import ConfigManager
 
 
 @pytest.fixture
@@ -34,8 +34,8 @@ def mock_config_manager():
 @pytest.fixture
 def anti_hallucination_engine(mock_config_manager):
     """Create Anti-Hallucination Engine with mocked dependencies."""
-    with patch('claude_tiu.validation.anti_hallucination_engine.load_models'), \
-         patch('claude_tiu.validation.anti_hallucination_engine.initialize_neural_networks'):
+    with patch('claude_tui.validation.anti_hallucination_engine.load_models'), \
+         patch('claude_tui.validation.anti_hallucination_engine.initialize_neural_networks'):
         
         engine = AntiHallucinationEngine(mock_config_manager)
         return engine

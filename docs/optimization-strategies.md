@@ -1,4 +1,4 @@
-# Performance Optimization Strategies - Claude TIU
+# Performance Optimization Strategies - Claude TUI
 
 **Document Version:** 1.0  
 **Last Updated:** 2025-08-25  

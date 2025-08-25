@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: claude-tiu
+  name: claude-tui
   labels:
-    name: claude-tiu
-    app.kubernetes.io/name: claude-tiu
-    app.kubernetes.io/part-of: claude-tiu-platform
+    name: claude-tui
+    app.kubernetes.io/name: claude-tui
+    app.kubernetes.io/part-of: claude-tui-platform
 
 ---
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: claude-tiu-quota
-  namespace: claude-tiu
+  name: claude-tui-quota
+  namespace: claude-tui
 spec:
   hard:
     requests.cpu: "4"
@@ -28,8 +28,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: claude-tiu-network-policy
-  namespace: claude-tiu
+  name: claude-tui-network-policy
+  namespace: claude-tui
 spec:
   podSelector: {}
   policyTypes:
@@ -39,7 +39,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: claude-tiu
+          name: claude-tui
     - namespaceSelector:
         matchLabels:
           name: kube-system
@@ -53,7 +53,7 @@ spec:
   - to:
     - namespaceSelector:
         matchLabels:
-          name: claude-tiu
+          name: claude-tui
   - to: []
     ports:
     - protocol: TCP

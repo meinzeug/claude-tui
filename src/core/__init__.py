@@ -1,5 +1,5 @@
 """
-Core business logic modules for claude-tiu.
+Core business logic modules for claude-tui.
 
 This package contains the essential components that orchestrate AI-powered
 project management with anti-hallucination validation and real-time progress tracking.
@@ -102,7 +102,7 @@ __all__ = [
 
 __version__ = '1.0.0'
 __author__ = 'Claude Code AI Development Team'
-__description__ = 'Core business logic for claude-tiu AI-powered project management'
+__description__ = 'Core business logic for claude-tui AI-powered project management'
 
 # Initialize default logging
 _logger = setup_logging()
@@ -200,6 +200,7 @@ def _lazy_import_heavy_modules():
     
     try:
         # Import heavy optional dependencies
+        import asyncio
         import uvloop
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         _logger.info("uvloop enabled for better async performance")
@@ -222,7 +223,7 @@ def initialize_core_system(config: dict = None) -> dict:
     config = config or {}
     effective_config = {**DEFAULT_CONFIG, **config}
     
-    _logger.info("Initializing claude-tiu core system")
+    _logger.info("Initializing claude-tui core system")
     
     # System requirements check
     requirements_check = validate_system_requirements()

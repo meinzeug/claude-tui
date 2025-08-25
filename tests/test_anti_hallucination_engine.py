@@ -21,23 +21,23 @@ import tempfile
 import json
 
 # Test imports
-from claude_tiu.core.config_manager import ConfigManager
-from claude_tiu.validation.anti_hallucination_engine import (
+from claude_tui.core.config_manager import ConfigManager
+from claude_tui.validation.anti_hallucination_engine import (
     AntiHallucinationEngine,
     CodeSample,
     ValidationStage,
     ModelType,
     FeatureExtractor
 )
-from claude_tiu.validation.training_data_generator import (
+from claude_tui.validation.training_data_generator import (
     TrainingDataGenerator,
     GenerationConfig,
     CodePattern,
     QualityLevel
 )
-from claude_tiu.validation.performance_optimizer import PerformanceOptimizer
-from claude_tiu.validation.progress_validator import ValidationResult, ValidationSeverity
-from claude_tiu.models.project import Project
+from claude_tui.validation.performance_optimizer import PerformanceOptimizer
+from claude_tui.validation.progress_validator import ValidationResult, ValidationSeverity
+from claude_tui.models.project import Project
 
 
 class TestAntiHallucinationEngine:

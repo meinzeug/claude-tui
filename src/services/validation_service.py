@@ -1,5 +1,5 @@
 """
-Validation Service for claude-tiu.
+Validation Service for claude-tui.
 
 Provides comprehensive validation and anti-hallucination capabilities:
 - Code validation and quality checking

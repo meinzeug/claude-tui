@@ -1,5 +1,5 @@
 """
-Mock implementations for external dependencies in claude-tiu tests.
+Mock implementations for external dependencies in claude-tui tests.
 
 This package provides comprehensive mocks for:
 - AI interfaces and integrations

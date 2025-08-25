@@ -43,20 +43,20 @@ This guide covers the complete production deployment infrastructure for Claude-T
 # Deploy AWS infrastructure with Terraform
 cd terraform
 terraform init
-terraform plan -var="cluster_name=claude-tiu-production"
+terraform plan -var="cluster_name=claude-tui-production"
 terraform apply
 
 # Configure kubectl
-aws eks update-kubeconfig --region us-west-2 --name claude-tiu-production
+aws eks update-kubeconfig --region us-west-2 --name claude-tui-production
 ```
 
 ### 2. Application Deployment
 ```bash
 # Deploy with Helm
-helm install claude-tiu ./helm/claude-tiu \
-  --namespace claude-tiu-production \
+helm install claude-tui ./helm/claude-tui \
+  --namespace claude-tui-production \
   --create-namespace \
-  --values helm/claude-tiu/values.yaml
+  --values helm/claude-tui/values.yaml
 
 # Or deploy with kubectl
 kubectl apply -f k8s/
@@ -65,7 +65,7 @@ kubectl apply -f k8s/
 ### 3. Database Setup
 ```bash
 # Run database migrations
-kubectl exec -it deployment/claude-tiu-app -n claude-tiu-production -- \
+kubectl exec -it deployment/claude-tui-app -n claude-tui-production -- \
   psql $DATABASE_URL -f /app/scripts/migration/database-migration.sql
 ```
 
@@ -168,7 +168,7 @@ curl -X POST "$GRAFANA_API_URL/api/dashboards/db" \
 ## 📁 File Structure
 
 ```
-claude-tiu/
+claude-tui/
 ├── docker/
 │   ├── Dockerfile.production     # Multi-stage production build
 │   └── .dockerignore            # Build optimization
@@ -184,7 +184,7 @@ claude-tiu/
 ├── terraform/
 │   ├── main.tf                  # EKS cluster infrastructure
 │   └── userdata.sh              # Node initialization
-├── helm/claude-tiu/
+├── helm/claude-tui/
 │   ├── Chart.yaml               # Helm chart metadata
 │   ├── values.yaml              # Configuration values
 │   └── templates/               # Kubernetes templates
@@ -205,16 +205,16 @@ claude-tiu/
 ### Health Check Commands
 ```bash
 # Check deployment status
-kubectl get deployments -n claude-tiu-production
+kubectl get deployments -n claude-tui-production
 
 # Check pod health
-kubectl get pods -n claude-tiu-production
+kubectl get pods -n claude-tui-production
 
 # Check HPA status  
-kubectl get hpa -n claude-tiu-production
+kubectl get hpa -n claude-tui-production
 
 # View logs
-kubectl logs -f deployment/claude-tiu-app -n claude-tiu-production
+kubectl logs -f deployment/claude-tui-app -n claude-tui-production
 
 # Run validation script
 ./scripts/production-validation.sh
@@ -223,35 +223,35 @@ kubectl logs -f deployment/claude-tiu-app -n claude-tiu-production
 ### Troubleshooting
 ```bash
 # Check resource usage
-kubectl top pods -n claude-tiu-production
+kubectl top pods -n claude-tui-production
 
 # Describe problematic pod
-kubectl describe pod <pod-name> -n claude-tiu-production
+kubectl describe pod <pod-name> -n claude-tui-production
 
 # Check events
-kubectl get events -n claude-tiu-production --sort-by='.lastTimestamp'
+kubectl get events -n claude-tui-production --sort-by='.lastTimestamp'
 
 # Port forward for debugging
-kubectl port-forward service/claude-tiu-service 8080:80 -n claude-tiu-production
+kubectl port-forward service/claude-tui-service 8080:80 -n claude-tui-production
 ```
 
 ### Emergency Procedures
 ```bash
 # Scale up immediately
-kubectl scale deployment claude-tiu-app --replicas=10 -n claude-tiu-production
+kubectl scale deployment claude-tui-app --replicas=10 -n claude-tui-production
 
 # Rollback to previous version
-kubectl rollout undo deployment/claude-tiu-app -n claude-tiu-production
+kubectl rollout undo deployment/claude-tui-app -n claude-tui-production
 
 # Emergency restart
-kubectl rollout restart deployment/claude-tiu-app -n claude-tiu-production
+kubectl rollout restart deployment/claude-tui-app -n claude-tui-production
 ```
 
 ## 📞 Support & Contacts
 
 - **Production Issues**: PagerDuty escalation
-- **Deployment Questions**: DevOps team (#devops-claude-tiu)
-- **Performance Issues**: Performance team (#perf-claude-tiu)
+- **Deployment Questions**: DevOps team (#devops-claude-tui)
+- **Performance Issues**: Performance team (#perf-claude-tui)
 - **Security Concerns**: Security team (#security-alerts)
 
 ## 🔗 Related Documentation

@@ -1,5 +1,5 @@
 """
-Authentication Integration Tests for claude-tiu.
+Authentication Integration Tests for claude-tui.
 
 Comprehensive tests for authentication system including:
 - JWT token generation and validation
@@ -37,8 +37,8 @@ def jwt_config():
         "jwt_algorithm": "HS256", 
         "jwt_access_token_expire_minutes": 30,
         "jwt_refresh_token_expire_days": 7,
-        "jwt_issuer": "claude-tiu-test",
-        "jwt_audience": "claude-tiu-test-api"
+        "jwt_issuer": "claude-tui-test",
+        "jwt_audience": "claude-tui-test-api"
     }
 
 

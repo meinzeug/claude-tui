@@ -1,5 +1,5 @@
 #!/bin/bash
-# Claude TIU Deployment Script
+# Claude TUI Deployment Script
 # Automated deployment for staging and production environments
 
 set -euo pipefail
@@ -69,10 +69,10 @@ setup_environment() {
 # Claude-TIU Environment Configuration
 CLAUDE_API_KEY=your-claude-api-key-here
 CLAUDE_FLOW_API_KEY=your-claude-flow-api-key-here
-POSTGRES_DB=claude_tiu
+POSTGRES_DB=claude_tui
 POSTGRES_USER=claude_user
 POSTGRES_PASSWORD=claude_secure_pass
-DATABASE_URL=postgresql://claude_user:claude_secure_pass@db:5432/claude_tiu
+DATABASE_URL=postgresql://claude_user:claude_secure_pass@db:5432/claude_tui
 REDIS_URL=redis://cache:6379
 CLAUDE_TIU_ENV=${ENVIRONMENT}
 EOF
@@ -88,17 +88,17 @@ EOF
 # Docker deployment
 deploy_docker() {
     log_info "Building Docker image..."
-    docker build -t claude-tiu:latest .
+    docker build -t claude-tui:latest .
     
     log_info "Running Docker container..."
     docker run -d \
-        --name claude-tiu-${ENVIRONMENT} \
+        --name claude-tui-${ENVIRONMENT} \
         --env-file .env \
         -v "${PWD}/data:/app/data" \
         -v "${PWD}/logs:/app/logs" \
         -v "${PWD}/projects:/app/projects" \
         -p 8080:8080 \
-        claude-tiu:latest
+        claude-tui:latest
     
     log_success "Docker deployment complete"
 }
@@ -158,7 +158,7 @@ deploy_kubernetes() {
     
     # Wait for deployment to be ready
     log_info "Waiting for deployment to be ready..."
-    kubectl wait --for=condition=available --timeout=300s deployment/claude-tiu -n ${NAMESPACE}
+    kubectl wait --for=condition=available --timeout=300s deployment/claude-tui -n ${NAMESPACE}
     
     log_success "Kubernetes deployment complete"
     
@@ -173,7 +173,7 @@ health_check() {
     
     case ${DEPLOYMENT_TYPE} in
         "docker")
-            if docker ps | grep -q "claude-tiu-${ENVIRONMENT}"; then
+            if docker ps | grep -q "claude-tui-${ENVIRONMENT}"; then
                 log_success "Container is running"
             else
                 log_error "Container is not running"
@@ -202,13 +202,13 @@ show_logs() {
     
     case ${DEPLOYMENT_TYPE} in
         "docker")
-            docker logs -f claude-tiu-${ENVIRONMENT}
+            docker logs -f claude-tui-${ENVIRONMENT}
             ;;
         "docker-compose")
-            docker-compose logs -f claude-tiu
+            docker-compose logs -f claude-tui
             ;;
         "kubernetes"|"k8s")
-            kubectl logs -f deployment/claude-tiu -n ${NAMESPACE}
+            kubectl logs -f deployment/claude-tui -n ${NAMESPACE}
             ;;
     esac
 }
@@ -219,8 +219,8 @@ cleanup() {
     
     case ${DEPLOYMENT_TYPE} in
         "docker")
-            docker stop claude-tiu-${ENVIRONMENT} || true
-            docker rm claude-tiu-${ENVIRONMENT} || true
+            docker stop claude-tui-${ENVIRONMENT} || true
+            docker rm claude-tui-${ENVIRONMENT} || true
             ;;
         "docker-compose")
             docker-compose down -v
@@ -255,7 +255,7 @@ show_usage() {
     echo ""
     echo "Examples:"
     echo "  $0 docker-compose development"
-    echo "  $0 kubernetes production claude-tiu"
+    echo "  $0 kubernetes production claude-tui"
     echo "  $0 logs"
     exit 0
 }

@@ -3,7 +3,7 @@
 ## 1. Security Architecture Overview
 
 ### Defense-in-Depth Strategy
-The claude-tiu project implements multiple layers of security to protect against various threats:
+The claude-tui project implements multiple layers of security to protect against various threats:
 
 ```
 ┌─────────────────────────────────────────┐
@@ -357,7 +357,7 @@ from typing import Optional, Dict
 class SecureAPIKeyManager:
     """Secure management of API keys"""
     
-    def __init__(self, app_name: str = "claude-tiu"):
+    def __init__(self, app_name: str = "claude-tui"):
         self.app_name = app_name
         self.config_dir = Path.home() / f".{app_name}"
         self.config_dir.mkdir(exist_ok=True, mode=0o700)  # Owner only
@@ -426,7 +426,7 @@ class SecureAPIKeyManager:
     def _generate_encryption_key(self, password: str) -> bytes:
         """Generate encryption key from password"""
         password_bytes = password.encode()
-        salt = b'claude-tiu-salt'  # In production, use random salt per key
+        salt = b'claude-tui-salt'  # In production, use random salt per key
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
@@ -861,7 +861,7 @@ from typing import Any, Dict, Optional
 class DataEncryption:
     """Comprehensive data encryption system"""
     
-    def __init__(self, app_name: str = "claude-tiu"):
+    def __init__(self, app_name: str = "claude-tui"):
         self.app_name = app_name
         self.key_dir = Path.home() / f".{app_name}" / "keys"
         self.key_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -960,7 +960,7 @@ class SecureHTTPClient:
         # Configure secure SSL context
         self.session.verify = True
         self.session.headers.update({
-            'User-Agent': 'claude-tiu/1.0.0 (Security Enhanced)',
+            'User-Agent': 'claude-tui/1.0.0 (Security Enhanced)',
             'Accept': 'application/json',
             'Accept-Encoding': 'gzip, deflate',
             'Connection': 'keep-alive'
@@ -1497,7 +1497,7 @@ class VulnerabilityResponseManager:
     def __init__(self, config_path: Optional[Path] = None):
         self.config = self._load_config(config_path)
         self.incidents: Dict[str, SecurityIncident] = {}
-        self.log_path = Path.home() / ".claude-tiu" / "security_incidents.log"
+        self.log_path = Path.home() / ".claude-tui" / "security_incidents.log"
         self.log_path.parent.mkdir(exist_ok=True)
         
         # Configure logging
@@ -1779,7 +1779,7 @@ Affected Components:
 
 SLA Response Time: {self.response_sla[incident.severity]} hours
 
-This is an automated notification from claude-tiu Security Response System.
+This is an automated notification from claude-tui Security Response System.
 """
             
             self._send_email_notification(notification_emails, subject, body)
@@ -1807,7 +1807,7 @@ Updated: {incident.updated_at.isoformat()}
 Recent Mitigation Steps:
 {chr(10).join(incident.mitigation_steps[-5:]) if incident.mitigation_steps else 'None'}
 
-This is an automated notification from claude-tiu Security Response System.
+This is an automated notification from claude-tui Security Response System.
 """
             
             self._send_email_notification(notification_emails, subject, body)
@@ -1845,7 +1845,7 @@ Affected Components:
 Automatic mitigation has been initiated where possible.
 Manual intervention may be required.
 
-This is an automated escalation from claude-tiu Security Response System.
+This is an automated escalation from claude-tui Security Response System.
 """
         
         try:

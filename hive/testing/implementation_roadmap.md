@@ -1,4 +1,4 @@
-# Testing Implementation Roadmap - claude-tiu
+# Testing Implementation Roadmap - claude-tui
 
 **Strategic Testing Enhancement Plan**  
 **Duration**: 6 weeks  
@@ -513,7 +513,7 @@ success_criteria:
 
 ## Success Celebration 🎉
 
-Upon completion, the claude-tiu project will have achieved:
+Upon completion, the claude-tui project will have achieved:
 
 - **✅ World-class testing infrastructure** (98/100 score)
 - **✅ Comprehensive anti-hallucination validation**

@@ -1,5 +1,5 @@
 """
-Authentication Security Tests for claude-tiu.
+Authentication Security Tests for claude-tui.
 
 Comprehensive security tests for authentication system including:
 - SQL injection prevention

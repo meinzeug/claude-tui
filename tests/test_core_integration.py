@@ -1,5 +1,5 @@
 """
-Integration tests for claude-tiu core modules.
+Integration tests for claude-tui core modules.
 
 This test suite verifies that all core components work together correctly
 and validates the anti-hallucination pipeline with real-world scenarios.
@@ -344,7 +344,7 @@ async def run_integration_tests():
     """Run all integration tests."""
     test_instance = TestCoreIntegration()
     
-    print("🚀 Starting claude-tiu core integration tests...\n")
+    print("🚀 Starting claude-tui core integration tests...\n")
     
     try:
         # Create temporary directory for tests

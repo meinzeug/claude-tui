@@ -1,5 +1,5 @@
 """
-Secure API Key Management System for claude-tiu.
+Secure API Key Management System for claude-tui.
 
 This module provides enterprise-grade API key management with:
 - Multi-layer encryption (AES-256 + RSA)

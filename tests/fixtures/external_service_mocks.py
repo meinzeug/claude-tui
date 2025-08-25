@@ -1,5 +1,5 @@
 """
-External Service Mocks for claude-tiu Testing.
+External Service Mocks for claude-tui Testing.
 
 Comprehensive mocks for external services including:
 - Claude Code integration mocks

@@ -109,12 +109,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t claude-tiu:security-scan .
+          docker build -t claude-tui:security-scan .
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'claude-tiu:security-scan'
+          image-ref: 'claude-tui:security-scan'
           format: 'sarif'
           output: 'trivy-container-results.sarif'
 
@@ -127,7 +127,7 @@ jobs:
         uses: anchore/scan-action@v3
         id: grype-scan
         with:
-          image: 'claude-tiu:security-scan'
+          image: 'claude-tui:security-scan'
           fail-build: false
           output-format: sarif
 

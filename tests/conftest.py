@@ -1,5 +1,5 @@
 """
-Global pytest configuration and fixtures for claude-tiu tests.
+Global pytest configuration and fixtures for claude-tui tests.
 
 This module provides shared fixtures, configuration, and utilities
 for the entire test suite.
@@ -26,9 +26,9 @@ except ImportError:
     sessionmaker = None
 
 # Import project modules (will be created)
-# from claude_tiu.core.project_manager import ProjectManager
-# from claude_tiu.core.ai_interface import ClaudeInterface
-# from claude_tiu.database.models import Base
+# from claude_tui.core.project_manager import ProjectManager
+# from claude_tui.core.ai_interface import ClaudeInterface
+# from claude_tui.database.models import Base
 
 
 # Configure faker for consistent test data if available
@@ -366,7 +366,7 @@ def pytest_collection_modifyitems(config, items):
 
 def pytest_sessionstart(session):
     """Called after the Session object has been created."""
-    print("\\n🧪 Starting claude-tiu test suite...")
+    print("\\n🧪 Starting claude-tui test suite...")
     print("📋 Test Configuration:")
     print(f"   • Python version: {session.config.getoption('--tb')}")
     print(f"   • Async mode: enabled")

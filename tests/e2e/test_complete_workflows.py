@@ -1,5 +1,5 @@
 """
-End-to-end tests for complete user workflows in claude-tiu.
+End-to-end tests for complete user workflows in claude-tui.
 
 This module tests complete user journeys from start to finish,
 ensuring all components work together seamlessly.

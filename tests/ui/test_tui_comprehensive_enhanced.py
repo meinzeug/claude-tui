@@ -14,14 +14,14 @@ from textual import events
 from textual.testing import AppPilot
 
 # Import application components
-from claude_tiu.ui.main_app import ClaudeTIUApp
-from claude_tiu.ui.screens.workspace_screen import WorkspaceScreen
-from claude_tiu.ui.screens.settings import SettingsScreen
-from claude_tiu.ui.screens.help_screen import HelpScreen
-from claude_tiu.ui.widgets.task_dashboard import TaskDashboard
-from claude_tiu.ui.widgets.notification_system import NotificationSystem
-from claude_tiu.ui.widgets.progress_intelligence import ProgressIntelligence
-from claude_tiu.core.config_manager import ConfigManager
+from claude_tui.ui.main_app import ClaudeTUIApp
+from claude_tui.ui.screens.workspace_screen import WorkspaceScreen
+from claude_tui.ui.screens.settings import SettingsScreen
+from claude_tui.ui.screens.help_screen import HelpScreen
+from claude_tui.ui.widgets.task_dashboard import TaskDashboard
+from claude_tui.ui.widgets.notification_system import NotificationSystem
+from claude_tui.ui.widgets.progress_intelligence import ProgressIntelligence
+from claude_tui.core.config_manager import ConfigManager
 
 
 @pytest.fixture
@@ -68,8 +68,8 @@ class TestMainApp:
     @pytest.mark.asyncio
     async def test_app_initialization(self, mock_config_manager):
         """Test main app initialization."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(
                 config_manager=mock_config_manager,
                 debug=False,
                 initial_project_dir=None
@@ -82,7 +82,7 @@ class TestMainApp:
     @pytest.mark.asyncio
     async def test_app_startup_sequence(self, mock_config_manager):
         """Test application startup sequence."""
-        with patch('claude_tiu.ui.main_app.SystemChecker') as mock_checker:
+        with patch('claude_tui.ui.main_app.SystemChecker') as mock_checker:
             # Mock system check
             check_result = Mock()
             check_result.all_passed = True
@@ -90,7 +90,7 @@ class TestMainApp:
             check_result.errors = []
             mock_checker.return_value.run_checks = AsyncMock(return_value=check_result)
             
-            app = ClaudeTIUApp(
+            app = ClaudeTUIApp(
                 config_manager=mock_config_manager,
                 debug=False
             )
@@ -111,8 +111,8 @@ class TestMainApp:
     @pytest.mark.asyncio
     async def test_app_theme_switching(self, mock_config_manager):
         """Test theme switching functionality."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Test theme switching
@@ -129,8 +129,8 @@ class TestMainApp:
     @pytest.mark.asyncio
     async def test_keyboard_shortcuts(self, mock_config_manager):
         """Test keyboard shortcut handling."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Test various keyboard shortcuts
@@ -169,8 +169,8 @@ class TestWorkspaceScreen:
         # Mock project loading
         with patch.object(screen, 'load_project_data', AsyncMock(return_value=sample_project_data)):
             # Test within app context
-            with patch('claude_tiu.ui.main_app.SystemChecker'):
-                app = ClaudeTIUApp(config_manager=mock_config_manager)
+            with patch('claude_tui.ui.main_app.SystemChecker'):
+                app = ClaudeTUIApp(config_manager=mock_config_manager)
                 
                 async with app.run_test() as pilot:
                     # Push workspace screen
@@ -186,8 +186,8 @@ class TestWorkspaceScreen:
         """Test file tree interaction in workspace."""
         screen = WorkspaceScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -211,8 +211,8 @@ class TestWorkspaceScreen:
         """Test code editor integration in workspace."""
         screen = WorkspaceScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -236,8 +236,8 @@ class TestWorkspaceScreen:
         """Test task dashboard integration in workspace."""
         screen = WorkspaceScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -264,8 +264,8 @@ class TestSettingsScreen:
         """Test settings screen navigation and options."""
         screen = SettingsScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -283,8 +283,8 @@ class TestSettingsScreen:
         """Test theme setting change in settings screen."""
         screen = SettingsScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -307,8 +307,8 @@ class TestSettingsScreen:
         """Test font size adjustment in settings."""
         screen = SettingsScreen(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -336,8 +336,8 @@ class TestHelpScreen:
         """Test help screen content display."""
         screen = HelpScreen()
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -362,8 +362,8 @@ class TestHelpScreen:
         """Test help screen navigation."""
         screen = HelpScreen()
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 app.push_screen(screen)
@@ -391,8 +391,8 @@ class TestTaskDashboard:
         assert hasattr(dashboard, 'on_mount')
         
         # Test in app context
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Mount dashboard in a container
@@ -409,8 +409,8 @@ class TestTaskDashboard:
         """Test task creation through dashboard."""
         dashboard = TaskDashboard(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(dashboard)
@@ -443,8 +443,8 @@ class TestTaskDashboard:
         ]
         
         with patch.object(dashboard, 'get_tasks', AsyncMock(return_value=sample_tasks)):
-            with patch('claude_tiu.ui.main_app.SystemChecker'):
-                app = ClaudeTIUApp(config_manager=mock_config_manager)
+            with patch('claude_tui.ui.main_app.SystemChecker'):
+                app = ClaudeTUIApp(config_manager=mock_config_manager)
                 
                 async with app.run_test() as pilot:
                     container = Container(dashboard)
@@ -467,8 +467,8 @@ class TestNotificationSystem:
         """Test notification display functionality."""
         notification_system = NotificationSystem(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(notification_system)
@@ -492,8 +492,8 @@ class TestNotificationSystem:
         """Test different types of notifications."""
         notification_system = NotificationSystem(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(notification_system)
@@ -524,8 +524,8 @@ class TestNotificationSystem:
         """Test notification dismissal."""
         notification_system = NotificationSystem(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(notification_system)
@@ -561,8 +561,8 @@ class TestProgressIntelligence:
         """Test progress tracking functionality."""
         progress_widget = ProgressIntelligence(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(progress_widget)
@@ -582,8 +582,8 @@ class TestProgressIntelligence:
         """Test tracking multiple progress items."""
         progress_widget = ProgressIntelligence(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(progress_widget)
@@ -609,8 +609,8 @@ class TestProgressIntelligence:
         """Test progress completion handling."""
         progress_widget = ProgressIntelligence(mock_config_manager)
         
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 container = Container(progress_widget)
@@ -641,8 +641,8 @@ class TestResponsiveDesign:
     @pytest.mark.asyncio
     async def test_window_resize_handling(self, mock_config_manager):
         """Test handling of window resize events."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Test different window sizes
@@ -663,8 +663,8 @@ class TestResponsiveDesign:
     @pytest.mark.asyncio
     async def test_layout_adaptation(self, mock_config_manager):
         """Test layout adaptation to different screen sizes."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Test narrow screen
@@ -689,8 +689,8 @@ class TestAccessibility:
     @pytest.mark.asyncio
     async def test_keyboard_navigation(self, mock_config_manager):
         """Test keyboard navigation throughout the interface."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Test tab navigation
@@ -709,8 +709,8 @@ class TestAccessibility:
     @pytest.mark.asyncio
     async def test_focus_management(self, mock_config_manager):
         """Test focus management for screen readers."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Get focusable widgets
@@ -739,8 +739,8 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_invalid_input_handling(self, mock_config_manager):
         """Test handling of invalid user input."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Find input fields
@@ -761,8 +761,8 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_exception_recovery(self, mock_config_manager):
         """Test recovery from exceptions in TUI components."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             # Mock a component that raises an exception
             original_compose = app.compose
@@ -781,8 +781,8 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_screen_transition_errors(self, mock_config_manager):
         """Test error handling during screen transitions."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Try to push invalid screen
@@ -804,12 +804,12 @@ class TestUIPerformance:
     @pytest.mark.asyncio
     async def test_startup_performance(self, mock_config_manager):
         """Test application startup performance."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
+        with patch('claude_tui.ui.main_app.SystemChecker'):
             import time
             
             start_time = time.time()
             
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 await pilot.pause()
@@ -823,8 +823,8 @@ class TestUIPerformance:
     @pytest.mark.asyncio
     async def test_widget_rendering_performance(self, mock_config_manager):
         """Test widget rendering performance."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 import time
@@ -849,8 +849,8 @@ class TestUIPerformance:
     @pytest.mark.asyncio
     async def test_memory_usage_stability(self, mock_config_manager):
         """Test memory usage stability during extended use."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Simulate extended use
@@ -879,8 +879,8 @@ class TestTUIIntegration:
     @pytest.mark.asyncio
     async def test_full_user_workflow(self, mock_config_manager):
         """Test complete user workflow through TUI."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Simulate complete user workflow
@@ -912,8 +912,8 @@ class TestTUIIntegration:
     @pytest.mark.asyncio
     async def test_concurrent_widget_updates(self, mock_config_manager):
         """Test concurrent updates to multiple widgets."""
-        with patch('claude_tiu.ui.main_app.SystemChecker'):
-            app = ClaudeTIUApp(config_manager=mock_config_manager)
+        with patch('claude_tui.ui.main_app.SystemChecker'):
+            app = ClaudeTUIApp(config_manager=mock_config_manager)
             
             async with app.run_test() as pilot:
                 # Create multiple widgets that update concurrently

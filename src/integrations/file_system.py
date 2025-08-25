@@ -184,7 +184,7 @@ class FileSystemManager:
         self.claude_flow_binary = claude_flow_binary
         
         # Create backup directory
-        self.backup_dir = self.base_path / '.claude-tiu-backups'
+        self.backup_dir = self.base_path / '.claude-tui-backups'
         self.backup_dir.mkdir(exist_ok=True)
         
         # Operation tracking

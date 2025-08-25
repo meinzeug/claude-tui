@@ -230,7 +230,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
                     '''.strip()
                 elif filename == "package.json":
                     return json.dumps({
-                        "name": "claude-tiu-react-app",
+                        "name": "claude-tui-react-app",
                         "version": "1.0.0", 
                         "dependencies": {
                             "react": "^18.2.0",

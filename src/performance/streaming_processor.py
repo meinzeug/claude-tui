@@ -552,7 +552,7 @@ if __name__ == "__main__":
         print("🚀 Testing streaming file processor...")
         
         # Analyze current codebase
-        result = await analyze_codebase_fast("/home/tekkadmin/claude-tiu/src")
+        result = await analyze_codebase_fast("/home/tekkadmin/claude-tui/src")
         
         print(f"📊 Codebase Analysis Results:")
         print(f"   Total files: {result['total_files']}")

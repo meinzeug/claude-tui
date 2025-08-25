@@ -371,7 +371,7 @@ FROM python:3.11-slim
 # ... production runtime
 # Security: non-root user, health checks
 USER claudetiu
-HEALTHCHECK --interval=30s --timeout=10s CMD python -c "import claude_tiu; print('healthy')"
+HEALTHCHECK --interval=30s --timeout=10s CMD python -c "import claude_tui; print('healthy')"
 ```
 
 ### 7.2 Kubernetes Readiness
@@ -384,7 +384,7 @@ spec:
   strategy:
     type: RollingUpdate
   containers:
-  - name: claude-tiu
+  - name: claude-tui
     resources:
       limits:
         cpu: 1000m

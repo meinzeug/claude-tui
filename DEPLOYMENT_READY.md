@@ -1,4 +1,4 @@
-# 🚀 Claude TIU - Deployment Ready Status
+# 🚀 Claude TUI - Deployment Ready Status
 
 ## ✅ **PROJECT COMPLETE - READY FOR PRODUCTION**
 
@@ -39,7 +39,7 @@ GITHUB_USER=meinzeug
 GITHUB_REPO=claude-tui
 
 # Database (To Configure)
-DATABASE_URL=postgresql+asyncpg://user:password@localhost/claude_tiu
+DATABASE_URL=postgresql+asyncpg://user:password@localhost/claude_tui
 REDIS_URL=redis://localhost:6379
 
 # Security (To Configure) 

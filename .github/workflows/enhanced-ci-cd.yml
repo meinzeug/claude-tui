@@ -1,4 +1,4 @@
-name: 🚀 Enhanced CI/CD Pipeline - Claude TIU
+name: 🚀 Enhanced CI/CD Pipeline - Claude TUI
 
 on:
   push:
@@ -193,7 +193,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -228,16 +228,16 @@ jobs:
 
       - name: 🧪 Run Test Suite - ${{ matrix.test-suite }}
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379/0
-          CLAUDE_TIU_ENV: testing
+          CLAUDE_TUI_ENV: testing
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           # Determine test path and options based on matrix
           case "${{ matrix.test-suite }}" in
             "unit")
               pytest tests/unit/ \
-                --cov=src/claude_tiu \
+                --cov=src/claude_tui \
                 --cov-report=xml:coverage-${{ matrix.python-version }}-unit.xml \
                 --cov-report=html:htmlcov-${{ matrix.python-version }}-unit \
                 --junit-xml=junit-${{ matrix.python-version }}-unit.xml \
@@ -245,7 +245,7 @@ jobs:
               ;;
             "integration")
               pytest tests/integration/ \
-                --cov=src/claude_tiu \
+                --cov=src/claude_tui \
                 --cov-append \
                 --cov-report=xml:coverage-${{ matrix.python-version }}-integration.xml \
                 --junit-xml=junit-${{ matrix.python-version }}-integration.xml \

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Runner for Claude TIU
+Comprehensive Test Runner for Claude TUI
 
 This script orchestrates the complete test suite execution with detailed
 reporting, performance benchmarking, and quality metrics analysis.
@@ -90,7 +90,7 @@ class TestRunner:
                            parallel: bool = True,
                            generate_report: bool = True) -> Dict[str, TestResults]:
         """Run all test categories and generate comprehensive report."""
-        print("🚀 Starting Claude TIU Comprehensive Test Suite")
+        print("🚀 Starting Claude TUI Comprehensive Test Suite")
         print("=" * 60)
         
         start_time = time.time()
@@ -381,7 +381,7 @@ class TestRunner:
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Claude TIU - Test Report</title>
+    <title>Claude TUI - Test Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .header { background: #f0f8ff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
@@ -405,7 +405,7 @@ class TestRunner:
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Claude TIU - Comprehensive Test Report</h1>
+        <h1>🚀 Claude TUI - Comprehensive Test Report</h1>
         <p class="timestamp">Generated: {timestamp}</p>
         <p>Complete test suite execution results with coverage analysis and performance benchmarks.</p>
     </div>
@@ -590,7 +590,7 @@ class TestRunner:
 async def main():
     """Main entry point for test runner."""
     parser = argparse.ArgumentParser(
-        description="Claude TIU Comprehensive Test Runner",
+        description="Claude TUI Comprehensive Test Runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

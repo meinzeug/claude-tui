@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: claude-tiu-app
+  name: claude-tui-app
   namespace: staging
   labels:
-    app: claude-tiu
+    app: claude-tui
     environment: staging
     version: v1
 spec:
@@ -16,12 +16,12 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: claude-tiu
+      app: claude-tui
       environment: staging
   template:
     metadata:
       labels:
-        app: claude-tiu
+        app: claude-tui
         environment: staging
         version: v1
       annotations:
@@ -29,21 +29,21 @@ spec:
         prometheus.io/port: "8000"
         prometheus.io/path: "/metrics"
     spec:
-      serviceAccountName: claude-tiu-sa
+      serviceAccountName: claude-tui-sa
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
       containers:
-      - name: claude-tiu
-        image: ghcr.io/claude-tiu/claude-tiu:staging
+      - name: claude-tui
+        image: ghcr.io/claude-tui/claude-tui:staging
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
           name: http
           protocol: TCP
         env:
-        - name: CLAUDE_TIU_ENV
+        - name: CLAUDE_TUI_ENV
           value: "staging"
         - name: PYTHONUNBUFFERED
           value: "1"
@@ -52,17 +52,17 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: database-url
         - name: REDIS_URL
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: redis-url
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: claude-tiu-secrets
+              name: claude-tui-secrets
               key: secret-key
         resources:
           limits:
@@ -105,7 +105,7 @@ spec:
       volumes:
       - name: app-data
         persistentVolumeClaim:
-          claimName: claude-tiu-data-pvc
+          claimName: claude-tui-data-pvc
       - name: app-logs
         emptyDir: {}
       - name: tmp

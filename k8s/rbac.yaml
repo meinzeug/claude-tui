@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: claude-tiu
-  namespace: claude-tiu-production
+  name: claude-tui
+  namespace: claude-tui-production
   labels:
-    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/name: claude-tui
     app.kubernetes.io/instance: production
     app.kubernetes.io/component: serviceaccount
 automountServiceAccountToken: true
@@ -13,10 +13,10 @@ automountServiceAccountToken: true
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: claude-tiu-production
-  name: claude-tiu-role
+  namespace: claude-tui-production
+  name: claude-tui-role
   labels:
-    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/name: claude-tui
     app.kubernetes.io/instance: production
     app.kubernetes.io/component: rbac
 rules:
@@ -37,7 +37,7 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
-  resourceNames: ["claude-tiu-secrets"]
+  resourceNames: ["claude-tui-secrets"]
 
 # Service discovery
 - apiGroups: [""]
@@ -58,19 +58,19 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: claude-tiu-rolebinding
-  namespace: claude-tiu-production
+  name: claude-tui-rolebinding
+  namespace: claude-tui-production
   labels:
-    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/name: claude-tui
     app.kubernetes.io/instance: production
     app.kubernetes.io/component: rbac
 subjects:
 - kind: ServiceAccount
-  name: claude-tiu
-  namespace: claude-tiu-production
+  name: claude-tui
+  namespace: claude-tui-production
 roleRef:
   kind: Role
-  name: claude-tiu-role
+  name: claude-tui-role
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -78,9 +78,9 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: claude-tiu-cluster-monitoring
+  name: claude-tui-cluster-monitoring
   labels:
-    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/name: claude-tui
     app.kubernetes.io/instance: production
     app.kubernetes.io/component: rbac
 rules:
@@ -99,18 +99,18 @@ rules:
 # apiVersion: rbac.authorization.k8s.io/v1
 # kind: ClusterRoleBinding
 # metadata:
-#   name: claude-tiu-cluster-monitoring
+#   name: claude-tui-cluster-monitoring
 #   labels:
-#     app.kubernetes.io/name: claude-tiu
+#     app.kubernetes.io/name: claude-tui
 #     app.kubernetes.io/instance: production
 #     app.kubernetes.io/component: rbac
 # subjects:
 # - kind: ServiceAccount
-#   name: claude-tiu
-#   namespace: claude-tiu-production
+#   name: claude-tui
+#   namespace: claude-tui-production
 # roleRef:
 #   kind: ClusterRole
-#   name: claude-tiu-cluster-monitoring
+#   name: claude-tui-cluster-monitoring
 #   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -118,16 +118,16 @@ rules:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: claude-tiu-network-policy
-  namespace: claude-tiu-production
+  name: claude-tui-network-policy
+  namespace: claude-tui-production
   labels:
-    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/name: claude-tui
     app.kubernetes.io/instance: production
     app.kubernetes.io/component: security
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: claude-tiu
+      app.kubernetes.io/name: claude-tui
   policyTypes:
   - Ingress
   - Egress
@@ -152,7 +152,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: claude-tiu
+          app.kubernetes.io/name: claude-tui
     ports:
     - protocol: TCP
       port: 8000

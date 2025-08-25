@@ -1,9 +1,9 @@
-# Prometheus Configuration for Claude TIU Monitoring
+# Prometheus Configuration for Claude TUI Monitoring
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    monitor: 'claude-tiu-monitor'
+    monitor: 'claude-tui-monitor'
     cluster: 'development'
 
 # Alertmanager Configuration
@@ -26,12 +26,12 @@ scrape_configs:
       - targets: ['localhost:9090']
     metrics_path: /metrics
 
-  # Claude TIU Application Metrics
-  - job_name: 'claude-tiu'
+  # Claude TUI Application Metrics
+  - job_name: 'claude-tui'
     scrape_interval: 15s
     metrics_path: /metrics
     static_configs:
-      - targets: ['claude-tiu:8000']
+      - targets: ['claude-tui:8000']
     scrape_timeout: 10s
     honor_labels: true
 
@@ -67,11 +67,11 @@ scrape_configs:
     metrics_path: /metrics
 
   # Custom Application Metrics
-  - job_name: 'claude-tiu-custom'
+  - job_name: 'claude-tui-custom'
     scrape_interval: 15s
     metrics_path: /api/v1/metrics
     static_configs:
-      - targets: ['claude-tiu:8000']
+      - targets: ['claude-tui:8000']
     params:
       format: ['prometheus']
 

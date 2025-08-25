@@ -1,8 +1,8 @@
-# claude-tiu Requirements Specification
+# claude-tui Requirements Specification
 
 ## Executive Summary
 
-This document defines the comprehensive requirements for claude-tiu, an intelligent AI-powered terminal user interface (TUI) tool that revolutionizes software development through sophisticated AI orchestration, continuous validation, and anti-hallucination mechanisms.
+This document defines the comprehensive requirements for claude-tui, an intelligent AI-powered terminal user interface (TUI) tool that revolutionizes software development through sophisticated AI orchestration, continuous validation, and anti-hallucination mechanisms.
 
 ---
 
@@ -826,4 +826,4 @@ This document defines the comprehensive requirements for claude-tiu, an intellig
 - [ ] Disaster recovery plans tested successfully
 - [ ] Compliance requirements fully satisfied
 
-This requirements specification provides comprehensive guidance for developing claude-tiu, ensuring all stakeholder needs are addressed while maintaining technical excellence and user-focused design.
+This requirements specification provides comprehensive guidance for developing claude-tui, ensuring all stakeholder needs are addressed while maintaining technical excellence and user-focused design.

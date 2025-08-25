@@ -1,5 +1,5 @@
 """
-Performance and load testing suite for claude-tiu.
+Performance and load testing suite for claude-tui.
 
 Tests system performance under various load conditions,
 memory usage, and execution time benchmarks.

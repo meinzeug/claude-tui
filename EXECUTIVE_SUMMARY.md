@@ -1,8 +1,8 @@
-# 🎯 Claude-TIU: Executive Summary
+# 🎯 Claude TUI: Executive Summary
 
 ## Mission Accomplished ✅
 
-Das **Claude-TIU** (Terminal User Interface) Projekt wurde erfolgreich von einem **Hive Mind Team** aus 6 spezialisierten AI-Agenten in weniger als einem Tag entwickelt.
+Das **Claude TUI** (Terminal User Interface) Projekt wurde erfolgreich von einem **Hive Mind Team** aus 6 spezialisierten AI-Agenten in weniger als einem Tag entwickelt.
 
 ## 🏆 Kernleistungen
 
@@ -127,9 +127,9 @@ Claude-TIU positioniert sich als:
 ## 📞 Kontakt
 
 Für Enterprise-Anfragen und Partnerschaften:
-- **GitHub**: [claude-tiu/claude-tiu](https://github.com/claude-tiu)
-- **Documentation**: [docs.claude-tiu.ai](https://docs.claude-tiu.ai)
-- **Support**: enterprise@claude-tiu.ai
+- **GitHub**: [claude-tui/claude-tui](https://github.com/claude-tui)
+- **Documentation**: [docs.claude-tui.ai](https://docs.claude-tui.ai)
+- **Support**: enterprise@claude-tui.ai
 
 ---
 © 2025 Claude-TIU Project | Powered by Anthropic Claude & Hive Mind Technology

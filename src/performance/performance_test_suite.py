@@ -83,7 +83,7 @@ class PerformanceTestSuite:
     async def run_comprehensive_test_suite(self) -> Dict[str, Any]:
         """Run complete performance validation test suite"""
         logger.info("🚀 COMPREHENSIVE PERFORMANCE TEST SUITE STARTING")
-        logger.info("Validating production readiness for Claude-TIU system")
+        logger.info("Validating production readiness for Claude-TUI system")
         
         suite_start_time = time.time()
         

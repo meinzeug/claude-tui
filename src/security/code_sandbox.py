@@ -1,5 +1,5 @@
 """
-Secure Code Sandbox for claude-tiu.
+Secure Code Sandbox for claude-tui.
 
 This module provides a secure environment for executing AI-generated code with:
 - Multi-layer sandboxing (process, Docker, VM)

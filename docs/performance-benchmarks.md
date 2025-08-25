@@ -1,4 +1,4 @@
-# Performance Benchmarks & SLA Definitions - Claude TIU
+# Performance Benchmarks & SLA Definitions - Claude TUI
 
 **Document Version:** 1.0  
 **Created:** 2025-08-25  
@@ -607,4 +607,4 @@ benchmark_versioning:
 **Next Review:** 2025-11-25  
 **Stakeholder Approval:** Required for SLA changes
 
-*This benchmark document serves as the definitive reference for Claude TIU system performance expectations, measurement methodologies, and continuous improvement targets.*
+*This benchmark document serves as the definitive reference for Claude TUI system performance expectations, measurement methodologies, and continuous improvement targets.*

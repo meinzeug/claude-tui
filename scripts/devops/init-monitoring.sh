@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Claude TIU Monitoring Stack Initialization
+# Claude TUI Monitoring Stack Initialization
 # Sets up Prometheus, Grafana, and alerting infrastructure
 
 set -euo pipefail
@@ -129,7 +129,7 @@ setup_alertmanager_config() {
     cat > "${MONITORING_DIR}/alertmanager/alertmanager.yml" << 'EOF'
 global:
   smtp_smarthost: 'localhost:587'
-  smtp_from: 'alertmanager@claude-tiu.dev'
+  smtp_from: 'alertmanager@claude-tui.dev'
   smtp_auth_username: ''
   smtp_auth_password: ''
   
@@ -151,12 +151,12 @@ route:
 receivers:
   - name: 'default-receiver'
     webhook_configs:
-      - url: 'http://claude-tiu:8000/api/v1/alerts/webhook'
+      - url: 'http://claude-tui:8000/api/v1/alerts/webhook'
         send_resolved: true
   
   - name: 'critical-receiver'
     email_configs:
-      - to: 'ops-critical@claude-tiu.dev'
+      - to: 'ops-critical@claude-tui.dev'
         subject: '🚨 CRITICAL Alert: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
         body: |
           {{ range .Alerts }}
@@ -168,12 +168,12 @@ receivers:
           **Time:** {{ .StartsAt }}
           {{ end }}
     webhook_configs:
-      - url: 'http://claude-tiu:8000/api/v1/alerts/critical'
+      - url: 'http://claude-tui:8000/api/v1/alerts/critical'
         send_resolved: true
   
   - name: 'warning-receiver'
     email_configs:
-      - to: 'ops-warnings@claude-tiu.dev'
+      - to: 'ops-warnings@claude-tui.dev'
         subject: '⚠️ Warning Alert: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
 
 inhibit_rules:
@@ -210,7 +210,7 @@ services:
   # Prometheus - Metrics collection
   prometheus:
     image: prom/prometheus:latest
-    container_name: claude-tiu-prometheus
+    container_name: claude-tui-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -229,12 +229,12 @@ services:
       - claude-network
     restart: unless-stopped
     depends_on:
-      - claude-tiu
+      - claude-tui
 
   # Grafana - Visualization
   grafana:
     image: grafana/grafana:latest
-    container_name: claude-tiu-grafana
+    container_name: claude-tui-grafana
     ports:
       - "3000:3000"
     environment:
@@ -254,7 +254,7 @@ services:
   # Alertmanager - Alert handling
   alertmanager:
     image: prom/alertmanager:latest
-    container_name: claude-tiu-alertmanager
+    container_name: claude-tui-alertmanager
     ports:
       - "9093:9093"
     volumes:
@@ -272,7 +272,7 @@ services:
   # Loki - Log aggregation
   loki:
     image: grafana/loki:latest
-    container_name: claude-tiu-loki
+    container_name: claude-tui-loki
     ports:
       - "3100:3100"
     volumes:
@@ -286,7 +286,7 @@ services:
   # Node Exporter - System metrics
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: claude-tiu-node-exporter
+    container_name: claude-tui-node-exporter
     ports:
       - "9100:9100"
     volumes:
@@ -305,7 +305,7 @@ services:
   # cAdvisor - Container metrics
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    container_name: claude-tiu-cadvisor
+    container_name: claude-tui-cadvisor
     ports:
       - "8080:8080"
     volumes:
@@ -324,7 +324,7 @@ services:
   # Redis Exporter
   redis-exporter:
     image: oliver006/redis_exporter:latest
-    container_name: claude-tiu-redis-exporter
+    container_name: claude-tui-redis-exporter
     ports:
       - "9121:9121"
     environment:
@@ -338,11 +338,11 @@ services:
   # Postgres Exporter
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: claude-tiu-postgres-exporter
+    container_name: claude-tui-postgres-exporter
     ports:
       - "9187:9187"
     environment:
-      - DATA_SOURCE_NAME=postgresql://claude_user:${POSTGRES_PASSWORD:-claude_secure_pass}@db:5432/claude_tiu?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://claude_user:${POSTGRES_PASSWORD:-claude_secure_pass}@db:5432/claude_tui?sslmode=disable
     networks:
       - claude-network
     restart: unless-stopped
@@ -361,9 +361,9 @@ generate_monitoring_readme() {
     log INFO "Generating monitoring documentation..."
     
     cat > "${MONITORING_DIR}/README.md" << 'EOF'
-# Claude TIU Monitoring Stack
+# Claude TUI Monitoring Stack
 
-This directory contains the monitoring infrastructure for Claude TIU.
+This directory contains the monitoring infrastructure for Claude TUI.
 
 ## Components
 
@@ -411,9 +411,9 @@ make monitoring
 #### Application Metrics
 - `http_requests_total` - Total HTTP requests
 - `http_request_duration_seconds` - Request duration
-- `claude_tiu_active_users` - Active users
-- `claude_tiu_ai_requests_total` - AI API requests
-- `claude_tiu_errors_total` - Application errors
+- `claude_tui_active_users` - Active users
+- `claude_tui_ai_requests_total` - AI API requests
+- `claude_tui_errors_total` - Application errors
 
 #### System Metrics
 - `node_cpu_seconds_total` - CPU usage
@@ -597,7 +597,7 @@ EOF
 }
 
 main() {
-    log INFO "Initializing Claude TIU monitoring stack..."
+    log INFO "Initializing Claude TUI monitoring stack..."
     
     create_monitoring_directories
     setup_prometheus_config

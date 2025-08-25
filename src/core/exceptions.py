@@ -1,5 +1,5 @@
 """
-Comprehensive Exception System for claude-tiu.
+Comprehensive Exception System for claude-tui.
 
 This module defines a hierarchy of custom exceptions with:
 - Structured error information
@@ -61,7 +61,7 @@ class RecoveryStrategy(Enum):
 
 class ClaudeTIUException(Exception):
     """
-    Base exception class for all claude-tiu specific errors.
+    Base exception class for all claude-tui specific errors.
     
     Provides structured error information and recovery guidance.
     """

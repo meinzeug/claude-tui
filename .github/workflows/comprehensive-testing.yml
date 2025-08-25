@@ -12,7 +12,7 @@ on:
 env:
   PYTHON_VERSION: '3.11'
   NODE_VERSION: '18'
-  CLAUDE_TIU_ENV: 'test'
+  CLAUDE_TUI_ENV: 'test'
   PYTHONPATH: ${{ github.workspace }}/src
 
 jobs:
@@ -169,7 +169,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: claude_tiu_test
+          POSTGRES_DB: claude_tui_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -205,17 +205,17 @@ jobs:
 
       - name: 🗄️ Setup Test Database
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379
         run: |
           # Run database migrations if they exist
           if [ -f scripts/init-db.sql ]; then
-            PGPASSWORD=test_password psql -h localhost -U postgres -d claude_tiu_test -f scripts/init-db.sql
+            PGPASSWORD=test_password psql -h localhost -U postgres -d claude_tui_test -f scripts/init-db.sql
           fi
 
       - name: 🔗 Run Integration Tests
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tiu_test
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tui_test
           REDIS_URL: redis://localhost:6379
           CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY_TEST }}
         run: |
@@ -269,7 +269,7 @@ jobs:
           # Verify server is running
           curl -f http://localhost:8000/health || exit 1
         env:
-          CLAUDE_TIU_ENV: test
+          CLAUDE_TUI_ENV: test
           PORT: 8000
 
       - name: 🌐 Run API Tests
@@ -427,7 +427,7 @@ jobs:
       - name: 🛡️ OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'claude-tiu'
+          project: 'claude-tui'
           path: '.'
           format: 'XML'
           out: 'dependency-check-report'
@@ -649,7 +649,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          channel: '#claude-tiu-ci'
+          channel: '#claude-tui-ci'
           webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:

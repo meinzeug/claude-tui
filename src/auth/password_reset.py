@@ -62,7 +62,7 @@ class EmailService:
         smtp_username: Optional[str] = None,
         smtp_password: Optional[str] = None,
         use_tls: bool = True,
-        from_email: str = "noreply@claude-tiu.com",
+        from_email: str = "noreply@claude-tui.com",
         from_name: str = "Claude-TIU"
     ):
         self.smtp_host = smtp_host
@@ -295,7 +295,7 @@ class PasswordResetService:
         email: str,
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None,
-        reset_base_url: str = "https://claude-tiu.com/reset-password"
+        reset_base_url: str = "https://claude-tui.com/reset-password"
     ) -> Dict[str, Any]:
         """Request password reset for email address"""
         try:

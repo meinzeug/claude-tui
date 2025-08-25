@@ -127,7 +127,7 @@ The Test Engineering validation of Claude-TIU performance fixes has been complet
 
 ### Immediate Actions Required
 1. **Expand Unit Test Coverage**
-   - Add tests for all core modules in `src/claude_tiu/core/`
+   - Add tests for all core modules in `src/claude_tui/core/`
    - Target 90%+ coverage for critical components
    - Implement property-based testing for edge cases
 

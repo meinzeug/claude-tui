@@ -27,7 +27,7 @@ def test_imports():
         
         # UI imports (will fail if Textual not installed)
         try:
-            from ui.main_app import ClaudeTIUApp
+            from ui.main_app import ClaudeTUIApp
             print("✅ UI: Main App imported")
         except ImportError as e:
             print(f"⚠️  UI: Main App import failed (Textual may not be installed): {e}")
@@ -90,7 +90,7 @@ def test_basic_functionality():
 def main():
     """Main test runner"""
     print("=" * 50)
-    print("Claude-TIU Component Test")
+    print("Claude TUI Component Test")
     print("=" * 50)
     
     # Test imports
@@ -102,7 +102,7 @@ def main():
     # Summary
     print("\n" + "=" * 50)
     if import_success and func_success:
-        print("✅ All tests passed! Claude-TIU is ready.")
+        print("✅ All tests passed! Claude TUI is ready.")
         print("\nTo run the full TUI:")
         print("  python run_tui.py")
         print("\nTo run the API:")

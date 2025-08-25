@@ -1,4 +1,4 @@
-# Code Quality Assessment Report - Claude TIU Project
+# Code Quality Assessment Report - Claude TUI Project
 
 **Generated:** 2025-08-25  
 **Assessment Type:** Comprehensive Codebase Analysis  
@@ -8,7 +8,7 @@
 
 ### Overall Quality Score: 7.2/10
 
-The Claude TIU project demonstrates a well-structured, enterprise-grade Python application with comprehensive features for AI-powered development. The codebase shows strong architectural patterns, security considerations, and testing infrastructure, but has areas for improvement in technical debt management and code size optimization.
+The Claude TUI project demonstrates a well-structured, enterprise-grade Python application with comprehensive features for AI-powered development. The codebase shows strong architectural patterns, security considerations, and testing infrastructure, but has areas for improvement in technical debt management and code size optimization.
 
 **Project Statistics:**
 - **Total Lines of Code:** ~120,086 lines
@@ -241,7 +241,7 @@ The codebase largely follows the documented architecture with:
 
 ## Conclusion
 
-The Claude TIU codebase represents a sophisticated, well-architected application with strong security foundations and modern development practices. While there are areas for improvement, particularly around code complexity and technical debt, the overall structure provides a solid foundation for continued development and scaling.
+The Claude TUI codebase represents a sophisticated, well-architected application with strong security foundations and modern development practices. While there are areas for improvement, particularly around code complexity and technical debt, the overall structure provides a solid foundation for continued development and scaling.
 
 The main focus should be on refactoring large files, improving exception handling, and removing debug artifacts to achieve production-ready quality standards.
 
