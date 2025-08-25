@@ -1,7 +1,7 @@
 /* Claude-TUI Main Stylesheet */
 /* Enhanced Textual CSS for the TUI application */
 
-/* CSS Variables */
+/* TCSS Variables */
 $background: #121212;
 $surface: #1e1e1e;
 $primary: #0178d4;
@@ -76,7 +76,6 @@ Screen {
 .project-tree {
     height: 50%;
     border: solid $border;
-    scrollbar-gutter: stable;
 }
 
 .file-status-validated {
@@ -126,7 +125,6 @@ Screen {
 .task-dashboard {
     height: 50%;
     border: solid $border;
-    scrollbar-gutter: stable;
 }
 
 .task-header {
@@ -172,7 +170,6 @@ Screen {
 
 .console-log {
     height: 1fr;
-    scrollbar-gutter: stable;
     background: $surface;
 }
 
@@ -455,7 +452,7 @@ Button.success {
 }
 
 Button.success:hover {
-    background: $success-darken-1;
+    background: #059669;
 }
 
 Button.error {
@@ -464,7 +461,7 @@ Button.error {
 }
 
 Button.error:hover {
-    background: $error-darken-1;
+    background: #dc2626;
 }
 
 Button.warning {
@@ -473,7 +470,7 @@ Button.warning {
 }
 
 Button.warning:hover {
-    background: $warning-darken-1;
+    background: #d97706;
 }
 
 /* Modal Styles */

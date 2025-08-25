@@ -31,8 +31,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 # Internal imports
 from .core_services import ServiceOrchestrator, get_service_orchestrator
 from ..core.config_manager import ConfigManager
-from ..claude_tiu.integrations.claude_flow_client import ClaudeFlowClient
-from ..claude_tiu.integrations.claude_code_client import ClaudeCodeClient
+from ..claude_tui.integrations.claude_flow_client import ClaudeFlowClient
+from ..claude_tui.integrations.claude_code_client import ClaudeCodeClient
 
 logger = logging.getLogger(__name__)
 
@@ -686,7 +686,7 @@ class ClaudeIntegrationLayer:
             return None
         
         try:
-            from ..claude_tiu.models.ai_models import WorkflowRequest
+            from ..claude_tui.models.ai_models import WorkflowRequest
             
             context = self.conversations.get(conversation_id)
             if not context:

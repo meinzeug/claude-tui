@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import work, on
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container
 from textual.widgets import Static, Label, Button, ListView, ListItem
 from textual.message import Message
@@ -122,7 +123,7 @@ class NotificationWidget(Container):
         self.dismiss_callback = dismiss_callback
         self.auto_dismiss_timer: Optional[Timer] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose notification widget"""
         with Horizontal(classes="notification-container"):
             # Icon and content
@@ -194,7 +195,7 @@ class NotificationToast(Container):
         self.notification = notification
         self.dismiss_callback = dismiss_callback
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose toast notification"""
         # Create panel with notification content
         content = Text()
@@ -291,7 +292,7 @@ class NotificationSystem(Container):
         self.toast_container: Optional[Container] = None
         self.history_widget: Optional[NotificationHistory] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose notification system"""
         # Toast notifications container (top overlay)
         self.toast_container = Container(id="toast-container", classes="toast-overlay")

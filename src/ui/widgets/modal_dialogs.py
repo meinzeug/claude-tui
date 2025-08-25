@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from textual import on
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container, Grid
 from textual.widgets import (
     Static, Label, Button, Input, TextArea, Select, Checkbox, 
@@ -52,7 +53,7 @@ class ConfigurationModal(ModalScreen):
         self.input_widgets: Dict[str, Any] = {}
         self.categories = list(set(opt.category for opt in config_options))
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose configuration modal"""
         with Container(id="config-modal", classes="modal-container"):
             yield Label("⚙️ Application Settings", classes="modal-header")
@@ -206,7 +207,7 @@ class CommandTemplatesModal(ModalScreen):
         self.templates = self._load_command_templates()
         self.selected_template: Optional[Dict[str, str]] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose command templates modal"""
         with Container(id="templates-modal", classes="modal-container"):
             yield Label("📝 AI Command Templates", classes="modal-header")
@@ -401,7 +402,7 @@ class ConfirmationModal(ModalScreen):
         self.cancel_text = cancel_text
         self.variant = variant
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose confirmation modal"""
         with Container(id="confirm-modal", classes="modal-container small-modal"):
             yield Label(self.title, classes="modal-header")
@@ -431,7 +432,7 @@ class TaskCreationModal(ModalScreen):
         super().__init__()
         self.project_id = project_id
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose task creation modal"""
         with Container(id="task-modal", classes="modal-container"):
             yield Label("➕ Create New Task", classes="modal-header")

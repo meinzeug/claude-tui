@@ -19,32 +19,32 @@ from textual.message import Message
 from textual.reactive import reactive
 
 # Import all UI widgets
-from claude_tiu.ui.widgets.project_tree import ProjectTree, FileSelectedMessage
-from claude_tiu.ui.widgets.task_dashboard import TaskDashboard, AddTaskMessage, ShowAnalyticsMessage
-from claude_tiu.ui.widgets.console_widget import ConsoleWidget, ShowCommandTemplatesMessage
-from claude_tiu.ui.widgets.placeholder_alert import (
+from claude_tui.ui.widgets.project_tree import ProjectTree, FileSelectedMessage
+from claude_tui.ui.widgets.task_dashboard import TaskDashboard, AddTaskMessage, ShowAnalyticsMessage
+from claude_tui.ui.widgets.console_widget import ConsoleWidget, ShowCommandTemplatesMessage
+from claude_tui.ui.widgets.placeholder_alert import (
     PlaceholderAlert, PlaceholderAlertTriggeredMessage, AutoFixIssuesMessage,
     StartCompletionMessage, ExportPlaceholderReportMessage
 )
-from claude_tiu.ui.widgets.progress_intelligence import (
+from claude_tui.ui.widgets.progress_intelligence import (
     ProgressIntelligence, ValidateNowMessage, ShowValidationDetailsMessage
 )
-from claude_tiu.ui.widgets.workflow_visualizer import (
+from claude_tui.ui.widgets.workflow_visualizer import (
     WorkflowVisualizerWidget, StartWorkflowMessage, PauseWorkflowMessage,
     StopWorkflowMessage, ExportWorkflowMessage
 )
-from claude_tiu.ui.widgets.metrics_dashboard import (
+from claude_tui.ui.widgets.metrics_dashboard import (
     MetricsDashboardWidget, ExportMetricsMessage, ShowMetricsSettingsMessage
 )
-from claude_tiu.ui.widgets.modal_dialogs import (
+from claude_tui.ui.widgets.modal_dialogs import (
     ConfigurationModal, CommandTemplatesModal, TaskCreationModal,
     ConfirmationModal, UseTemplateMessage, CreateTaskMessage,
     SaveConfigMessage, ExportConfigMessage
 )
 
 # Import models
-from claude_tiu.models.project import Project
-from claude_tiu.models.task import Task
+from claude_tui.models.project import Project
+from claude_tui.models.task import Task
 
 
 class WorkspaceLayout(Enum):

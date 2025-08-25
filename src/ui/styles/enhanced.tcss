@@ -1,4 +1,4 @@
-/* Enhanced Textual CSS for Claude-TIU Application */
+/* Enhanced Textual CSS for Claude-TUI Application */
 /* Professional dark theme with modern design patterns */
 
 /* Color Variables - Dark Theme */
@@ -180,39 +180,39 @@ Button:focus {
     color: white;
 }
 
-Button.-primary {
+Button.primary {
     background: $primary;
     color: white;
 }
 
-Button.-primary:hover {
+Button.primary:hover {
     background: $primary-dark;
 }
 
-Button.-success {
+Button.success {
     background: $success;
     color: white;
 }
 
-Button.-success:hover {
+Button.success:hover {
     background: $success-dark;
 }
 
-Button.-error {
+Button.error {
     background: $error;
     color: white;
 }
 
-Button.-error:hover {
+Button.error:hover {
     background: $error-dark;
 }
 
-Button.-warning {
+Button.warning {
     background: $warning;
     color: white;
 }
 
-Button.-warning:hover {
+Button.warning:hover {
     background: $warning-dark;
 }
 
@@ -391,7 +391,7 @@ RichLog {
     color: $warning;
     margin: 1 0;
     padding: 1;
-    background: rgba(245, 158, 11, 0.1);
+    background: $warning 10%;
     border: round $warning;
 }
 
@@ -485,7 +485,7 @@ RichLog {
 .category-content {
     margin: 0 0 2 0;
     padding: 1;
-    background: rgba(51, 65, 85, 0.3);
+    background: $surface 30%;
     border: round $border;
 }
 
@@ -574,7 +574,7 @@ Tab:hover {
     color: $text;
 }
 
-Tab.-active {
+Tab.active {
     background: $primary;
     color: white;
     text-style: bold;
@@ -611,11 +611,11 @@ DataTable {
 
 /* Floating Actions */
 .floating-actions {
-    position: absolute;
-    bottom: 5;
-    right: 5;
+    dock: bottom;
+    align: right bottom;
     width: 15;
     height: 20;
+    margin: 0 5 5 0;
 }
 
 .quick-btn {
@@ -679,40 +679,25 @@ Input:focus, TextArea:focus, Select:focus {
     background: $surface-light;
 }
 
-/* Responsive Design */
-@media (max-width: 100) {
-    .sidebar {
-        width: 25;
-    }
-    .right-panel {
-        width: 30;
-    }
+/* Responsive Design - Textual doesn't support media queries */
+.sidebar-small {
+    width: 25;
+}
+.right-panel-small {
+    width: 30;
 }
 
-@media (max-width: 80) {
-    .workflow-tree-panel, .workflow-details-panel {
-        width: 100%;
-    }
-    .metrics-grid {
-        grid-size: 1 2;
-    }
+.workflow-tree-panel-small, .workflow-details-panel-small {
+    width: 100%;
+}
+.metrics-grid-small {
+    grid-size: 1 2;
 }
 
-/* Animation and Transitions */
-Button {
-    transition: background 200ms;
-}
+/* Animation and Transitions - Simplified for Textual */
+/* Textual doesn't support CSS transitions */
 
-Input, TextArea, Select {
-    transition: border 200ms, background 200ms;
-}
-
-/* Print Styles (if needed) */
-@media print {
-    .floating-actions {
-        display: none;
-    }
-    .quick-actions {
-        display: none;
-    }
+/* Print Styles - Not applicable to terminal UI */
+.print-hidden {
+    display: none;
 }

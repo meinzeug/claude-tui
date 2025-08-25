@@ -12,7 +12,8 @@ from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
 from enum import Enum
 
-from textual import on, work
+from textual import on, work, events
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal
 from textual.widgets import Input, RichLog, Button, Static, Label
 from textual.message import Message
@@ -97,7 +98,7 @@ class ConsoleInput(Input):
             "analyze codebase"
         ]
     
-    def on_key(self, event) -> None:
+    def on_key(self, event: events.Key) -> None:
         """Handle key events for history navigation"""
         if event.key == "up":
             self._navigate_history(-1)
@@ -242,7 +243,7 @@ class ConsoleWidget(Vertical):
         self.message_history: List[ConsoleMessage] = []
         self.current_task_id: Optional[str] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose console widget"""
         yield Label("💬 AI Console", classes="header")
         

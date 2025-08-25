@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import on, work
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container
 from textual.widgets import Static, Label, Button, ListView, ListItem
 from textual.screen import ModalScreen
@@ -104,7 +105,7 @@ class PlaceholderIssueWidget(Container):
         super().__init__()
         self.issue = issue
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose issue widget"""
         with Vertical():
             # Issue header
@@ -183,7 +184,7 @@ class PlaceholderAlertModal(ModalScreen):
         self.issues = issues
         self.issue_widgets: List[PlaceholderIssueWidget] = []
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose alert modal"""
         with Container(id="alert-modal"):
             # Header
@@ -291,7 +292,7 @@ class PlaceholderAlert(Container):
         self.alert_visible = False
         self.monitoring_active = False
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose placeholder alert widget (initially hidden)"""
         # This widget is primarily for managing alerts, not visible UI
         yield Static("", id="placeholder-alert-manager")

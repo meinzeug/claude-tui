@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import work, on
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal
 from textual.widgets import Static, Label, ProgressBar, Button
 from textual.reactive import reactive
@@ -266,7 +267,7 @@ class ProgressIntelligence(Vertical):
         self.eta_label: Optional[Label] = None
         self.monitoring_active = False
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose progress intelligence widget"""
         yield Label("🔍 Progress Intelligence", classes="header")
         

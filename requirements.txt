@@ -1,98 +1,98 @@
-# Core Framework Dependencies
-textual>=0.40.0
-rich>=13.0.0
-click>=8.0.0
-pydantic>=2.0.0
-aiohttp>=3.8.0
-pyyaml>=6.0
-watchdog>=3.0.0
-gitpython>=3.1.0
-jinja2>=3.1.0
-psutil>=5.9.0
-cachetools>=5.3.0
-asyncio-mqtt>=0.11.0
+# Core Framework Dependencies - Pinned Versions for Fast Resolution
+textual==5.3.0
+rich==13.7.0
+click==8.1.7
+pydantic==2.5.3
+aiohttp==3.9.1
+pyyaml==6.0.1
+watchdog==3.0.0
+gitpython==3.1.40
+jinja2==3.1.3
+psutil==5.9.6
+cachetools==5.3.2
+asyncio-mqtt==0.16.2
 
 # HTTP Client Dependencies
-backoff>=2.2.0  # For retry logic
-httpx>=0.25.0   # Alternative HTTP client
+backoff==2.2.1
+httpx==0.25.2
+
+# Async File I/O
+aiofiles==23.2.1
+
+# File type detection  
+python-magic==0.4.27
 
 # Performance Optimizations (Optional)
-uvloop>=0.17.0
-orjson>=3.9.0
-msgpack>=1.0.0
-lz4>=4.3.0
+uvloop==0.19.0
+orjson==3.9.10
+msgpack==1.0.7
+lz4==4.3.2
 
 # Development Dependencies
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.1.0
-black>=23.0.0
-isort>=5.12.0
-mypy>=1.5.0
-pre-commit>=3.4.0
-sphinx>=7.1.0
-sphinx-rtd-theme>=1.3.0
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.12.1
+isort==5.13.2
+mypy==1.7.1
+pre-commit==3.6.0
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
 
 # API Framework
-fastapi>=0.104.0
-uvicorn>=0.24.0
-sqlalchemy>=2.0.0
-aiosqlite>=0.19.0
-alembic>=1.12.0
+fastapi==0.104.1
+uvicorn==0.24.0
+sqlalchemy==2.0.23
+aiosqlite==0.19.0
+alembic==1.13.1
 
 # Authentication
-python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
-python-multipart>=0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
 
 # Security and Validation
-cryptography>=3.4.8
-certifi>=2021.10.8
-requests>=2.25.1
+cryptography==41.0.7
+certifi==2023.11.17
+requests==2.31.0
 
 # Community Platform Dependencies
-jinja2>=3.1.0
-bleach>=6.0.0
-markdown>=3.5.0
-python-slugify>=8.0.0
-pillow>=10.0.0
+bleach==6.1.0
+markdown==3.5.1
+python-slugify==8.0.1
+pillow==10.1.0
 
 # Search and Analytics
-elasticsearch>=8.0.0
-redis>=5.0.0
+elasticsearch==8.11.0
+redis==5.0.1
 
 # Additional API Dependencies
-python-multipart>=0.0.6
-email-validator>=2.0.0
+email-validator==2.1.0
 
 # Machine Learning Dependencies for AI Learning System
-numpy>=1.24.0
-scikit-learn>=1.3.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-pandas>=2.0.0
-plotly>=5.15.0
+numpy==1.26.2
+scikit-learn==1.3.2
+matplotlib==3.8.2
+seaborn==0.13.0
+pandas==2.1.4
+plotly==5.18.0
 
 # AI Advanced Services Dependencies
-websockets>=12.0
-redis[hiredis]>=5.0.0
-diskcache>=5.6.0
-scipy>=1.11.0
-# pickle5>=0.0.12  # Not needed for Python 3.11+
-# asyncio>=3.4.3  # Built-in to Python 3.11+
+websockets==12.0
+diskcache==5.6.3
+scipy==1.11.4
 
 # Additional Testing Dependencies
-pytest-mock>=3.12.0
-pytest-benchmark>=4.0.0
-pytest-timeout>=2.2.0
-pytest-xdist>=3.5.0
+pytest-mock==3.12.0
+pytest-benchmark==4.0.0
+pytest-timeout==2.2.0
+pytest-xdist==3.5.0
 
 # Performance and Monitoring
-psutil>=5.9.0
-memory-profiler>=0.61.0
-line-profiler>=4.1.0
+memory-profiler==0.61.0
+line-profiler==4.1.2
 
 # Development Tools
-bandit>=1.7.0
-safety>=2.3.0
-vulture>=2.10.0
+bandit==1.7.5
+safety==3.0.1
+vulture==2.10

@@ -696,8 +696,8 @@ class IntelligentSystemIntegration:
         if self.config.get('enable_federated_learning', False):
             self.federated_system = FederatedLearningSystem(
                 self.pattern_engine,
-                node_id=self.config.get('node_id', 'claude_tiu_node'),
-                organization=self.config.get('organization', 'claude_tiu_org')
+                node_id=self.config.get('node_id', 'claude_tui_node'),
+                organization=self.config.get('organization', 'claude_tui_org')
             )
         else:
             self.federated_system = None

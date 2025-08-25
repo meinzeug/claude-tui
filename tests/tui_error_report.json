@@ -1,0 +1,208 @@
+{
+  "timestamp": "2025-08-25T17:06:44.885560",
+  "summary": {
+    "total_errors": 0,
+    "import_issues": 5,
+    "startup_issues": 0,
+    "widget_issues": 0,
+    "runtime_issues": 0,
+    "fixes_identified": 4,
+    "overall_status": "GOOD"
+  },
+  "test_results": {
+    "import_tests": {
+      "core": {
+        "ui.main_app.ClaudeTUIApp": {
+          "status": "success",
+          "class": "<class 'ui.main_app.ClaudeTUIApp'>"
+        },
+        "ui.main_app.run_app": {
+          "status": "success",
+          "class": "<function run_app at 0x7fc3b6365360>"
+        },
+        "core.project_manager.ProjectManager": {
+          "status": "success",
+          "class": "<class 'core.project_manager.ProjectManager'>"
+        },
+        "core.ai_interface.AIInterface": {
+          "status": "success",
+          "class": "<class 'core.ai_interface.AIInterface'>"
+        },
+        "core.config_manager.ConfigManager": {
+          "status": "success",
+          "class": "<class 'core.config_manager.ConfigManager'>"
+        }
+      },
+      "widgets": {
+        "ui.widgets.project_tree.ProjectTree": {
+          "status": "success",
+          "class": "<class 'ui.widgets.project_tree.ProjectTree'>"
+        },
+        "ui.widgets.task_dashboard.TaskDashboard": {
+          "status": "success",
+          "class": "<class 'ui.widgets.task_dashboard.TaskDashboard'>"
+        },
+        "ui.widgets.progress_intelligence.ProgressIntelligence": {
+          "status": "success",
+          "class": "<class 'ui.widgets.progress_intelligence.ProgressIntelligence'>"
+        },
+        "ui.widgets.console_widget.ConsoleWidget": {
+          "status": "success",
+          "class": "<class 'ui.widgets.console_widget.ConsoleWidget'>"
+        },
+        "ui.widgets.notification_system.NotificationSystem": {
+          "status": "success",
+          "class": "<class 'ui.widgets.notification_system.NotificationSystem'>"
+        },
+        "ui.widgets.placeholder_alert.PlaceholderAlert": {
+          "status": "success",
+          "class": "<class 'ui.widgets.placeholder_alert.PlaceholderAlert'>"
+        },
+        "ui.widgets.metrics_dashboard.MetricsDashboard": {
+          "status": "missing_class",
+          "error": "Class MetricsDashboard not found in ui.widgets.metrics_dashboard"
+        },
+        "ui.widgets.modal_dialogs.Modal": {
+          "status": "missing_class",
+          "error": "Class Modal not found in ui.widgets.modal_dialogs"
+        },
+        "ui.widgets.workflow_visualizer.WorkflowVisualizer": {
+          "status": "missing_class",
+          "error": "Class WorkflowVisualizer not found in ui.widgets.workflow_visualizer"
+        },
+        "ui.widgets.git_workflow_widget.GitWorkflowWidget": {
+          "status": "import_error",
+          "error": "Import error for ui.widgets.git_workflow_widget: attempted relative import beyond top-level package"
+        }
+      },
+      "screens": {
+        "ui.screens.project_wizard.ProjectWizardScreen": {
+          "status": "success",
+          "class": "<class 'ui.screens.project_wizard.ProjectWizardScreen'>"
+        },
+        "ui.screens.settings.SettingsScreen": {
+          "status": "success",
+          "class": "<class 'ui.screens.settings.SettingsScreen'>"
+        },
+        "ui.screens.help_screen.HelpScreen": {
+          "status": "success",
+          "class": "<class 'ui.screens.help_screen.HelpScreen'>"
+        },
+        "ui.screens.workspace_screen.WorkspaceScreen": {
+          "status": "import_error",
+          "error": "Import error for ui.screens.workspace_screen: No module named 'claude_tiu'"
+        }
+      }
+    },
+    "startup_test": true,
+    "widget_tests": {
+      "ProjectTree": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      },
+      "TaskDashboard": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      },
+      "ProgressIntelligence": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      },
+      "ConsoleWidget": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      },
+      "NotificationSystem": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      },
+      "PlaceholderAlert": {
+        "status": "success",
+        "available_methods": [
+          "refresh",
+          "render",
+          "compose"
+        ]
+      }
+    },
+    "runtime_test": true,
+    "error_handling_test": false
+  },
+  "issues": {
+    "errors": [],
+    "import_issues": [
+      "Class MetricsDashboard not found in ui.widgets.metrics_dashboard",
+      "Class Modal not found in ui.widgets.modal_dialogs",
+      "Class WorkflowVisualizer not found in ui.widgets.workflow_visualizer",
+      "Import error for ui.widgets.git_workflow_widget: attempted relative import beyond top-level package",
+      "Import error for ui.screens.workspace_screen: No module named 'claude_tiu'"
+    ],
+    "startup_issues": [],
+    "widget_issues": [],
+    "runtime_issues": []
+  },
+  "fixes": [
+    {
+      "issue": "Class MetricsDashboard not found in ui.widgets.metrics_dashboard",
+      "fix_type": "missing_class",
+      "description": "Create missing class or adjust import",
+      "action": "Implement missing class or fix import statement",
+      "priority": "medium"
+    },
+    {
+      "issue": "Class Modal not found in ui.widgets.modal_dialogs",
+      "fix_type": "missing_class",
+      "description": "Create missing class or adjust import",
+      "action": "Implement missing class or fix import statement",
+      "priority": "medium"
+    },
+    {
+      "issue": "Class WorkflowVisualizer not found in ui.widgets.workflow_visualizer",
+      "fix_type": "missing_class",
+      "description": "Create missing class or adjust import",
+      "action": "Implement missing class or fix import statement",
+      "priority": "medium"
+    },
+    {
+      "issue": "Import error for ui.screens.workspace_screen: No module named 'claude_tiu'",
+      "fix_type": "import_path_correction",
+      "description": "Correct import path from claude_tiu to claude_tui",
+      "action": "Replace claude_tiu with claude_tui in import statements",
+      "priority": "high"
+    }
+  ],
+  "recommendations": [
+    {
+      "category": "imports",
+      "priority": "high",
+      "recommendation": "Fix import path issues, especially claude_tiu -> claude_tui",
+      "impact": "Critical for proper module loading"
+    },
+    {
+      "category": "success",
+      "priority": "low",
+      "recommendation": "Application is working well - consider adding more features",
+      "impact": "Enhancement opportunities"
+    }
+  ]
+}

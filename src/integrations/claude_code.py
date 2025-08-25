@@ -7,9 +7,27 @@ import asyncio
 import json
 import logging
 import os
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ClaudeCodeResult:
+    """Result from Claude Code operation"""
+    success: bool
+    description: str
+    execution_time: float
+    files_modified: List[str]
+    status: str
+    error_message: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class ClaudeCodeError(Exception):
+    """Claude Code operation error"""
+    pass
 
 
 class ClaudeCodeClient:
@@ -22,16 +40,16 @@ class ClaudeCodeClient:
         self,
         description: str,
         context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> ClaudeCodeResult:
         """Execute development task using Claude Code"""
         
         # Mock implementation - replace with actual Claude Code API calls
         await asyncio.sleep(0.5)  # Simulate processing time
         
-        return {
-            'success': True,
-            'description': description,
-            'execution_time': 0.5,
-            'files_modified': context.get('files', []),
-            'status': 'completed'
-        }
+        return ClaudeCodeResult(
+            success=True,
+            description=description,
+            execution_time=0.5,
+            files_modified=context.get('files', []),
+            status='completed'
+        )

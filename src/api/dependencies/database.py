@@ -8,7 +8,7 @@ import os
 from typing import AsyncGenerator
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./claude_tiu.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./claude_tui.db")
 
 # Create async engine
 async_engine = create_async_engine(

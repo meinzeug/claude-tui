@@ -1,4 +1,4 @@
-/* Claude-TIU Main Application Styles */
+/* Claude-TUI Main Application Styles */
 
 /* Global Styles */
 * {
@@ -29,10 +29,10 @@ $accent: #ffeb3b;
 /* Layout Containers */
 .left-panel {
     width: 30%;
-    min-width: 250px;
-    max-width: 400px;
-    border-right: solid $border;
+    min-width: 30;
+    max-width: 50;
     background: $surface-light;
+    border-right: solid $border;
 }
 
 .main-panel {
@@ -113,14 +113,14 @@ TaskDashboard {
 .filter-bar {
     height: 3;
     background: $surface-light;
-    align: center;
+    align: center middle;
     padding: 1;
 }
 
 .control-bar {
     height: 3;
     background: $surface-light;
-    align: center;
+    align: center middle;
     padding: 1;
     border-top: solid $border;
 }
@@ -303,7 +303,7 @@ RichLog {
 
 .issue-actions {
     margin-top: 1;
-    align: center;
+    align: center middle;
 }
 
 .modal-actions {
@@ -311,7 +311,7 @@ RichLog {
     background: $surface-light;
     padding: 1;
     border-top: solid $border;
-    align: center;
+    align: center middle;
 }
 
 /* Project Wizard Styles */
@@ -338,7 +338,7 @@ RichLog {
     background: $surface-light;
     padding: 1;
     border-top: solid $border;
-    align: center;
+    align: center middle;
 }
 
 .template-details {
@@ -387,30 +387,30 @@ Button:hover {
     color: white;
 }
 
-Button.-primary {
+Button.primary {
     background: $primary;
     color: white;
 }
 
-Button.-primary:hover {
+Button.primary:hover {
     background: $primary-dark;
 }
 
-Button.-success {
+Button.success {
     background: $success;
     color: white;
 }
 
-Button.-success:hover {
+Button.success:hover {
     background: #45a049;
 }
 
-Button.-error {
+Button.error {
     background: $error;
     color: white;
 }
 
-Button.-error:hover {
+Button.error:hover {
     background: #d32f2f;
 }
 
@@ -430,7 +430,7 @@ Input:focus {
     border: solid $primary;
 }
 
-Input.-invalid {
+Input.invalid {
     border: solid $error;
 }
 
@@ -451,7 +451,7 @@ ProgressBar {
 }
 
 ProgressBar > .bar {
-    background: $primary;
+    color: $primary;
 }
 
 /* Tab Styles */
@@ -468,7 +468,7 @@ Tab {
     color: $text-muted;
 }
 
-Tab.-active {
+Tab.active {
     background: $primary;
     color: white;
 }
@@ -515,18 +515,15 @@ ListItem:hover {
     background: $surface-light;
 }
 
-ListItem.-highlighted {
+ListItem.highlighted {
     background: $primary;
     color: white;
 }
 
 /* Scrollbar Styles */
-.scrollbar-background {
-    background: $surface-light;
-}
-
-.scrollbar-color {
-    background: $primary;
+.scrollbar {
+    scrollbar-background: $surface-light;
+    scrollbar-color: $primary;
 }
 
 /* Focus Styles */
@@ -543,8 +540,7 @@ ListItem.-highlighted {
     text-style: italic;
 }
 
-/* Responsive Design - Note: Media queries have limited support in TCSS */
-/* Textual handles responsiveness differently than CSS */
+/* Responsive Design - Using CSS classes instead of media queries */
 .left-panel {
     width: 30%;
     min-width: 20;
@@ -579,8 +575,7 @@ ListItem.-highlighted {
     margin: 5% auto;
 }
 
-/* Animation and Transitions - Simplified for TCSS */
-/* Note: Complex animations not fully supported in Textual TCSS */
+/* Animation and Transitions - Not supported in TCSS */
 .fade-in {
     opacity: 1;
 }

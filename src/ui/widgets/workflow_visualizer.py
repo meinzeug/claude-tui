@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import on, work
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container, Center
 from textual.widgets import Static, Label, Button, Tree, ListView, ListItem
 from textual.message import Message
@@ -362,7 +363,7 @@ class WorkflowVisualizerWidget(Vertical):
         self.critical_path_widget: Optional[CriticalPathWidget] = None
         self.monitoring_active = False
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose workflow visualizer"""
         yield Label("🔀 Workflow Visualizer", classes="header")
         

@@ -73,7 +73,7 @@ class CacheConfig(BaseModel):
     port: int = 6379
     db: int = 0
     password: Optional[str] = None
-    key_prefix: str = "claude_tiu"
+    key_prefix: str = "claude_tui"
     default_ttl: int = 3600  # 1 hour
     max_connections: int = 20
     connection_pool_size: int = 10
@@ -183,7 +183,7 @@ class ServiceOrchestrator:
             # Load database configuration
             db_settings = await self.config_manager.get_setting('database', {})
             self.db_config = DatabaseConfig(
-                url=db_settings.get('url', 'sqlite+aiosqlite:///./claude_tiu.db'),
+                url=db_settings.get('url', 'sqlite+aiosqlite:///./claude_tui.db'),
                 pool_size=db_settings.get('pool_size', 10),
                 max_overflow=db_settings.get('max_overflow', 20)
             )
@@ -293,7 +293,7 @@ class ServiceOrchestrator:
         
         try:
             self.celery_app = Celery(
-                'claude_tiu',
+                'claude_tui',
                 broker=self.queue_config.broker_url,
                 backend=self.queue_config.result_backend
             )

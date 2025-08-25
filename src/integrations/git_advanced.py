@@ -29,14 +29,61 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union, Tuple, Callable
 from uuid import uuid4
 
-import aiohttp
-from git import Repo
-from git.objects import Commit
+# Optional imports with fallbacks
+try:
+    import aiohttp
+    AIOHTTP_AVAILABLE = True
+except ImportError:
+    AIOHTTP_AVAILABLE = False
+    aiohttp = None
 
-from .git_manager import GitManager, GitOperationResult, GitOperationStatus
-from ..core.types import ValidationResult, Issue, Severity, IssueType
-from ..core.ai_interface import AIInterface
-from ..services.validation_service import ValidationService
+try:
+    from git import Repo
+    from git.objects import Commit
+    GITPYTHON_AVAILABLE = True
+except ImportError:
+    GITPYTHON_AVAILABLE = False
+    class Repo:
+        def __init__(self, *args, **kwargs):
+            pass
+    class Commit:
+        pass
+
+# Use relative imports with try/except to handle missing modules
+try:
+    from .git_manager import GitManager, GitOperationResult, GitOperationStatus
+except ImportError:
+    class GitManager:
+        pass
+    class GitOperationResult:
+        pass
+    class GitOperationStatus:
+        pass
+
+# Core types with fallbacks
+try:
+    from ..core.types import ValidationResult, Issue, Severity, IssueType
+except ImportError:
+    class ValidationResult:
+        pass
+    class Issue:
+        pass
+    class Severity:
+        pass
+    class IssueType:
+        pass
+
+try:
+    from ..core.ai_interface import AIInterface
+except ImportError:
+    class AIInterface:
+        pass
+
+try:
+    from ..services.validation_service import ValidationService
+except ImportError:
+    class ValidationService:
+        pass
 
 logger = logging.getLogger(__name__)
 

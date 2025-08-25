@@ -12,6 +12,7 @@ from datetime import datetime
 import asyncio
 
 from textual import on, work
+from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.widgets import DirectoryTree, Static, Label, Button
 from textual.message import Message
@@ -72,13 +73,29 @@ class ProjectFileTree(DirectoryTree):
     
     def update_file_status(self, file_path: str, status: str) -> None:
         """Update validation status for a file"""
-        self.validation_status[file_path] = status
-        self.refresh()
+        try:
+            self.validation_status[file_path] = status
+            self.refresh()
+        except Exception as e:
+            # Handle refresh errors gracefully
+            try:
+                from ...core.error_handler import get_error_handler
+                get_error_handler().handle_error(e, component='project_tree', auto_recover=True)
+            except:
+                pass  # Continue without error handling if not available
     
     def update_validation_batch(self, status_dict: Dict[str, str]) -> None:
         """Batch update validation statuses"""
-        self.validation_status.update(status_dict)
-        self.refresh()
+        try:
+            self.validation_status.update(status_dict)
+            self.refresh()
+        except Exception as e:
+            # Handle refresh errors gracefully
+            try:
+                from ...core.error_handler import get_error_handler
+                get_error_handler().handle_error(e, component='project_tree', auto_recover=True)
+            except:
+                pass  # Continue without error handling if not available
 
 
 class ProjectTree(Vertical):
@@ -93,7 +110,7 @@ class ProjectTree(Vertical):
         self.status_label: Optional[Label] = None
         self.refresh_button: Optional[Button] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose the project tree widget"""
         yield Static("📁 Project Explorer", classes="header")
         
@@ -253,13 +270,13 @@ class ProjectTree(Vertical):
         # Emit custom message for file selection
         self.post_message(FileSelectedMessage(str(event.path)))
     
-    def refresh(self, *, repaint: bool = True, layout: bool = False, recompose: bool = False) -> None:
+    def refresh(self, **kwargs) -> None:
         """Refresh the project tree"""
         if self.tree_widget:
             self.tree_widget.reload()
         # Call parent refresh if it exists
         if hasattr(super(), 'refresh'):
-            super().refresh()
+            super().refresh(**kwargs)
         
     def set_project(self, project_path: str) -> None:
         """Set the current project path"""

@@ -635,7 +635,7 @@ class SecureSubprocessManager:
         log_dir.mkdir(parents=True, exist_ok=True)
         
         # Setup audit logger
-        self.audit_logger = logging.getLogger("claude_tiu_subprocess_audit")
+        self.audit_logger = logging.getLogger("claude_tui_subprocess_audit")
         self.audit_logger.setLevel(logging.INFO)
         
         # File handler for audit logs

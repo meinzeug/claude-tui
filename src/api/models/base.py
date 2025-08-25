@@ -14,7 +14,7 @@ from typing import AsyncGenerator
 from datetime import datetime
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./claude_tiu.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./claude_tui.db")
 
 # Create async engine
 async_engine = create_async_engine(DATABASE_URL, echo=True)

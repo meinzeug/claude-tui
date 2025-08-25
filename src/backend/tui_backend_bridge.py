@@ -30,7 +30,7 @@ from pydantic import BaseModel
 # Internal imports
 from .core_services import ServiceOrchestrator, get_service_orchestrator
 from ..api.v1.websocket import WebSocketEventType, ConnectionManager, WebSocketMessage
-from ..claude_tiu.integrations.claude_flow_client import ClaudeFlowClient
+from ..claude_tui.integrations.claude_flow_client import ClaudeFlowClient
 from ..core.config_manager import ConfigManager
 
 logger = logging.getLogger(__name__)
@@ -339,7 +339,7 @@ class TUIBackendBridge:
             claude_flow = self.orchestrator.get_claude_flow_service()
             if claude_flow:
                 # Create task orchestration request
-                from ..claude_tiu.models.ai_models import TaskOrchestrationRequest
+                from ..claude_tui.models.ai_models import TaskOrchestrationRequest
                 
                 request = TaskOrchestrationRequest(
                     description=task_data.get('description', f'TUI Task {task_id}'),

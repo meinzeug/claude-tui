@@ -24,11 +24,25 @@ from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union, Tuple, BinaryIO, TextIO
-import aiofiles
-import aiofiles.os
+
+# Optional imports with fallbacks
+try:
+    import aiofiles
+    import aiofiles.os
+    AIOFILES_AVAILABLE = True
+except ImportError:
+    AIOFILES_AVAILABLE = False
+    aiofiles = None
+
+try:
+    import magic
+    MAGIC_AVAILABLE = True
+except ImportError:
+    MAGIC_AVAILABLE = False
+    magic = None
+
 import filecmp
 import fnmatch
-import magic
 import psutil
 
 logger = logging.getLogger(__name__)

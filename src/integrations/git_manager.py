@@ -24,8 +24,28 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union, Tuple
 import tempfile
 import hashlib
-from git import Repo, InvalidGitRepositoryError, GitCommandError
-from git.objects import Commit, Blob, Tree
+
+# Optional Git imports with fallbacks
+try:
+    from git import Repo, InvalidGitRepositoryError, GitCommandError
+    from git.objects import Commit, Blob, Tree
+    GITPYTHON_AVAILABLE = True
+except ImportError:
+    GITPYTHON_AVAILABLE = False
+    # Fallback classes
+    class Repo:
+        def __init__(self, *args, **kwargs):
+            pass
+    class InvalidGitRepositoryError(Exception):
+        pass
+    class GitCommandError(Exception):
+        pass
+    class Commit:
+        pass
+    class Blob:
+        pass
+    class Tree:
+        pass
 
 logger = logging.getLogger(__name__)
 

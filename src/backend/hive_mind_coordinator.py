@@ -34,7 +34,7 @@ from .core_services import ServiceOrchestrator, get_service_orchestrator
 from .claude_integration_layer import ClaudeIntegrationLayer, get_claude_integration
 from .tui_backend_bridge import TUIBackendBridge, get_tui_bridge
 from ..core.config_manager import ConfigManager
-from ..claude_tiu.integrations.claude_flow_client import ClaudeFlowClient
+from ..claude_tui.integrations.claude_flow_client import ClaudeFlowClient
 
 logger = logging.getLogger(__name__)
 
@@ -444,7 +444,7 @@ class HiveMindCoordinator:
         # Integrate with Claude Flow if available
         if self.claude_flow:
             try:
-                from ..claude_tiu.models.ai_models import AgentConfig
+                from ..claude_tui.models.ai_models import AgentConfig
                 
                 flow_config = AgentConfig(
                     type=agent_type,

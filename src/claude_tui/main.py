@@ -16,11 +16,56 @@ from rich.console import Console
 from rich.logging import RichHandler
 
 from claude_tui import __version__
-from .core.config_manager import ConfigManager
-from .ui.main_app import ClaudeTUIApp
-from .core.logger import setup_logging
-from .utils.system_check import SystemChecker
-from .cli.main import cli as cli_main
+
+# Import with error handling
+try:
+    from .core.config_manager import ConfigManager
+    from .ui.main_app import ClaudeTUIApp
+    from .core.logger import setup_logging
+    from .utils.system_check import SystemChecker
+    from .cli.main import cli as cli_main
+    from .core.error_handler import get_error_handler, handle_errors, error_context
+    from .core.fallback_implementations import create_fallback_config_manager
+except ImportError as e:
+    # Provide minimal fallback for critical import failures
+    console = Console()
+    console.print(f"[red]Critical import error: {e}[/red]")
+    console.print("[yellow]Running in degraded mode with basic functionality[/yellow]")
+    
+    # Stub implementations for essential functionality
+    class ConfigManager:
+        def __init__(self, *args, **kwargs):
+            self.config = {'app': {'debug': False}}
+        def get(self, key, default=None):
+            return default
+    
+    class SystemChecker:
+        def check_system(self):
+            return {'status': 'degraded', 'issues': ['Import failures detected']}
+    
+    def setup_logging(*args, **kwargs):
+        logging.basicConfig(level=logging.INFO)
+        return logging.getLogger(__name__)
+    
+    # Fallback CLI and error handling
+    def cli_main():
+        console.print("[red]CLI functionality unavailable due to import errors[/red]")
+        sys.exit(1)
+        
+    def get_error_handler():
+        return None
+        
+    def handle_errors(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+        
+    def error_context(*args, **kwargs):
+        from contextlib import nullcontext
+        return nullcontext()
+    
+    def create_fallback_config_manager():
+        return ConfigManager()
 
 console = Console()
 logger = logging.getLogger(__name__)

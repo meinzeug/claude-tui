@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import on, work
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container
 from textual.widgets import (
     Static, Label, Button, ProgressBar, 
@@ -125,7 +126,7 @@ class TaskProgressWidget(Container):
         self.status_label: Optional[Label] = None
         self.authenticity_label: Optional[Label] = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose task progress widget"""
         with Vertical():
             # Task header
@@ -247,7 +248,7 @@ class TaskDashboard(Vertical):
         self.current_filter: Optional[TaskStatus] = None
         self.current_project = None
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose task dashboard"""
         yield Label("🎯 Task Dashboard", classes="header")
         
@@ -533,15 +534,36 @@ class TaskDashboard(Vertical):
         """Show task analytics"""
         self.post_message(ShowAnalyticsMessage())
     
-    def refresh(self, *, repaint: bool = True, layout: bool = False, recompose: bool = False) -> None:
+    def refresh(self, *, repaint: bool = True, layout: bool = False, **kwargs) -> None:
         """Refresh the dashboard with latest backend data"""
-        # Force update of tasks from backend
-        if self.backend_bridge:
-            # This will trigger the monitoring loop to fetch fresh data
-            asyncio.create_task(self._force_refresh())
-        # Call parent refresh if it exists
-        if hasattr(super(), 'refresh'):
-            super().refresh()
+        try:
+            # Force update of tasks from backend
+            if self.backend_bridge:
+                # This will trigger the monitoring loop to fetch fresh data
+                asyncio.create_task(self._force_refresh())
+            
+            # Call parent refresh with all compatible parameters
+            # Filter out incompatible kwargs to avoid TypeError
+            compatible_kwargs = {k: v for k, v in kwargs.items() 
+                               if k not in ['repaint', 'layout']}
+            
+            # Try calling with standard parameters first
+            try:
+                super().refresh(repaint=repaint, layout=layout, **compatible_kwargs)
+            except TypeError as e:
+                # Fallback to basic refresh if signature mismatch
+                if 'repaint' in str(e) or 'layout' in str(e):
+                    super().refresh(**compatible_kwargs)
+                else:
+                    raise
+        except Exception as e:
+            # Log error but continue operation
+            try:
+                from ...core.logger import get_logger
+                logger = get_logger(__name__)
+                logger.warning(f"Dashboard refresh error: {str(e)}")
+            except:
+                pass  # Continue without logging if logger unavailable
     
     async def _force_refresh(self) -> None:
         """Force refresh from backend"""

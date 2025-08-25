@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from textual import on, work
+from textual.app import ComposeResult
 from textual.containers import Vertical, Horizontal, Container, Grid
 from textual.widgets import Static, Label, Button, DataTable, TabbedContent, TabPane
 from textual.message import Message
@@ -385,7 +386,7 @@ class MetricsDashboardWidget(Vertical):
         self.metrics_history: Dict[str, List[Tuple[datetime, float]]] = {}
         self.monitoring_active = False
         
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Compose metrics dashboard"""
         yield Label("📊 Metrics Dashboard", classes="header")
         
