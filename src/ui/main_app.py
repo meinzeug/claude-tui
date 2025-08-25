@@ -193,7 +193,7 @@ class ClaudeTUIApp(App[None]):
     TITLE = "Claude-TUI - Intelligent AI Project Manager"
     SUB_TITLE = "SPARC Development with Progress Validation"
     
-    CSS_PATH = "styles/main.tcss"
+    # CSS_PATH = str(Path(__file__).parent / "styles" / "main.tcss")
     
     BINDINGS = [
         Binding("ctrl+n", "new_project", "New Project"),

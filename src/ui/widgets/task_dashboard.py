@@ -533,7 +533,7 @@ class TaskDashboard(Vertical):
         """Show task analytics"""
         self.post_message(ShowAnalyticsMessage())
     
-    def refresh(self, layout: bool = False) -> None:
+    def refresh(self, *, repaint: bool = True, layout: bool = False, recompose: bool = False) -> None:
         """Refresh the dashboard with latest backend data"""
         # Force update of tasks from backend
         if self.backend_bridge:

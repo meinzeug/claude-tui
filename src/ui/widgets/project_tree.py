@@ -253,7 +253,7 @@ class ProjectTree(Vertical):
         # Emit custom message for file selection
         self.post_message(FileSelectedMessage(str(event.path)))
     
-    def refresh(self, layout: bool = False, repaint: bool = True) -> None:
+    def refresh(self, *, repaint: bool = True, layout: bool = False, recompose: bool = False) -> None:
         """Refresh the project tree"""
         if self.tree_widget:
             self.tree_widget.reload()
