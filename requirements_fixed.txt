@@ -1,0 +1,98 @@
+# Core Framework Dependencies - Compatible Versions
+textual>=5.0.0,<6.0.0
+rich>=13.0.0
+click>=8.0.0
+pydantic>=1.10.0,<2.0.0
+aiohttp>=3.8.0
+pyyaml>=6.0
+watchdog>=3.0.0
+gitpython>=3.1.0
+jinja2>=3.1.0
+psutil>=5.9.0
+cachetools>=5.3.0
+asyncio-mqtt>=0.16.0
+
+# HTTP Client Dependencies
+backoff>=2.2.0
+httpx>=0.25.0
+
+# Async File I/O
+aiofiles>=23.0.0
+
+# File type detection  
+python-magic>=0.4.0
+
+# Performance Optimizations (Optional)
+uvloop>=0.17.0
+orjson>=3.9.0
+msgpack>=1.0.0
+lz4>=4.0.0
+
+# Development Dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+black>=23.0.0
+isort>=5.0.0
+mypy>=1.0.0
+pre-commit>=3.0.0
+sphinx>=7.0.0
+sphinx-rtd-theme>=2.0.0
+
+# API Framework
+fastapi>=0.100.0
+uvicorn>=0.20.0
+sqlalchemy>=2.0.0
+aiosqlite>=0.19.0
+alembic>=1.12.0
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.0
+python-multipart>=0.0.6
+
+# Security and Validation
+cryptography>=41.0.0
+certifi>=2023.0.0
+requests>=2.31.0
+
+# Community Platform Dependencies
+bleach>=6.0.0
+markdown>=3.5.0
+python-slugify>=8.0.0
+pillow>=10.0.0
+
+# Search and Analytics
+elasticsearch>=8.0.0
+redis>=5.0.0
+
+# Additional API Dependencies
+email-validator>=2.0.0
+
+# Machine Learning Dependencies for AI Learning System
+numpy>=1.24.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+seaborn>=0.13.0
+pandas>=2.0.0
+plotly>=5.0.0
+
+# AI Advanced Services Dependencies
+websockets>=12.0
+diskcache>=5.0.0
+scipy>=1.10.0
+
+# Additional Testing Dependencies
+pytest-mock>=3.10.0
+pytest-benchmark>=4.0.0
+pytest-timeout>=2.2.0
+pytest-xdist>=3.0.0
+
+# Performance and Monitoring
+memory-profiler>=0.60.0
+line-profiler>=4.0.0
+
+# Development Tools
+bandit>=1.7.0
+safety>=2.3.0,<3.0
+vulture>=2.0
