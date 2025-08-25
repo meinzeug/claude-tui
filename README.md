@@ -1,11 +1,11 @@
-# Claude TIU - AI-Powered Terminal User Interface
+# Claude TUI - AI-Powered Terminal User Interface
 
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Quality](https://img.shields.io/badge/code%20quality-A-green.svg)]()
 [![Documentation](https://img.shields.io/badge/docs-comprehensive-brightgreen.svg)](#documentation)
 
-Claude TIU is an intelligent AI-powered Terminal User Interface tool that revolutionizes software development through sophisticated AI orchestration, continuous validation, and anti-hallucination mechanisms. Built with the SPARC methodology and Claude-Flow orchestration for systematic Test-Driven Development.
+Claude TUI is an intelligent AI-powered Terminal User Interface tool that revolutionizes software development through sophisticated AI orchestration, continuous validation, and anti-hallucination mechanisms. Built with the SPARC methodology and Claude-Flow orchestration for systematic Test-Driven Development.
 
 **Current Status**: 98% Complete - Production Ready ✅
 
@@ -132,7 +132,7 @@ claude-tiu/
 
 ## 🚀 SPARC Development Workflow
 
-Claude TIU uses the SPARC methodology for systematic development:
+Claude TUI uses the SPARC methodology for systematic development:
 
 1. **S**pecification - Requirements analysis
 2. **P**seudocode - Algorithm design  
@@ -163,7 +163,7 @@ npm run typecheck                              # Type checking
 
 ## 🤖 AI Agent Orchestration
 
-Claude TIU provides 54+ specialized AI agents for different development tasks:
+Claude TUI provides 54+ specialized AI agents for different development tasks:
 
 **Current Implementation Status**: All core agents are fully implemented and tested with comprehensive coordination capabilities.
 
@@ -201,7 +201,7 @@ See [Anti-Hallucination System Documentation](docs/anti-hallucination-system.md)
 
 ## ⚡ Performance
 
-Claude TIU delivers exceptional performance:
+Claude TUI delivers exceptional performance:
 
 - **84.8%** SWE-Bench solve rate
 - **32.3%** token reduction
@@ -283,5 +283,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Claude TIU** - Revolutionizing software development through intelligent AI orchestration.
+**Claude TUI** - Revolutionizing software development through intelligent AI orchestration.
 
