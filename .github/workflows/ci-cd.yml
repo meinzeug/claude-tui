@@ -1,0 +1,520 @@
+name: CI/CD Pipeline - Claude TIU Production
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      skip_tests:
+        description: 'Skip tests (emergency deployment)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  # Job 1: Code Quality & Security Analysis
+  code-quality:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      should-deploy: ${{ steps.quality-gate.outputs.should-deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install safety bandit semgrep
+
+      - name: Code formatting check
+        run: |
+          black --check --diff src/
+          isort --check-only --diff src/
+
+      - name: Linting with flake8
+        run: |
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Type checking with mypy
+        run: mypy src/
+
+      - name: Security scan with Bandit
+        run: |
+          bandit -r src/ -f json -o bandit-report.json || true
+          bandit -r src/ -ll
+
+      - name: Dependency vulnerability scan
+        run: |
+          safety check --json --output safety-report.json || true
+          safety check
+
+      - name: SAST with Semgrep
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        run: |
+          semgrep --config=auto src/ --json --output=semgrep-report.json || true
+          semgrep --config=auto src/
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+            semgrep-report.json
+
+      - name: Quality gate
+        id: quality-gate
+        run: |
+          echo "should-deploy=true" >> $GITHUB_OUTPUT
+
+  # Job 2: Unit & Integration Tests
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_tests }}
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: claude_tiu_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '**/package*.json'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install -e .
+          npm install -g claude-flow@alpha
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files
+
+      - name: Run unit tests
+        env:
+          REDIS_URL: redis://localhost:6379
+          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tiu_test
+          CLAUDE_TIU_ENV: testing
+        run: |
+          pytest tests/unit/ -v --cov=claude_tiu --cov-report=xml --cov-report=html
+          coverage report --show-missing
+
+      - name: Run integration tests
+        env:
+          REDIS_URL: redis://localhost:6379
+          DATABASE_URL: postgresql://postgres:postgres@localhost/claude_tiu_test
+          CLAUDE_TIU_ENV: testing
+        run: |
+          pytest tests/integration/ -v --maxfail=5
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: matrix.python-version == '3.11'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  # Job 3: Build & Security Scan Docker Images
+  build:
+    name: Build & Scan Images
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    if: needs.code-quality.outputs.should-deploy == 'true'
+    timeout-minutes: 30
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      image-tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: production
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run Snyk container scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          npm install -g snyk
+          snyk container test ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --file=Dockerfile --severity-threshold=high
+
+  # Job 4: Deploy to Staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+    environment: staging
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-west-2 --name claude-tiu-staging
+
+      - name: Deploy to staging
+        run: |
+          envsubst < k8s/staging/deployment.yaml | kubectl apply -f -
+          kubectl set image deployment/claude-tiu-app claude-tiu=${{ needs.build.outputs.image-tag }} -n staging
+          kubectl rollout status deployment/claude-tiu-app -n staging --timeout=300s
+
+      - name: Run smoke tests
+        run: |
+          kubectl wait --for=condition=ready pod -l app=claude-tiu -n staging --timeout=120s
+          STAGING_URL=$(kubectl get service claude-tiu-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          curl -f http://$STAGING_URL/health || exit 1
+
+  # Job 5: Performance & Load Testing
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/develop'
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region us-west-2 --name claude-tiu-staging
+
+      - name: Get staging URL
+        id: staging-url
+        run: |
+          STAGING_URL=$(kubectl get service claude-tiu-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "url=http://$STAGING_URL" >> $GITHUB_OUTPUT
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run load tests
+        env:
+          BASE_URL: ${{ steps.staging-url.outputs.url }}
+        run: |
+          k6 run tests/performance/load-test.js --out json=performance-results.json
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results.json
+
+  # Job 6: Deploy to Production (Blue-Green)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, performance-tests]
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-west-2 --name claude-tiu-production
+
+      - name: Blue-Green Deployment
+        run: |
+          # Determine current and new colors
+          CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}' || echo "blue")
+          NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
+          
+          echo "Current color: $CURRENT_COLOR"
+          echo "Deploying to: $NEW_COLOR"
+          
+          # Deploy new version to inactive color
+          envsubst < k8s/production/deployment-$NEW_COLOR.yaml | kubectl apply -f -
+          kubectl set image deployment/claude-tiu-$NEW_COLOR claude-tiu=${{ needs.build.outputs.image-tag }} -n production
+          
+          # Wait for new deployment to be ready
+          kubectl rollout status deployment/claude-tiu-$NEW_COLOR -n production --timeout=600s
+          
+          # Run health checks
+          kubectl wait --for=condition=ready pod -l app=claude-tiu,color=$NEW_COLOR -n production --timeout=300s
+          
+          # Switch traffic to new version
+          kubectl patch service claude-tiu-service -n production -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+          
+          # Wait and verify
+          sleep 30
+          PROD_URL=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          curl -f http://$PROD_URL/health || exit 1
+          
+          # Scale down old version after successful switch
+          kubectl scale deployment claude-tiu-$CURRENT_COLOR --replicas=0 -n production
+
+      - name: Post-deployment tests
+        run: |
+          PROD_URL=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          # Basic health check
+          curl -f http://$PROD_URL/health
+          
+          # API endpoints check
+          curl -f http://$PROD_URL/api/v1/health
+          curl -f http://$PROD_URL/api/v1/version
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, initiating rollback..."
+          CURRENT_COLOR=$(kubectl get service claude-tiu-service -n production -o jsonpath='{.spec.selector.color}')
+          OLD_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
+          
+          # Switch back to previous version
+          kubectl patch service claude-tiu-service -n production -p '{"spec":{"selector":{"color":"'$OLD_COLOR'"}}}'
+          kubectl scale deployment claude-tiu-$OLD_COLOR --replicas=3 -n production
+
+  # Job 7: Monitoring & Alerts Setup
+  setup-monitoring:
+    name: Setup Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Update CloudWatch dashboard
+        run: |
+          aws cloudwatch put-dashboard --dashboard-name "claude-tiu-production" --dashboard-body file://monitoring/cloudwatch-dashboard.json
+
+      - name: Setup alerts
+        run: |
+          aws cloudwatch put-metric-alarm --alarm-name "claude-tiu-high-error-rate" \
+            --alarm-description "High error rate detected" \
+            --metric-name "HTTPCode_5XX_Count" \
+            --namespace "AWS/ApplicationELB" \
+            --statistic Sum \
+            --period 300 \
+            --threshold 10 \
+            --comparison-operator GreaterThanThreshold \
+            --alarm-actions arn:aws:sns:us-west-2:${{ secrets.AWS_ACCOUNT_ID }}:claude-tiu-alerts
+
+  # Job 8: Security Compliance Check
+  security-compliance:
+    name: Security Compliance
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'https://claude-tiu.com'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      - name: Upload ZAP results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: zap-report
+          path: report_html.html
+
+  # Job 9: Cleanup & Notifications
+  cleanup:
+    name: Cleanup & Notify
+    runs-on: ubuntu-latest
+    needs: [deploy-production, setup-monitoring, security-compliance]
+    if: always()
+    steps:
+      - name: Clean up old images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: claude-tiu
+          package-type: container
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: true
+
+      - name: Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Teams notification
+        if: failure()
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }}
+          ms-teams-webhook-uri: ${{ secrets.TEAMS_WEBHOOK }}
+          notification-summary: 'Deployment Failed'
+          notification-color: 'ff0000'

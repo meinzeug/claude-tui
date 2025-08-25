@@ -1,0 +1,59 @@
+# Development dependencies for claude-tiu
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.1
+pytest-xdist>=3.3.1
+
+# Code quality
+black>=23.7.0
+isort>=5.12.0
+flake8>=6.0.0
+flake8-docstrings>=1.7.0
+flake8-bugbear>=23.7.10
+flake8-bandit>=4.1.1
+mypy>=1.5.0
+
+# Security
+bandit[toml]>=1.7.5
+safety>=2.3.0
+pip-audit>=2.6.0
+
+# Pre-commit hooks
+pre-commit>=3.3.0
+
+# Documentation
+sphinx>=7.1.0
+sphinx-rtd-theme>=1.3.0
+myst-parser>=2.0.0
+
+# Type stubs
+types-requests>=2.31.0
+types-PyYAML>=6.0.12
+types-setuptools>=68.0.0
+
+# Development tools
+ipython>=8.14.0
+ipdb>=0.13.13
+notebook>=7.0.0
+
+# Performance testing
+locust>=2.15.1
+
+# Database tools
+alembic>=1.11.1
+psycopg2-binary>=2.9.7
+
+# Docker utilities
+docker>=6.1.3
+
+# Monitoring and metrics
+prometheus-client>=0.17.1
+
+# Logging
+python-json-logger>=2.0.7
+
+# Configuration management
+pydantic>=2.0.0
+python-dotenv>=1.0.0

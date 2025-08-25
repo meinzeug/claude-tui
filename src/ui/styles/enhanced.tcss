@@ -1,0 +1,718 @@
+/* Enhanced Textual CSS for Claude-TIU Application */
+/* Professional dark theme with modern design patterns */
+
+/* Color Variables - Dark Theme */
+$primary: #0ea5e9;
+$primary-dark: #0284c7;
+$secondary: #8b5cf6;
+$secondary-dark: #7c3aed;
+$success: #10b981;
+$success-dark: #059669;
+$warning: #f59e0b;
+$warning-dark: #d97706;
+$error: #ef4444;
+$error-dark: #dc2626;
+$info: #3b82f6;
+$info-dark: #2563eb;
+
+$background: #0f172a;
+$background-light: #1e293b;
+$surface: #334155;
+$surface-light: #475569;
+$surface-variant: #64748b;
+$on-surface: #f8fafc;
+$on-surface-variant: #cbd5e1;
+$border: #475569;
+$border-light: #64748b;
+
+$text: #f8fafc;
+$text-dim: #cbd5e1;
+$text-muted: #94a3b8;
+
+/* Global Application Styles */
+Screen {
+    background: $background;
+    color: $text;
+}
+
+/* Header Styles */
+.header {
+    background: $primary;
+    color: white;
+    height: 3;
+    padding: 1;
+    text-align: center;
+    text-style: bold;
+}
+
+.modal-header {
+    background: $surface;
+    color: $text;
+    height: 3;
+    padding: 1;
+    text-align: center;
+    text-style: bold;
+    border-bottom: wide $border;
+}
+
+.section-header {
+    text-style: bold;
+    color: $primary;
+    margin: 1 0;
+}
+
+.category-header {
+    text-style: bold;
+    color: $secondary;
+    margin: 1 0;
+    background: $surface;
+    padding: 0 1;
+}
+
+/* Footer and Status */
+.footer {
+    background: $surface;
+    color: $text;
+    dock: bottom;
+    height: 3;
+    padding: 0 1;
+}
+
+.status-bar {
+    background: $surface-variant;
+    color: $on-surface-variant;
+    height: 1;
+    dock: bottom;
+    padding: 0 1;
+}
+
+/* Layout Containers */
+.main-container {
+    background: $background;
+    color: $text;
+}
+
+.sidebar {
+    width: 30;
+    background: $surface;
+    border-right: wide $border;
+    padding: 1;
+}
+
+.main-content {
+    background: $background;
+    padding: 1;
+}
+
+.right-panel {
+    width: 35;
+    background: $surface;
+    border-left: wide $border;
+    padding: 1;
+}
+
+.bottom-panel {
+    height: 12;
+    background: $surface;
+    border-top: wide $border;
+    padding: 1;
+    dock: bottom;
+}
+
+/* Workspace Specific Styles */
+.workspace-main {
+    layout: horizontal;
+}
+
+.workspace-header {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-bottom: wide $border;
+    layout: horizontal;
+}
+
+.project-info {
+    width: 40%;
+}
+
+.project-name {
+    text-style: bold;
+    color: $primary;
+}
+
+.project-status {
+    color: $success;
+}
+
+.layout-controls {
+    width: 30%;
+    align: center middle;
+}
+
+.quick-actions {
+    width: 30%;
+    align: right middle;
+}
+
+.layout-btn {
+    margin: 0 1;
+    min-width: 8;
+}
+
+/* Button Styles */
+Button {
+    background: $surface;
+    color: $text;
+    border: round $border;
+    padding: 0 2;
+    margin: 0 1;
+    min-width: 10;
+}
+
+Button:hover {
+    background: $surface-light;
+    border: round $border-light;
+}
+
+Button:focus {
+    background: $primary;
+    color: white;
+}
+
+Button.-primary {
+    background: $primary;
+    color: white;
+}
+
+Button.-primary:hover {
+    background: $primary-dark;
+}
+
+Button.-success {
+    background: $success;
+    color: white;
+}
+
+Button.-success:hover {
+    background: $success-dark;
+}
+
+Button.-error {
+    background: $error;
+    color: white;
+}
+
+Button.-error:hover {
+    background: $error-dark;
+}
+
+Button.-warning {
+    background: $warning;
+    color: white;
+}
+
+Button.-warning:hover {
+    background: $warning-dark;
+}
+
+/* Input and Form Styles */
+Input {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    padding: 0 1;
+}
+
+Input:focus {
+    border: round $primary;
+    background: $surface;
+}
+
+TextArea {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    padding: 1;
+}
+
+TextArea:focus {
+    border: round $primary;
+    background: $surface;
+}
+
+Select {
+    background: $surface;
+    color: $text;
+    border: round $border;
+}
+
+Select:focus {
+    border: round $primary;
+}
+
+Checkbox {
+    background: $surface;
+    color: $text;
+}
+
+RadioButton {
+    background: $surface;
+    color: $text;
+}
+
+/* Widget-Specific Styles */
+
+/* Project Tree */
+DirectoryTree {
+    background: $surface;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+Tree {
+    background: $surface;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+/* Task Dashboard */
+.task-header {
+    text-style: bold;
+    color: $primary;
+    background: $surface;
+    padding: 0 1;
+}
+
+.task-status {
+    color: $text-dim;
+}
+
+.task-eta {
+    color: $info;
+}
+
+.progress-label {
+    color: $text-muted;
+    width: 8;
+}
+
+ProgressBar {
+    color: $primary;
+    background: $surface;
+}
+
+.filter-bar {
+    margin: 1 0;
+    height: 3;
+    align: center middle;
+}
+
+.control-bar {
+    margin: 1 0;
+    height: 3;
+    align: center middle;
+}
+
+/* Console Widget */
+RichLog {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+.input-area {
+    height: 3;
+    margin: 1 0;
+}
+
+.input-area Input {
+    width: 1fr;
+}
+
+/* Alert and Validation Styles */
+.alert {
+    background: $warning;
+    color: white;
+    padding: 1;
+    margin: 1;
+    border: round $warning-dark;
+}
+
+.alert-critical {
+    background: $error;
+    border: round $error-dark;
+}
+
+.alert-warning {
+    background: $warning;
+    border: round $warning-dark;
+}
+
+.alert-success {
+    background: $success;
+    border: round $success-dark;
+}
+
+.alert-info {
+    background: $info;
+    border: round $info-dark;
+}
+
+/* Issue and Validation Widgets */
+.issue-header {
+    text-style: bold;
+    color: $error;
+}
+
+.issue-location {
+    color: $text-dim;
+    margin: 0 0 1 0;
+}
+
+.code-snippet {
+    background: $background-light;
+    border: round $border;
+    padding: 1;
+    margin: 1 0;
+}
+
+.code-snippet-plain {
+    background: $background-light;
+    color: $text-dim;
+    border: round $border;
+    padding: 1;
+    margin: 1 0;
+}
+
+.suggestion {
+    color: $warning;
+    margin: 1 0;
+    padding: 1;
+    background: rgba(245, 158, 11, 0.1);
+    border: round $warning;
+}
+
+.issue-actions {
+    margin: 1 0;
+    height: 3;
+}
+
+/* Progress Intelligence Styles */
+.eta-section {
+    margin: 1 0;
+    padding: 1;
+    background: $surface;
+    border: round $border;
+}
+
+.eta-label {
+    color: $info;
+    text-style: bold;
+}
+
+/* Workflow Visualizer */
+.workflow-tree-panel {
+    width: 50%;
+    padding: 1;
+}
+
+.workflow-details-panel {
+    width: 50%;
+    padding: 1;
+}
+
+.workflow-controls {
+    height: 4;
+    margin: 1 0;
+    align: center middle;
+}
+
+.panel-header {
+    text-style: bold;
+    color: $secondary;
+    margin: 0 0 1 0;
+}
+
+/* Metrics Dashboard */
+.metrics-grid {
+    grid-size: 2 2;
+    grid-gutter: 1;
+}
+
+.productivity-grid {
+    grid-size: 2 1;
+    grid-gutter: 1;
+}
+
+.dashboard-controls {
+    height: 4;
+    margin: 1 0;
+    align: center middle;
+}
+
+/* Modal Dialog Styles */
+.modal-container {
+    background: $surface;
+    border: thick $border;
+    width: 80;
+    height: 30;
+    margin: 2;
+    padding: 2;
+}
+
+.small-modal {
+    width: 50;
+    height: 15;
+}
+
+.modal-actions {
+    height: 4;
+    margin: 2 0 0 0;
+    align: center middle;
+    dock: bottom;
+}
+
+.config-content {
+    max-height: 20;
+    overflow-y: auto;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+.category-content {
+    margin: 0 0 2 0;
+    padding: 1;
+    background: rgba(51, 65, 85, 0.3);
+    border: round $border;
+}
+
+.config-option {
+    margin: 1 0;
+    padding: 1;
+    background: $surface-light;
+    border: round $border;
+}
+
+.option-name {
+    text-style: bold;
+    color: $primary;
+}
+
+.option-description {
+    color: $text-dim;
+    margin: 0 0 1 0;
+}
+
+/* Template Modal Styles */
+.templates-content {
+    height: 20;
+}
+
+.templates-list {
+    width: 40%;
+    border-right: wide $border;
+    padding: 0 1 0 0;
+}
+
+.template-preview {
+    width: 60%;
+    padding: 0 0 0 1;
+}
+
+.category-item {
+    text-style: bold;
+    color: $secondary;
+    background: $surface-variant;
+}
+
+/* Form Styles */
+.form-content {
+    max-height: 20;
+    overflow-y: auto;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+.form-label {
+    text-style: bold;
+    color: $primary;
+    margin: 1 0 0 0;
+}
+
+.confirm-message {
+    margin: 2 0;
+    text-align: center;
+    color: $text-dim;
+}
+
+/* Tab Styles */
+TabbedContent {
+    background: $background;
+}
+
+TabPane {
+    background: $background;
+    padding: 1;
+}
+
+Tabs {
+    background: $surface;
+    color: $text;
+}
+
+Tab {
+    background: $surface;
+    color: $text-dim;
+    padding: 0 2;
+}
+
+Tab:hover {
+    background: $surface-light;
+    color: $text;
+}
+
+Tab.-active {
+    background: $primary;
+    color: white;
+    text-style: bold;
+}
+
+/* List and Data Styles */
+ListView {
+    background: $surface;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+ListItem {
+    background: $surface;
+    color: $text;
+    padding: 1;
+}
+
+ListItem:hover {
+    background: $surface-light;
+}
+
+ListItem:focus {
+    background: $primary;
+    color: white;
+}
+
+DataTable {
+    background: $surface;
+    color: $text;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+/* Floating Actions */
+.floating-actions {
+    position: absolute;
+    bottom: 5;
+    right: 5;
+    width: 15;
+    height: 20;
+}
+
+.quick-btn {
+    width: 12;
+    height: 3;
+    margin: 1 0;
+    text-align: center;
+    background: $primary;
+    color: white;
+    border: round $primary-dark;
+}
+
+.quick-btn:hover {
+    background: $primary-dark;
+}
+
+/* Utility Styles */
+.coming-soon {
+    color: $text-muted;
+    text-align: center;
+    margin: 5 0;
+    text-style: italic;
+}
+
+.success {
+    background: $success;
+    color: white;
+}
+
+.error {
+    background: $error;
+    color: white;
+}
+
+.warning {
+    background: $warning;
+    color: white;
+}
+
+.info {
+    background: $info;
+    color: white;
+}
+
+/* Scrollbar Styles */
+* {
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+    scrollbar-color-hover: $primary-dark;
+    scrollbar-color-active: $primary;
+}
+
+/* Focus Styles for Accessibility */
+*:focus {
+    border: thick $primary;
+}
+
+Input:focus, TextArea:focus, Select:focus {
+    outline: none;
+    border: round $primary;
+    background: $surface-light;
+}
+
+/* Responsive Design */
+@media (max-width: 100) {
+    .sidebar {
+        width: 25;
+    }
+    .right-panel {
+        width: 30;
+    }
+}
+
+@media (max-width: 80) {
+    .workflow-tree-panel, .workflow-details-panel {
+        width: 100%;
+    }
+    .metrics-grid {
+        grid-size: 1 2;
+    }
+}
+
+/* Animation and Transitions */
+Button {
+    transition: background 200ms;
+}
+
+Input, TextArea, Select {
+    transition: border 200ms, background 200ms;
+}
+
+/* Print Styles (if needed) */
+@media print {
+    .floating-actions {
+        display: none;
+    }
+    .quick-actions {
+        display: none;
+    }
+}

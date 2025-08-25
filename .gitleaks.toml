@@ -1,0 +1,156 @@
+# Gitleaks configuration for Claude TIU
+# Detects hardcoded secrets, keys, and sensitive information
+
+title = "Claude TIU Security Configuration"
+
+[extend]
+# Use default rules as base
+useDefault = true
+
+[[rules]]
+description = "Claude API Key"
+id = "claude-api-key"
+regex = '''(?i)(claude_api_key|claude-api-key|sk-ant-[a-zA-Z0-9]{96})'''
+keywords = [
+    "claude_api_key",
+    "claude-api-key",
+    "sk-ant-",
+]
+
+[[rules]]
+description = "GitHub Token"
+id = "github-token"
+regex = '''(?i)(ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|ghu_[a-zA-Z0-9]{36}|ghs_[a-zA-Z0-9]{36}|ghr_[a-zA-Z0-9]{36})'''
+keywords = [
+    "ghp_",
+    "gho_",
+    "ghu_",
+    "ghs_",
+    "ghr_",
+]
+
+[[rules]]
+description = "Database URL"
+id = "database-url"
+regex = '''(?i)(postgresql://|mysql://|mongodb://)[a-zA-Z0-9_\-\.]+:[a-zA-Z0-9_\-\.!@#$%^&*()+=]+@[a-zA-Z0-9_\-\.]+:[0-9]+/[a-zA-Z0-9_\-\.]+'''
+keywords = [
+    "postgresql://",
+    "mysql://",
+    "mongodb://",
+]
+
+[[rules]]
+description = "JWT Secret"
+id = "jwt-secret"
+regex = '''(?i)(jwt_secret|jwt-secret|jwt_key|jwt-key)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9+/]{32,}[\"']'''
+keywords = [
+    "jwt_secret",
+    "jwt-secret",
+    "jwt_key",
+    "jwt-key",
+]
+
+[[rules]]
+description = "OpenAI API Key"
+id = "openai-api-key"
+regex = '''sk-[a-zA-Z0-9]{48}'''
+keywords = [
+    "sk-",
+    "openai",
+    "chatgpt",
+]
+
+[[rules]]
+description = "Docker Registry Credentials"
+id = "docker-credentials"
+regex = '''(?i)(docker_password|docker_token|registry_password)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9+/=]{10,}[\"']'''
+keywords = [
+    "docker_password",
+    "docker_token",
+    "registry_password",
+]
+
+[[rules]]
+description = "Kubernetes Secrets"
+id = "k8s-secrets"
+regex = '''(?i)(kube_token|k8s_token|kubernetes_token)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9+/=]{20,}[\"']'''
+keywords = [
+    "kube_token",
+    "k8s_token",
+    "kubernetes_token",
+]
+
+[[rules]]
+description = "Redis Password"
+id = "redis-password"
+regex = '''(?i)(redis_password|redis_auth)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9!@#$%^&*()_+=\-]{8,}[\"']'''
+keywords = [
+    "redis_password",
+    "redis_auth",
+]
+
+[[rules]]
+description = "Grafana Credentials"
+id = "grafana-credentials"
+regex = '''(?i)(grafana_password|grafana_api_key)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9!@#$%^&*()_+=\-]{8,}[\"']'''
+keywords = [
+    "grafana_password",
+    "grafana_api_key",
+]
+
+[allowlist]
+description = "Allowlisted files and patterns"
+files = [
+    '''(.*\.example|.*\.template|.*\.sample)$''',
+    '''(.*test.*|.*spec.*|.*mock.*)$''',
+    '''\.git/.*''',
+    '''node_modules/.*''',
+    '''venv/.*''',
+    '''__pycache__/.*''',
+    '''\.pytest_cache/.*''',
+    '''.coverage''',
+    '''htmlcov/.*''',
+    '''build/.*''',
+    '''dist/.*''',
+    '''\.egg-info/.*''',
+]
+
+paths = [
+    '''config/.*\.example''',
+    '''examples/.*''',
+    '''docs/.*''',
+    '''.github/workflows/.*''' # Allow workflow files with template secrets
+]
+
+regexes = [
+    '''(?i)example|sample|template|placeholder|dummy|fake|test|mock''',
+    '''YOUR_API_KEY_HERE''',
+    '''sk-ant-api03-[X]{96}''', # Template format
+    '''ghp_[X]{36}''', # Template format
+    '''jwt_secret.*example''',
+]
+
+commits = [
+    "allowlisted-commit-hash-here"
+]
+
+# Global allowlist for specific strings that are not secrets
+[[rules]]
+description = "Generic Secret"
+id = "generic-secret"
+regex = '''(?i)(secret|password|key|token|credential)[\"']?\s*[=:]\s*[\"'][a-zA-Z0-9+/=]{10,}[\"']'''
+keywords = [
+    "secret",
+    "password",
+    "key",
+    "token",
+    "credential",
+]
+[rules.allowlist]
+regexes = [
+    '''secret.*example''',
+    '''password.*placeholder''',
+    '''key.*template''',
+    '''token.*sample''',
+    '''credential.*test''',
+]

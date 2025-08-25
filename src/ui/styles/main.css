@@ -1,0 +1,680 @@
+/* Claude-TIU Main Application Styles */
+
+/* Global Styles */
+* {
+    box-sizing: border-box;
+}
+
+Screen {
+    background: $surface;
+    color: $text;
+}
+
+/* Color Variables */
+Screen {
+    --primary: #00d4ff;
+    --primary-dark: #0099cc;
+    --secondary: #ff6b35;
+    --success: #4caf50;
+    --warning: #ff9800;
+    --error: #f44336;
+    --info: #2196f3;
+    --surface: #1a1a1a;
+    --surface-light: #2a2a2a;
+    --text: #ffffff;
+    --text-muted: #cccccc;
+    --text-dim: #888888;
+    --border: #444444;
+    --accent: #ffeb3b;
+}
+
+/* Layout Containers */
+.left-panel {
+    width: 30%;
+    min-width: 250px;
+    max-width: 400px;
+    border-right: solid $border;
+    background: $surface-light;
+}
+
+.main-panel {
+    width: 70%;
+    background: $surface;
+}
+
+/* Headers */
+.header {
+    height: 3;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.section-header {
+    height: 2;
+    background: $surface-light;
+    color: $primary;
+    text-style: bold;
+    padding: 0 1;
+    border-bottom: solid $border;
+}
+
+.subsection-header {
+    height: 1;
+    color: $text-muted;
+    text-style: bold;
+    margin: 1 0;
+}
+
+/* Project Tree Styles */
+ProjectTree {
+    border: solid $border;
+    background: $surface-light;
+}
+
+ProjectTree .status {
+    height: 2;
+    background: $surface;
+    color: $text-muted;
+    padding: 0 1;
+    border-bottom: solid $border;
+}
+
+ProjectFileTree {
+    scrollbar-background: $surface;
+    scrollbar-color: $primary;
+}
+
+/* Task Dashboard Styles */
+TaskDashboard {
+    border: solid $border;
+    background: $surface;
+}
+
+.task-header {
+    height: 2;
+    background: $surface-light;
+    color: $text;
+    text-style: bold;
+    padding: 0 1;
+}
+
+.task-status {
+    color: $text-muted;
+    padding: 0 1;
+}
+
+.task-eta {
+    color: $info;
+    padding: 0 1;
+}
+
+.filter-bar {
+    height: 3;
+    background: $surface-light;
+    align: center;
+    padding: 1;
+}
+
+.control-bar {
+    height: 3;
+    background: $surface-light;
+    align: center;
+    padding: 1;
+    border-top: solid $border;
+}
+
+.progress-label {
+    width: 8;
+    text-align: right;
+    margin-right: 1;
+    color: $text-muted;
+}
+
+/* Progress Intelligence Styles */
+ProgressIntelligence {
+    border: solid $border;
+    background: $surface-light;
+}
+
+.eta-section {
+    margin: 1;
+    padding: 1;
+    background: $surface;
+    border: solid $border;
+}
+
+.eta-label {
+    color: $accent;
+    text-style: bold;
+    text-align: center;
+}
+
+/* Console Widget Styles */
+ConsoleWidget {
+    border: solid $border;
+    background: $surface;
+}
+
+.input-area {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+}
+
+.status-bar {
+    height: 2;
+    background: $surface-light;
+    color: $info;
+    padding: 0 1;
+    border-top: solid $border;
+}
+
+RichLog {
+    background: $surface;
+    border: solid $border;
+    scrollbar-background: $surface-light;
+    scrollbar-color: $primary;
+}
+
+/* Notification System Styles */
+.notification-toast {
+    position: absolute;
+    top: 1;
+    right: 1;
+    width: 50%;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.notification-container {
+    background: $surface-light;
+    border: solid $border;
+    margin: 1;
+    padding: 1;
+}
+
+.notification-header {
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.notification-message {
+    color: $text-muted;
+    margin-bottom: 1;
+}
+
+.notification-actions {
+    margin-top: 1;
+}
+
+.dismiss-button {
+    width: 3;
+    height: 3;
+    background: $error;
+    color: white;
+}
+
+.toast-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.toast-overlay > * {
+    pointer-events: auto;
+}
+
+.history-panel {
+    position: absolute;
+    right: 1;
+    top: 10%;
+    width: 40%;
+    height: 80%;
+    background: $surface-light;
+    border: solid $primary;
+    z-index: 900;
+    display: none;
+}
+
+.history-header {
+    height: 3;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+}
+
+.history-controls {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+}
+
+/* Placeholder Alert Styles */
+.alert-header {
+    height: 3;
+    background: $error;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.severity-summary {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+}
+
+.issue-header {
+    color: $warning;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.issue-location {
+    color: $text-muted;
+    margin-bottom: 1;
+}
+
+.code-snippet {
+    background: $surface;
+    border: solid $border;
+    margin: 1 0;
+    padding: 1;
+}
+
+.code-snippet-plain {
+    background: $surface;
+    border: solid $border;
+    margin: 1 0;
+    padding: 1;
+    color: $text-muted;
+}
+
+.suggestion {
+    background: $surface-light;
+    border: solid $accent;
+    margin: 1 0;
+    padding: 1;
+    color: $accent;
+}
+
+.issue-actions {
+    margin-top: 1;
+    align: center;
+}
+
+.modal-actions {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+    align: center;
+}
+
+/* Project Wizard Styles */
+#wizard-container {
+    width: 90%;
+    height: 90%;
+    background: $surface;
+    border: solid $primary;
+    margin: 5% auto;
+}
+
+.wizard-header {
+    height: 4;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.wizard-actions {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+    align: center;
+}
+
+.template-details {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+    height: 50%;
+    overflow-y: auto;
+}
+
+.form-section {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+}
+
+.preview-panel {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+    height: 50%;
+    overflow-y: auto;
+}
+
+.file-structure {
+    margin: 1;
+    padding: 1;
+    background: $surface;
+    border: solid $border;
+    height: 40%;
+    overflow-y: auto;
+}
+
+/* Button Styles */
+Button {
+    margin: 0 1;
+    min-width: 10;
+    height: 3;
+}
+
+Button:hover {
+    background: $primary;
+    color: white;
+}
+
+Button.-primary {
+    background: $primary;
+    color: white;
+}
+
+Button.-primary:hover {
+    background: $primary-dark;
+}
+
+Button.-success {
+    background: $success;
+    color: white;
+}
+
+Button.-success:hover {
+    background: #45a049;
+}
+
+Button.-error {
+    background: $error;
+    color: white;
+}
+
+Button.-error:hover {
+    background: #d32f2f;
+}
+
+Button:disabled {
+    background: $border;
+    color: $text-dim;
+}
+
+/* Input Styles */
+Input {
+    background: $surface;
+    color: $text;
+    border: solid $border;
+}
+
+Input:focus {
+    border: solid $primary;
+}
+
+Input.-invalid {
+    border: solid $error;
+}
+
+TextArea {
+    background: $surface;
+    color: $text;
+    border: solid $border;
+}
+
+TextArea:focus {
+    border: solid $primary;
+}
+
+/* Progress Bar Styles */
+ProgressBar {
+    background: $surface-light;
+    color: $primary;
+}
+
+ProgressBar > .bar {
+    background: $primary;
+}
+
+/* Tab Styles */
+TabbedContent {
+    background: $surface;
+}
+
+Tabs {
+    background: $surface-light;
+}
+
+Tab {
+    background: $surface-light;
+    color: $text-muted;
+}
+
+Tab.-active {
+    background: $primary;
+    color: white;
+}
+
+TabPane {
+    background: $surface;
+    padding: 1;
+}
+
+/* Checkbox and Radio Styles */
+Checkbox {
+    color: $text;
+}
+
+Checkbox:focus {
+    color: $primary;
+}
+
+RadioButton {
+    color: $text;
+}
+
+RadioButton:focus {
+    color: $primary;
+}
+
+RadioSet {
+    background: $surface-light;
+    border: solid $border;
+    padding: 1;
+}
+
+/* List Styles */
+ListView {
+    background: $surface;
+    border: solid $border;
+}
+
+ListItem {
+    background: $surface;
+}
+
+ListItem:hover {
+    background: $surface-light;
+}
+
+ListItem.-highlighted {
+    background: $primary;
+    color: white;
+}
+
+/* Scrollbar Styles */
+.scrollbar-background {
+    background: $surface-light;
+}
+
+.scrollbar-color {
+    background: $primary;
+}
+
+/* Focus Styles */
+*:focus {
+    border: solid $primary;
+    outline: none;
+}
+
+/* Placeholder Styles */
+.placeholder {
+    color: $text-dim;
+    text-align: center;
+    content-align: center middle;
+    text-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 120) {
+    .left-panel {
+        width: 40%;
+    }
+    
+    .main-panel {
+        width: 60%;
+    }
+    
+    .notification-toast {
+        width: 80%;
+    }
+}
+
+@media (max-width: 80) {
+    .left-panel {
+        width: 100%;
+        height: 40%;
+        border-right: none;
+        border-bottom: solid $border;
+    }
+    
+    .main-panel {
+        width: 100%;
+        height: 60%;
+    }
+    
+    .notification-toast {
+        width: 95%;
+    }
+    
+    #wizard-container {
+        width: 95%;
+        height: 95%;
+        margin: 2.5% auto;
+    }
+}
+
+/* Animation and Transitions */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Status Indicators */
+.status-excellent {
+    color: $success;
+}
+
+.status-good {
+    color: $primary;
+}
+
+.status-warning {
+    color: $warning;
+}
+
+.status-critical {
+    color: $error;
+}
+
+.status-unknown {
+    color: $text-dim;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-bold {
+    text-style: bold;
+}
+
+.text-italic {
+    text-style: italic;
+}
+
+.text-dim {
+    color: $text-dim;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.margin-1 {
+    margin: 1;
+}
+
+.padding-1 {
+    padding: 1;
+}
+
+.border {
+    border: solid $border;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

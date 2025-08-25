@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: claude-config
+  namespace: claude-tiu
+  labels:
+    app: claude-tiu
+data:
+  redis-url: "redis://claude-tiu-redis:6379"
+  log-level: "INFO"
+  max-workers: "4"
+  validation-interval: "30"
+  cache-ttl: "3600"
+  
+  # Application configuration
+  app.yaml: |
+    app:
+      name: claude-tiu
+      version: "1.0.0"
+      environment: production
+    
+    server:
+      host: "0.0.0.0"
+      port: 8080
+      workers: 4
+      timeout: 120
+    
+    validation:
+      enabled: true
+      interval: 30
+      threshold: 0.15
+      auto_fix: true
+      max_retries: 3
+    
+    security:
+      sandbox:
+        enabled: true
+        memory_limit: "512M"
+        cpu_limit: 1.0
+        timeout: 300
+      
+      rate_limiting:
+        enabled: true
+        requests_per_minute: 100
+        burst: 20
+    
+    monitoring:
+      metrics:
+        enabled: true
+        port: 9090
+        path: "/metrics"
+      
+      logging:
+        level: info
+        format: json
+        output: stdout
+
+  # Logging configuration
+  logging.yaml: |
+    version: 1
+    formatters:
+      json:
+        class: pythonjsonlogger.jsonlogger.JsonFormatter
+        format: '%(asctime)s %(name)s %(levelname)s %(message)s'
+      default:
+        format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: json
+        stream: ext://sys.stdout
+    
+    loggers:
+      claude_tiu:
+        level: INFO
+        handlers: [console]
+        propagate: false
+    
+    root:
+      level: INFO
+      handlers: [console]
+
+  # Prometheus monitoring configuration
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    scrape_configs:
+      - job_name: 'claude-tiu'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - claude-tiu
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: kubernetes_pod_name

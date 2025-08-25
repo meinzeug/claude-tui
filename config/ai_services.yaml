@@ -1,0 +1,131 @@
+# AI Advanced Services Configuration
+
+# Swarm Orchestrator Configuration
+swarm_orchestrator:
+  max_swarms: 10
+  max_agents_per_swarm: 15
+  enable_auto_scaling: true
+  monitoring_interval: 30  # seconds
+  load_balancing_strategy: "intelligent"
+  default_topology: "hierarchical"
+  
+# Agent Coordinator Configuration
+agent_coordinator:
+  max_message_queue_size: 2000
+  message_retention_hours: 48
+  enable_consensus: true
+  heartbeat_interval: 30  # seconds
+  load_balancing_algorithm: "capability_weighted"
+  
+# Neural Pattern Trainer Configuration
+neural_trainer:
+  models_directory: "./models"
+  training_data_directory: "./training_data"
+  max_concurrent_training: 3
+  enable_gpu: false  # Set to true if GPU is available
+  default_epochs: 100
+  default_learning_rate: 0.001
+  enable_claude_flow_integration: true
+  
+# Cache Manager Configuration  
+cache_manager:
+  memory_cache_size: 2000
+  memory_limit_mb: 512
+  redis_url: "${REDIS_URL:-redis://localhost:6379}"
+  disk_cache_dir: "./cache"
+  default_ttl: 3600  # 1 hour
+  eviction_policy: "lru"
+  cache_strategy: "write_through"
+  enable_compression: true
+  enable_encryption: false
+  
+# Performance Monitor Configuration
+performance_monitor:
+  collection_interval: 15  # seconds
+  retention_hours: 72  # 3 days
+  enable_alerts: true
+  alert_cooldown: 300  # seconds
+  enable_profiling: true
+  
+# Claude Flow Integration Configuration
+claude_flow:
+  binary_path: "npx claude-flow@alpha"
+  timeout_seconds: 300
+  max_retries: 3
+  enable_hooks: true
+  enable_neural_features: true
+  
+# Environment-specific overrides
+environments:
+  development:
+    swarm_orchestrator:
+      max_swarms: 3
+      monitoring_interval: 10
+    neural_trainer:
+      max_concurrent_training: 1
+    cache_manager:
+      memory_limit_mb: 128
+      
+  production:
+    swarm_orchestrator:
+      max_swarms: 20
+      max_agents_per_swarm: 25
+    neural_trainer:
+      enable_gpu: true
+      max_concurrent_training: 5
+    cache_manager:
+      memory_limit_mb: 2048
+      enable_encryption: true
+    performance_monitor:
+      retention_hours: 168  # 1 week
+      
+  testing:
+    swarm_orchestrator:
+      max_swarms: 1
+      max_agents_per_swarm: 3
+      enable_auto_scaling: false
+    neural_trainer:
+      max_concurrent_training: 1
+      default_epochs: 5
+    cache_manager:
+      memory_limit_mb: 32
+      default_ttl: 60
+    performance_monitor:
+      collection_interval: 1
+      retention_hours: 1
+      enable_alerts: false
+
+# Logging Configuration for AI Services
+logging:
+  version: 1
+  disable_existing_loggers: false
+  formatters:
+    detailed:
+      format: '%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s'
+    simple:
+      format: '%(levelname)s - %(message)s'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: simple
+      stream: ext://sys.stdout
+    file:
+      class: logging.handlers.RotatingFileHandler
+      level: DEBUG
+      formatter: detailed
+      filename: logs/ai_services.log
+      maxBytes: 10485760  # 10MB
+      backupCount: 5
+  loggers:
+    src.ai:
+      level: DEBUG
+      handlers: [console, file]
+      propagate: false
+    src.api.v1.ai_advanced:
+      level: INFO
+      handlers: [console, file]
+      propagate: false
+  root:
+    level: INFO
+    handlers: [console]

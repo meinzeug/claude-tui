@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: claude-tiu
+  labels:
+    name: claude-tiu
+    app.kubernetes.io/name: claude-tiu
+    app.kubernetes.io/part-of: claude-tiu-platform
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: claude-tiu-quota
+  namespace: claude-tiu
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi
+    persistentvolumeclaims: "10"
+    services: "10"
+    secrets: "20"
+    configmaps: "20"
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-tiu-network-policy
+  namespace: claude-tiu
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: claude-tiu
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: claude-tiu
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80

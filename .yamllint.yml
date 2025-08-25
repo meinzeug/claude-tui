@@ -1,0 +1,67 @@
+# YAML Linting Configuration for Claude TIU
+extends: default
+
+rules:
+  # Line length - accommodate long URLs and commands
+  line-length:
+    max: 120
+    level: warning
+
+  # Indentation - standard 2 spaces
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Comments
+  comments:
+    min-spaces-from-content: 1
+
+  # Empty lines
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 1
+
+  # Brackets
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Braces
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Truthy values (allow yes/no for Docker Compose)
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+    check-keys: true
+
+  # Document start (--- not required)
+  document-start:
+    present: false
+
+  # Document end (... not required)
+  document-end:
+    present: false
+
+  # Key duplicates
+  key-duplicates: enable
+
+  # Quoted strings
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+
+# Ignore certain files and directories
+ignore: |
+  .github/workflows/
+  node_modules/
+  .venv/
+  venv/
+  __pycache__/
+  .pytest_cache/
+  *.egg-info/
+  build/
+  dist/
