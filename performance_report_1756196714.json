@@ -1,0 +1,140 @@
+{
+  "report_generated": "2025-08-26T08:25:14.767339",
+  "performance_baseline": {
+    "baseline_created": "2025-08-26T08:25:14.767032",
+    "system_info": {
+      "platform": "linux",
+      "python_version": "3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]",
+      "cpu_count": 2,
+      "total_memory_gb": 1.8706855773925781,
+      "python_files": 354
+    },
+    "current_performance": {
+      "process_memory_mb": 60.26171875,
+      "system_memory_percent": 55.0,
+      "cpu_percent": 5.0,
+      "gc_objects": 74475,
+      "modules_loaded": 1004,
+      "threads": 1
+    },
+    "startup_performance": {
+      "total_import_time_ms": 0.720977783203125,
+      "avg_import_time_ms": 0.01424551010131836,
+      "max_import_time_ms": 0.03886222839355469,
+      "file_scan_time_ms": 4.581212997436523,
+      "files_scanned": 354,
+      "memory_ops_time_ms": 0.3027915954589844,
+      "gc_time_ms": 46.390533447265625
+    },
+    "runtime_performance": {
+      "workload_time_ms": 9.115219116210938,
+      "workload_memory_mb": 0.04652881622314453,
+      "workload_peak_mb": 0.7424802780151367
+    },
+    "targets": {
+      "memory_mb": 100.0,
+      "startup_time_ms": 2000.0,
+      "import_time_ms": 200.0,
+      "file_scan_ms": 10.0,
+      "gc_time_ms": 20.0,
+      "cpu_percent": 10.0,
+      "system_memory_percent": 50.0
+    },
+    "thresholds": {
+      "memory_mb": 200.0,
+      "startup_time_ms": 5000.0,
+      "import_time_ms": 500.0,
+      "file_scan_ms": 50.0,
+      "gc_time_ms": 100.0,
+      "cpu_percent": 80.0,
+      "system_memory_percent": 80.0
+    }
+  },
+  "optimization_roadmap": {
+    "roadmap_generated": "2025-08-26T08:25:14.767307",
+    "quick_wins": [
+      {
+        "category": "Module Loading",
+        "severity": "MEDIUM",
+        "impact": 167.33333333333334,
+        "description": "1004 modules loaded, indicating potential over-importing",
+        "suggestions": [
+          "Implement lazy imports for non-critical modules",
+          "Review and remove unused imports",
+          "Use importlib for dynamic imports when needed"
+        ],
+        "estimated_improvement": "20-40% startup time and memory reduction",
+        "effort": "LOW",
+        "priority": 217
+      }
+    ],
+    "major_projects": [],
+    "maintenance_tasks": [
+      {
+        "category": "Garbage Collection",
+        "severity": "MEDIUM",
+        "impact": 22.3425,
+        "description": "74,475 objects tracked by GC, indicating high object churn",
+        "suggestions": [
+          "Optimize object lifecycle management",
+          "Use weak references where appropriate",
+          "Implement object pooling patterns"
+        ],
+        "estimated_improvement": "15-30% performance improvement",
+        "effort": "LOW",
+        "priority": 72
+      }
+    ],
+    "total_optimizations": 2,
+    "estimated_total_improvement": "70-90% overall performance improvement possible"
+  },
+  "identified_bottlenecks": [
+    {
+      "category": "Module Loading",
+      "severity": "MEDIUM",
+      "impact_percent": 167.33333333333334,
+      "description": "1004 modules loaded, indicating potential over-importing",
+      "root_cause": "Eager loading of modules, unnecessary imports",
+      "optimization_suggestions": [
+        "Implement lazy imports for non-critical modules",
+        "Review and remove unused imports",
+        "Use importlib for dynamic imports when needed",
+        "Separate core and optional functionality"
+      ],
+      "estimated_improvement": "20-40% startup time and memory reduction"
+    },
+    {
+      "category": "Garbage Collection",
+      "severity": "MEDIUM",
+      "impact_percent": 22.3425,
+      "description": "74,475 objects tracked by GC, indicating high object churn",
+      "root_cause": "High object creation rate, circular references, or large object retention",
+      "optimization_suggestions": [
+        "Optimize object lifecycle management",
+        "Use weak references where appropriate",
+        "Implement object pooling patterns",
+        "Review and break circular references",
+        "Tune GC thresholds for workload"
+      ],
+      "estimated_improvement": "15-30% performance improvement"
+    }
+  ],
+  "recent_snapshots": [
+    {
+      "timestamp": 1756196714.0060217,
+      "process_memory_mb": 46.48046875,
+      "system_memory_percent": 55.3,
+      "cpu_percent": 65.0,
+      "gc_objects": 49986,
+      "modules": 657
+    },
+    {
+      "timestamp": 1756196714.5989716,
+      "process_memory_mb": 60.26171875,
+      "system_memory_percent": 55.0,
+      "cpu_percent": 5.0,
+      "gc_objects": 74475,
+      "modules": 1004
+    }
+  ]
+}

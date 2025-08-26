@@ -1,0 +1,27 @@
+# Docker ignore file for production builds
+*.md
+.git
+.gitignore
+.gitattributes
+.github/
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.coverage
+.env.local
+.env.development
+.env.test
+.DS_Store
+Thumbs.db
+logs/
+*.log
+temp/
+tmp/
+node_modules/
+docs/development/
+tests/manual/

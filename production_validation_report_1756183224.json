@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 7,
+    "failed": 3,
+    "warnings": 0,
+    "skipped": 0,
+    "success_rate": "70.0%",
+    "duration_seconds": 1.089147
+  },
+  "details": [
+    {
+      "test": "Application Import",
+      "status": "PASS",
+      "details": "All core modules import successfully",
+      "timestamp": "2025-08-26T04:40:24.808468"
+    },
+    {
+      "test": "Integration Bridge",
+      "status": "PASS",
+      "details": "4/4 components initialized",
+      "timestamp": "2025-08-26T04:40:24.812085"
+    },
+    {
+      "test": "ConfigManager CRUD",
+      "status": "FAIL",
+      "details": "Expected 'test_value', got 'None'",
+      "timestamp": "2025-08-26T04:40:24.816128"
+    },
+    {
+      "test": "ConfigManager Persistence",
+      "status": "PASS",
+      "details": "Configuration saved successfully",
+      "timestamp": "2025-08-26T04:40:24.818240"
+    },
+    {
+      "test": "Database CRUD",
+      "status": "PASS",
+      "details": "Database operations working correctly",
+      "timestamp": "2025-08-26T04:40:24.824035"
+    },
+    {
+      "test": "File System Operations",
+      "status": "PASS",
+      "details": "File I/O working correctly",
+      "timestamp": "2025-08-26T04:40:24.826157"
+    },
+    {
+      "test": "Memory Usage",
+      "status": "PASS",
+      "details": "Memory usage: 1.03MB",
+      "timestamp": "2025-08-26T04:40:24.826963"
+    },
+    {
+      "test": "Validation Systems",
+      "status": "FAIL",
+      "details": "Validation error: PlaceholderDetector.__init__() missing 1 required positional argument: 'config_manager'",
+      "timestamp": "2025-08-26T04:40:24.827064"
+    },
+    {
+      "test": "UI Components",
+      "status": "PASS",
+      "details": "UI components can be imported and instantiated",
+      "timestamp": "2025-08-26T04:40:24.827111"
+    },
+    {
+      "test": "Error Handling",
+      "status": "FAIL",
+      "details": "Error handling test failed: [Errno 13] Permission denied: '/invalid'",
+      "timestamp": "2025-08-26T04:40:24.827237"
+    }
+  ],
+  "timestamp": "2025-08-26T04:40:24.827295",
+  "production_ready": false
+}

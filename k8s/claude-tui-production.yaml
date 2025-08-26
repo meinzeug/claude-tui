@@ -1,0 +1,389 @@
+# Complete Kubernetes Production Deployment Manifest for Claude-TUI
+# This manifest includes all necessary components for production deployment
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: claude-tui-prod
+  labels:
+    name: claude-tui-prod
+    environment: production
+
+---
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: claude-tui-config
+  namespace: claude-tui-prod
+data:
+  CLAUDE_TUI_ENV: "production"
+  PYTHONPATH: "/app/src"
+  PYTHONUNBUFFERED: "1" 
+  PYTHONDONTWRITEBYTECODE: "1"
+  CLAUDE_TUI_CONFIG_DIR: "/app/config"
+  CLAUDE_TUI_DATA_DIR: "/app/data"
+  CLAUDE_TUI_LOG_DIR: "/app/logs"
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_WORKERS: "4"
+  API_TIMEOUT: "30"
+  CLAUDE_FLOW_VERSION: "alpha"
+  CLAUDE_FLOW_MAX_AGENTS: "50"
+  CLAUDE_FLOW_MEMORY_LIMIT: "2048"
+  LOG_LEVEL: "INFO"
+  ENABLE_METRICS: "true"
+  METRICS_PORT: "9090"
+  HEALTH_CHECK_INTERVAL: "30"
+  MEMORY_LIMIT: "4096"
+  CPU_LIMIT: "2"
+  ENABLE_CACHING: "true"
+  CACHE_TTL: "3600"
+  ENABLE_SECURITY_HEADERS: "true"
+  ENABLE_RATE_LIMITING: "true"
+  RATE_LIMIT_PER_MINUTE: "100"
+  ENABLE_AUTO_BACKUP: "true"
+  BACKUP_INTERVAL: "24"
+  BACKUP_RETENTION_DAYS: "30"
+  ENABLE_TELEMETRY: "true"
+  ENABLE_ERROR_REPORTING: "true"
+  ENABLE_PERFORMANCE_MONITORING: "true"
+
+---
+# Secret for sensitive configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: claude-tui-secrets
+  namespace: claude-tui-prod
+type: Opaque
+stringData:
+  # These values should be set from external secret management
+  # kubectl create secret generic claude-tui-secrets \
+  #   --from-literal=SECRET_KEY="$(openssl rand -base64 32)" \
+  #   --from-literal=JWT_SECRET_KEY="$(openssl rand -base64 32)"
+  SECRET_KEY: ""
+  JWT_SECRET_KEY: ""
+  JWT_ALGORITHM: "HS256"
+  JWT_EXPIRE_MINUTES: "1440"
+  DATABASE_URL: "postgresql://claude_tui:secure_password@postgres:5432/claude_tui_prod"
+
+---
+# Persistent Volume for data storage
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: claude-tui-data-pv
+  namespace: claude-tui-prod
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: fast-ssd
+  hostPath:
+    path: /data/claude-tui
+
+---
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claude-tui-data-pvc
+  namespace: claude-tui-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+# Blue Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claude-tui-blue
+  namespace: claude-tui-prod
+  labels:
+    app: claude-tui
+    version: blue
+    environment: production
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: claude-tui
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: claude-tui
+        version: blue
+        environment: production
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: claude-tui
+        image: claude-tui:prod
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: claude-tui-config
+        - secretRef:
+            name: claude-tui-secrets
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: config-volume
+          mountPath: /app/config
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: claude-tui-data-pvc
+      - name: logs-volume
+        emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: claude-tui-config
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+
+---
+# Service for load balancing
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tui-service
+  namespace: claude-tui-prod
+  labels:
+    app: claude-tui
+    environment: production
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  type: ClusterIP
+  selector:
+    app: claude-tui
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: claude-tui-hpa
+  namespace: claude-tui-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: claude-tui-blue
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+
+---
+# Network Policy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-tui-network-policy
+  namespace: claude-tui-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: claude-tui-pdb
+  namespace: claude-tui-prod
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: claude-tui
+
+---
+# ServiceMonitor for Prometheus monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: claude-tui-monitor
+  namespace: claude-tui-prod
+  labels:
+    app: claude-tui
+    environment: production
+spec:
+  selector:
+    matchLabels:
+      app: claude-tui
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+
+---
+# Ingress for external access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: claude-tui-ingress
+  namespace: claude-tui-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - claude-tui.production.example.com
+    secretName: claude-tui-tls
+  rules:
+  - host: claude-tui.production.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: claude-tui-service
+            port:
+              number: 80

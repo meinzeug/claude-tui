@@ -1,0 +1,173 @@
+# {{ module.name | title }} Module
+
+{% if module.docstring %}
+{{ module.docstring }}
+{% else %}
+Documentation for the {{ module.name }} module.
+{% endif %}
+
+**Source:** `{{ module.path }}`
+
+---
+
+{% if module.imports %}
+## Dependencies
+
+{% for import in module.imports %}
+{% if import.type == "import" %}
+- `{{ import.names | join(', ') }}`
+{% else %}
+- `from {{ import.module }} import {{ import.names | join(', ') }}`
+{% endif %}
+{% endfor %}
+
+---
+{% endif %}
+
+{% if module.classes %}
+## Classes
+
+{% for class in module.classes %}
+### {{ class.name }}
+
+{% if class.docstring %}
+{{ class.docstring }}
+{% endif %}
+
+{% if class.bases %}
+**Inherits from:** {{ class.bases | join(', ') }}
+{% endif %}
+
+**Source line:** {{ class.line_number }}
+
+{% if class.methods %}
+#### Methods
+
+{% for method in class.methods %}
+##### `{{ method.name }}({% for arg in method.args %}{{ arg.name }}{% if arg.annotation %}: {{ arg.annotation }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.returns %} -> {{ method.returns }}{% endif %}`
+
+{% if method.is_async %}
+**Async method**
+{% endif %}
+
+{% if method.decorators %}
+**Decorators:** `{{ method.decorators | join('`, `') }}`
+{% endif %}
+
+{% if method.docstring %}
+{{ method.docstring }}
+{% endif %}
+
+**Source line:** {{ method.line_number }}
+
+{% if not loop.last %}
+---
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if class.properties %}
+#### Properties
+
+{% for prop in class.properties %}
+##### `{{ prop.name }}`
+
+{% if prop.docstring %}
+{{ prop.docstring }}
+{% endif %}
+
+**Source line:** {{ prop.line_number }}
+
+{% if not loop.last %}
+---
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if not loop.last %}
+
+---
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+{% if module.functions %}
+## Functions
+
+{% for func in module.functions %}
+### `{{ func.name }}({% for arg in func.args %}{{ arg.name }}{% if arg.annotation %}: {{ arg.annotation }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if func.returns %} -> {{ func.returns }}{% endif %}`
+
+{% if func.is_async %}
+**Async function**
+{% endif %}
+
+{% if func.decorators %}
+**Decorators:** `{{ func.decorators | join('`, `') }}`
+{% endif %}
+
+{% if func.docstring %}
+{{ func.docstring }}
+{% endif %}
+
+**Source line:** {{ func.line_number }}
+
+{% if not loop.last %}
+
+---
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+{% if module.examples %}
+## Examples
+
+{% for example in module.examples %}
+### Example {{ loop.index }}
+
+{% if example.type == "docstring" %}
+*From docstring:*
+{% elif example.type == "comment" %}
+*From comments:*
+{% endif %}
+
+```python
+{{ example.code }}
+```
+
+{% if example.validated %}
+✅ **Validated** - Code syntax is correct
+{% if example.validation_result %}
+
+**Analysis:**
+{% if example.validation_result.imports_used %}
+- **Imports used:** {{ example.validation_result.imports_used | join(', ') }}
+{% endif %}
+{% if example.validation_result.functions_defined %}
+- **Functions defined:** {{ example.validation_result.functions_defined | join(', ') }}
+{% endif %}
+{% if example.validation_result.classes_defined %}
+- **Classes defined:** {{ example.validation_result.classes_defined | join(', ') }}
+{% endif %}
+{% endif %}
+{% else %}
+❌ **Validation failed:** {{ example.validation_error }}
+{% endif %}
+
+{% if not loop.last %}
+
+---
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+---
+
+*Generated on {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}*

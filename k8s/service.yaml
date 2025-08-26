@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tui-service
+  namespace: claude-tui
+  labels:
+    app: claude-tui
+spec:
+  type: ClusterIP
+  selector:
+    app: claude-tui
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claude-tui-headless
+  namespace: claude-tui
+  labels:
+    app: claude-tui
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: claude-tui
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: claude-tui-ingress
+  namespace: claude-tui
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      add_header X-Frame-Options DENY;
+      add_header X-Content-Type-Options nosniff;
+      add_header X-XSS-Protection "1; mode=block";
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+spec:
+  tls:
+  - hosts:
+    - claude-tui.example.com
+    secretName: claude-tui-tls
+  rules:
+  - host: claude-tui.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: claude-tui-service
+            port:
+              number: 80

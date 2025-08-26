@@ -1,0 +1,652 @@
+/* Claude-TUI Main Application Styles */
+
+/* Global Styles */
+* {
+    box-sizing: border-box;
+}
+
+Screen {
+    background: $surface;
+    color: $text;
+}
+
+/* Color Variables - TCSS Format */
+$primary: #00d4ff;
+$primary-dark: #0099cc;
+$secondary: #ff6b35;
+$success: #4caf50;
+$warning: #ff9800;
+$error: #f44336;
+$info: #2196f3;
+$surface: #1a1a1a;
+$surface-light: #2a2a2a;
+$text: #ffffff;
+$text-muted: #cccccc;
+$text-dim: #888888;
+$border: #444444;
+$accent: #ffeb3b;
+
+/* Layout Containers */
+.left-panel {
+    width: 30%;
+    min-width: 30;
+    max-width: 50;
+    background: $surface-light;
+    border-right: solid $border;
+}
+
+.main-panel {
+    width: 70%;
+    background: $surface;
+}
+
+/* Headers */
+.header {
+    height: 3;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.section-header {
+    height: 2;
+    background: $surface-light;
+    color: $primary;
+    text-style: bold;
+    padding: 0 1;
+    border-bottom: solid $border;
+}
+
+.subsection-header {
+    height: 1;
+    color: $text-muted;
+    text-style: bold;
+    margin: 1 0;
+}
+
+/* Project Tree Styles */
+ProjectTree {
+    border: solid $border;
+    background: $surface-light;
+}
+
+ProjectTree .status {
+    height: 2;
+    background: $surface;
+    color: $text-muted;
+    padding: 0 1;
+    border-bottom: solid $border;
+}
+
+ProjectFileTree {
+    scrollbar-background: $surface;
+    scrollbar-color: $primary;
+}
+
+/* Task Dashboard Styles */
+TaskDashboard {
+    border: solid $border;
+    background: $surface;
+}
+
+.task-header {
+    height: 2;
+    background: $surface-light;
+    color: $text;
+    text-style: bold;
+    padding: 0 1;
+}
+
+.task-status {
+    color: $text-muted;
+    padding: 0 1;
+}
+
+.task-eta {
+    color: $info;
+    padding: 0 1;
+}
+
+.filter-bar {
+    height: 3;
+    background: $surface-light;
+    align: center middle;
+    padding: 1;
+}
+
+.control-bar {
+    height: 3;
+    background: $surface-light;
+    align: center middle;
+    padding: 1;
+    border-top: solid $border;
+}
+
+.progress-label {
+    width: 8;
+    text-align: right;
+    margin-right: 1;
+    color: $text-muted;
+}
+
+/* Progress Intelligence Styles */
+ProgressIntelligence {
+    border: solid $border;
+    background: $surface-light;
+}
+
+.eta-section {
+    margin: 1;
+    padding: 1;
+    background: $surface;
+    border: solid $border;
+}
+
+.eta-label {
+    color: $accent;
+    text-style: bold;
+    text-align: center;
+}
+
+/* Console Widget Styles */
+ConsoleWidget {
+    border: solid $border;
+    background: $surface;
+}
+
+.input-area {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+}
+
+.status-bar {
+    height: 2;
+    background: $surface-light;
+    color: $info;
+    padding: 0 1;
+    border-top: solid $border;
+}
+
+RichLog {
+    background: $surface;
+    border: solid $border;
+    scrollbar-background: $surface-light;
+    scrollbar-color: $primary;
+}
+
+/* Notification System Styles */
+.notification-toast {
+    dock: top;
+    width: 50%;
+    max-width: 40;
+    /* Note: TCSS uses dock instead of position absolute */
+}
+
+.notification-container {
+    background: $surface-light;
+    border: solid $border;
+    margin: 1;
+    padding: 1;
+}
+
+.notification-header {
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.notification-message {
+    color: $text-muted;
+    margin-bottom: 1;
+}
+
+.notification-actions {
+    margin-top: 1;
+}
+
+.dismiss-button {
+    width: 3;
+    height: 3;
+    background: $error;
+    color: white;
+}
+
+.toast-overlay {
+    dock: top;
+    width: 100%;
+    height: auto;
+    /* Note: pointer-events and z-index not supported in TCSS */
+}
+
+/* Note: Child selectors and pointer-events not supported in TCSS */
+
+.history-panel {
+    dock: right;
+    width: 40%;
+    height: 80%;
+    background: $surface-light;
+    border: solid $primary;
+    display: none;
+}
+
+.history-header {
+    height: 3;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+}
+
+.history-controls {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+}
+
+/* Placeholder Alert Styles */
+.alert-header {
+    height: 3;
+    background: $error;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.severity-summary {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+}
+
+.issue-header {
+    color: $warning;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.issue-location {
+    color: $text-muted;
+    margin-bottom: 1;
+}
+
+.code-snippet {
+    background: $surface;
+    border: solid $border;
+    margin: 1 0;
+    padding: 1;
+}
+
+.code-snippet-plain {
+    background: $surface;
+    border: solid $border;
+    margin: 1 0;
+    padding: 1;
+    color: $text-muted;
+}
+
+.suggestion {
+    background: $surface-light;
+    border: solid $accent;
+    margin: 1 0;
+    padding: 1;
+    color: $accent;
+}
+
+.issue-actions {
+    margin-top: 1;
+    align: center middle;
+}
+
+.modal-actions {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+    align: center middle;
+}
+
+/* Project Wizard Styles */
+#wizard-container {
+    width: 90%;
+    height: 90%;
+    background: $surface;
+    border: solid $primary;
+    margin: 5% auto;
+}
+
+.wizard-header {
+    height: 4;
+    background: $primary;
+    color: white;
+    text-align: center;
+    content-align: center middle;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.wizard-actions {
+    height: 4;
+    background: $surface-light;
+    padding: 1;
+    border-top: solid $border;
+    align: center middle;
+}
+
+.template-details {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+    height: 50%;
+    overflow-y: auto;
+}
+
+.form-section {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+}
+
+.preview-panel {
+    margin: 1;
+    padding: 1;
+    background: $surface-light;
+    border: solid $border;
+    height: 50%;
+    overflow-y: auto;
+}
+
+.file-structure {
+    margin: 1;
+    padding: 1;
+    background: $surface;
+    border: solid $border;
+    height: 40%;
+    overflow-y: auto;
+}
+
+/* Button Styles */
+Button {
+    margin: 0 1;
+    min-width: 10;
+    height: 3;
+}
+
+Button:hover {
+    background: $primary;
+    color: white;
+}
+
+Button.primary {
+    background: $primary;
+    color: white;
+}
+
+Button.primary:hover {
+    background: $primary-dark;
+}
+
+Button.success {
+    background: $success;
+    color: white;
+}
+
+Button.success:hover {
+    background: #45a049;
+}
+
+Button.error {
+    background: $error;
+    color: white;
+}
+
+Button.error:hover {
+    background: #d32f2f;
+}
+
+Button:disabled {
+    background: $border;
+    color: $text-dim;
+}
+
+/* Input Styles */
+Input {
+    background: $surface;
+    color: $text;
+    border: solid $border;
+}
+
+Input:focus {
+    border: solid $primary;
+}
+
+Input.invalid {
+    border: solid $error;
+}
+
+TextArea {
+    background: $surface;
+    color: $text;
+    border: solid $border;
+}
+
+TextArea:focus {
+    border: solid $primary;
+}
+
+/* Progress Bar Styles */
+ProgressBar {
+    background: $surface-light;
+    color: $primary;
+}
+
+ProgressBar > .bar {
+    color: $primary;
+}
+
+/* Tab Styles */
+TabbedContent {
+    background: $surface;
+}
+
+Tabs {
+    background: $surface-light;
+}
+
+Tab {
+    background: $surface-light;
+    color: $text-muted;
+}
+
+Tab.active {
+    background: $primary;
+    color: white;
+}
+
+TabPane {
+    background: $surface;
+    padding: 1;
+}
+
+/* Checkbox and Radio Styles */
+Checkbox {
+    color: $text;
+}
+
+Checkbox:focus {
+    color: $primary;
+}
+
+RadioButton {
+    color: $text;
+}
+
+RadioButton:focus {
+    color: $primary;
+}
+
+RadioSet {
+    background: $surface-light;
+    border: solid $border;
+    padding: 1;
+}
+
+/* List Styles */
+ListView {
+    background: $surface;
+    border: solid $border;
+}
+
+ListItem {
+    background: $surface;
+}
+
+ListItem:hover {
+    background: $surface-light;
+}
+
+ListItem.highlighted {
+    background: $primary;
+    color: white;
+}
+
+/* Scrollbar Styles */
+.scrollbar {
+    scrollbar-background: $surface-light;
+    scrollbar-color: $primary;
+}
+
+/* Focus Styles */
+*:focus {
+    border: solid $primary;
+    outline: none;
+}
+
+/* Placeholder Styles */
+.placeholder {
+    color: $text-dim;
+    text-align: center;
+    content-align: center middle;
+    text-style: italic;
+}
+
+/* Responsive Design - Using CSS classes instead of media queries */
+.left-panel {
+    width: 30%;
+    min-width: 20;
+    max-width: 50;
+}
+
+.main-panel {
+    width: 70%;
+}
+
+.notification-toast {
+    width: 50%;
+    max-width: 40;
+}
+
+/* Small screen adjustments - simplified approach */
+.left-panel-small {
+    width: 40%;
+}
+
+.main-panel-small {
+    width: 60%;
+}
+
+.notification-toast-small {
+    width: 80%;
+}
+
+#wizard-container {
+    width: 90%;
+    height: 90%;
+    margin: 5% auto;
+}
+
+/* Animation and Transitions - Not supported in TCSS */
+.fade-in {
+    opacity: 1;
+}
+
+.slide-in {
+    /* Simplified - transforms not supported in TCSS */
+    opacity: 1;
+}
+
+/* Status Indicators */
+.status-excellent {
+    color: $success;
+}
+
+.status-good {
+    color: $primary;
+}
+
+.status-warning {
+    color: $warning;
+}
+
+.status-critical {
+    color: $error;
+}
+
+.status-unknown {
+    color: $text-dim;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-bold {
+    text-style: bold;
+}
+
+.text-italic {
+    text-style: italic;
+}
+
+.text-dim {
+    color: $text-dim;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.margin-1 {
+    margin: 1;
+}
+
+.padding-1 {
+    padding: 1;
+}
+
+.border {
+    border: solid $border;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

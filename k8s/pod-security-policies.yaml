@@ -1,0 +1,221 @@
+# Pod Security Policies for Claude-TUI Production
+# Implements comprehensive container security controls
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: claude-tui-restricted
+  namespace: claude-tui-prod
+  labels:
+    security.policy: restricted
+    environment: production
+spec:
+  # Prevent privilege escalation
+  privileged: false
+  allowPrivilegeEscalation: false
+  
+  # Require non-root user
+  runAsUser:
+    rule: MustRunAsNonRoot
+  
+  # Restrict group permissions
+  runAsGroup:
+    rule: MustRunAs
+    ranges:
+      - min: 1000
+        max: 65535
+  
+  # Set filesystem group
+  fsGroup:
+    rule: MustRunAs
+    ranges:
+      - min: 1000
+        max: 65535
+  
+  # Supplement groups
+  supplementalGroups:
+    rule: MustRunAs
+    ranges:
+      - min: 1000
+        max: 65535
+  
+  # Required security context
+  requiredDropCapabilities:
+    - ALL
+  
+  # Allowed capabilities (minimal set)
+  allowedCapabilities:
+    - NET_BIND_SERVICE  # Only if needed for port 80/443
+  
+  # Volume restrictions
+  volumes:
+    - configMap
+    - emptyDir
+    - projected
+    - secret
+    - downwardAPI
+    - persistentVolumeClaim
+  
+  # Host network restrictions
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  
+  # Host path restrictions
+  allowedHostPaths: []
+  
+  # SELinux (if enabled)
+  seLinux:
+    rule: RunAsAny
+  
+  # Read-only root filesystem
+  readOnlyRootFilesystem: true
+  
+  # Default allow privilege escalation (should be false)
+  defaultAllowPrivilegeEscalation: false
+---
+# Pod Security Policy for database pods
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: claude-tui-database
+  namespace: claude-tui-prod
+  labels:
+    security.policy: database
+    environment: production
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  
+  runAsUser:
+    rule: MustRunAsNonRoot
+  
+  runAsGroup:
+    rule: MustRunAs
+    ranges:
+      - min: 999
+        max: 999  # postgres group
+  
+  fsGroup:
+    rule: MustRunAs
+    ranges:
+      - min: 999
+        max: 999
+  
+  requiredDropCapabilities:
+    - ALL
+  
+  volumes:
+    - configMap
+    - secret
+    - persistentVolumeClaim
+    - emptyDir
+  
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  
+  readOnlyRootFilesystem: false  # Database needs write access
+  
+  defaultAllowPrivilegeEscalation: false
+---
+# ClusterRole for Pod Security Policy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: claude-tui-psp-restricted
+  labels:
+    security.policy: psp-role
+rules:
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+  resourceNames:
+  - claude-tui-restricted
+---
+# ClusterRole for database PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: claude-tui-psp-database
+  labels:
+    security.policy: psp-database-role
+rules:
+- apiGroups:
+  - policy
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+  resourceNames:
+  - claude-tui-database
+---
+# Service Account for Claude-TUI application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-tui-app
+  namespace: claude-tui-prod
+  labels:
+    app: claude-tui
+    security.policy: restricted
+---
+# Service Account for database
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-tui-database
+  namespace: claude-tui-prod
+  labels:
+    app: postgresql
+    security.policy: database
+---
+# ClusterRoleBinding for application PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: claude-tui-app-psp
+  labels:
+    security.policy: psp-binding
+subjects:
+- kind: ServiceAccount
+  name: claude-tui-app
+  namespace: claude-tui-prod
+roleRef:
+  kind: ClusterRole
+  name: claude-tui-psp-restricted
+  apiGroup: rbac.authorization.k8s.io
+---
+# ClusterRoleBinding for database PSP
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: claude-tui-database-psp
+  labels:
+    security.policy: psp-database-binding
+subjects:
+- kind: ServiceAccount
+  name: claude-tui-database
+  namespace: claude-tui-prod
+roleRef:
+  kind: ClusterRole
+  name: claude-tui-psp-database
+  apiGroup: rbac.authorization.k8s.io
+---
+# Pod Disruption Budget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: claude-tui-pdb
+  namespace: claude-tui-prod
+  labels:
+    app: claude-tui
+    security.policy: availability
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: claude-tui
+      tier: backend

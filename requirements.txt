@@ -1,0 +1,111 @@
+# Core Framework Dependencies - Pinned Versions for Fast Resolution
+textual==5.3.0
+rich==13.7.0
+click==8.1.7
+pydantic>=1.10.12,<2.0
+aiohttp==3.9.1
+pyyaml==6.0.1
+watchdog==3.0.0
+gitpython==3.1.40
+jinja2==3.1.3
+psutil>=5.9.6
+cachetools==5.3.2
+asyncio-mqtt==0.16.2
+
+# HTTP Client Dependencies
+backoff==2.2.1
+httpx==0.25.2
+
+# Async File I/O
+aiofiles==23.2.1
+
+# File type detection  
+python-magic==0.4.27
+
+# Performance Optimizations (Optional)
+uvloop==0.19.0
+orjson==3.9.10
+msgpack==1.0.7
+lz4==4.3.2
+
+# Development Dependencies
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+black==24.8.0
+isort==5.13.2
+mypy==1.11.2
+pre-commit==4.0.1
+sphinx==8.1.3
+sphinx-rtd-theme==3.0.1
+ecdsa>=0.19.0
+
+# API Framework
+fastapi>=0.104.1
+uvicorn==0.24.0
+sqlalchemy==2.0.23
+aiosqlite==0.19.0
+alembic==1.13.1
+
+# Authentication - Updated for security fixes
+python-jose[cryptography]>=3.6.0
+pyjwt>=2.10.1
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Security and Validation - Updated for security fixes
+cryptography>=42.0.0
+certifi>=2024.8.30
+requests>=2.32.3
+setuptools>=75.0.0
+twisted>=24.7.0
+idna>=3.7
+oauthlib>=3.2.2
+zipp>=3.19.1
+wheel>=0.44.0
+
+# Community Platform Dependencies
+bleach==6.1.0
+markdown==3.5.1
+python-slugify==8.0.1
+pillow==10.1.0
+
+# Search and Analytics
+elasticsearch==8.11.0
+redis==5.0.1
+
+# Additional API Dependencies
+email-validator==2.1.0
+
+# Machine Learning Dependencies for AI Learning System
+numpy==1.26.2
+scikit-learn==1.3.2
+matplotlib==3.8.2
+seaborn==0.13.0
+pandas==2.1.4
+plotly==5.18.0
+
+# AI Advanced Services Dependencies
+websockets==12.0
+diskcache==5.6.3
+scipy==1.11.4
+
+# Additional Testing Dependencies
+pytest-mock==3.12.0
+pytest-benchmark==4.0.0
+pytest-timeout==2.2.0
+pytest-xdist==3.5.0
+
+# Performance and Monitoring
+memory-profiler>=0.61.0
+line-profiler>=4.1.3
+
+# Additional Security Dependencies
+hashlib-compat>=1.0.1
+secure-temp>=1.0.0
+cryptographic-hashing>=2.0.0
+
+# Development Tools
+bandit==1.7.5
+safety>=2.3.5,<3.0
+vulture==2.10

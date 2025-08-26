@@ -1,0 +1,19 @@
+{
+  "test_summary": {
+    "timestamp": 1756207767.9411988,
+    "total_tests": 0,
+    "successes": 0,
+    "failures": 0,
+    "success_rate": 0
+  },
+  "tests_executed": [],
+  "performance_metrics": {},
+  "errors": [
+    "Setup failed: Workflow manager not available"
+  ],
+  "generated_files_count": 0,
+  "progress_tracking": {
+    "total_updates": 0,
+    "update_frequency": 0.0
+  }
+}

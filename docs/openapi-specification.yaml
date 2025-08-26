@@ -1,0 +1,1794 @@
+openapi: 3.0.3
+info:
+  title: Claude-TIU API
+  version: 1.0.0
+  description: |
+    # Claude-TIU Enterprise API
+    
+    AI-Powered Development Tool REST API with comprehensive endpoints for enterprise development workflows.
+    
+    ## Core Features
+    - **Project Management**: Create, manage, validate, backup, and restore AI-powered development projects
+    - **Task Orchestration**: Execute complex development tasks with AI assistance and dependency management
+    - **Workflow Engine**: Advanced workflow orchestration with multi-agent coordination and real-time monitoring
+    - **Code Validation**: Anti-hallucination validation and quality assurance with automated fixing
+    - **AI Integration**: Seamless Claude Code and Claude Flow integration with intelligent routing
+    - **Real-time Communication**: WebSocket support for live progress updates and notifications
+    - **Analytics & Monitoring**: Comprehensive performance tracking, usage analytics, and trend analysis
+    - **Community Platform**: Template marketplace, user profiles, ratings, reviews, and collaborative development
+    
+    ## Authentication & Security
+    - JWT token authentication with role-based access control
+    - Rate limiting protection with configurable windows
+    - Request validation and sanitization
+    - Comprehensive error handling and logging
+    - Security middleware for input validation
+    
+    ## Performance Standards
+    - Response times < 200ms for most endpoints
+    - 99.9% uptime SLA
+    - Auto-scaling support for enterprise loads
+    - Built-in caching and optimization
+    - Memory-efficient operations with cleanup
+    
+  contact:
+    name: Claude TUI Support
+    email: support@claude-tui.dev
+    url: https://claude-tui.dev/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://claude-tui.dev/terms
+
+servers:
+  - url: https://api.claude-tui.dev/v1
+    description: Production API Server
+  - url: https://staging-api.claude-tui.dev/v1
+    description: Staging API Server
+  - url: http://localhost:8000/api/v1
+    description: Local Development Server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      summary: User Authentication
+      description: Authenticate user with email/password and receive JWT token
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                  example: "developer@company.com"
+                password:
+                  type: string
+                  format: password
+                  description: User password
+                  minLength: 8
+                  example: "SecurePass123!"
+                remember_me:
+                  type: boolean
+                  description: Keep session active longer
+                  default: false
+            examples:
+              standard_login:
+                summary: Standard Login
+                value:
+                  email: "developer@company.com"
+                  password: "SecurePass123!"
+                  remember_me: false
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token
+                  refresh_token:
+                    type: string
+                    description: JWT refresh token
+                  token_type:
+                    type: string
+                    example: "bearer"
+                  expires_in:
+                    type: integer
+                    description: Token expiration in seconds
+                    example: 3600
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                login_success:
+                  summary: Successful Login
+                  value:
+                    access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    token_type: "bearer"
+                    expires_in: 3600
+                    user:
+                      id: "user-123"
+                      email: "developer@company.com"
+                      name: "John Developer"
+                      role: "developer"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/register:
+    post:
+      summary: User Registration
+      description: Register new user account with email verification
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  description: Full name
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Password with complexity requirements
+                company:
+                  type: string
+                  description: Company name
+                role:
+                  type: string
+                  enum: [developer, admin, manager]
+                  default: developer
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Registration successful. Please check your email for verification."
+                  user_id:
+                    type: string
+                    example: "user-456"
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/refresh:
+    post:
+      summary: Refresh Access Token
+      description: Refresh expired access token using refresh token
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+                  description: Valid refresh token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  expires_in:
+                    type: integer
+                    example: 3600
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Project Management Endpoints
+  /projects:
+    get:
+      summary: List Projects
+      description: Get paginated list of user's projects with filtering options
+      tags: [Project Management]
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: type
+          in: query
+          description: Filter by project type
+          schema:
+            type: string
+            enum: [python, nodejs, react, vue, angular, flask, django, fastapi]
+        - name: status
+          in: query
+          description: Filter by project status
+          schema:
+            type: string
+            enum: [active, archived, template]
+      responses:
+        '200':
+          description: Projects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+              examples:
+                project_list:
+                  summary: Project List
+                  value:
+                    projects:
+                      - project_id: "proj-123"
+                        name: "E-commerce API"
+                        type: "fastapi"
+                        description: "REST API for e-commerce platform"
+                        created_at: "2024-01-15T10:30:00Z"
+                        status: "active"
+                        health_score: 0.95
+                    pagination:
+                      page: 1
+                      page_size: 10
+                      total: 1
+                      has_next: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      summary: Create New Project
+      description: Create a new AI-powered development project with template and configuration
+      tags: [Project Management]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateRequest'
+            examples:
+              react_project:
+                summary: React TypeScript Project
+                value:
+                  name: "Modern React App"
+                  path: "/projects/react-app"
+                  project_type: "react"
+                  template: "react-typescript"
+                  description: "Modern React application with TypeScript"
+                  features: ["authentication", "routing", "testing"]
+                  initialize_git: true
+                  create_venv: false
+                  config:
+                    ai_creativity: 0.8
+                    validation_level: "strict"
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /projects/{project_id}:
+    get:
+      summary: Get Project Details
+      description: Retrieve comprehensive information about a specific project
+      tags: [Project Management]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Project details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update Project Configuration
+      description: Update project settings and configuration
+      tags: [Project Management]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                config:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete Project
+      description: Remove project from system (optionally delete files)
+      tags: [Project Management]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - name: delete_files
+          in: query
+          description: Delete project files from filesystem
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Project deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  deleted_at:
+                    type: string
+                    format: date-time
+                  files_deleted:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{project_id}/validate:
+    post:
+      summary: Validate Project Structure
+      description: Perform comprehensive validation using anti-hallucination engine
+      tags: [Project Management, Validation]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                validation_level:
+                  type: string
+                  enum: [basic, standard, strict, comprehensive]
+                  default: standard
+                include_tests:
+                  type: boolean
+                  default: true
+                check_security:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationReport'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Task Management Endpoints  
+  /tasks:
+    get:
+      summary: List Tasks
+      description: Get paginated list of development tasks with filtering
+      tags: [Task Management]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by task status
+          schema:
+            type: string
+            enum: [pending, running, completed, failed, cancelled]
+        - name: type
+          in: query
+          description: Filter by task type
+          schema:
+            type: string
+            enum: [code_generation, analysis, testing, deployment, refactoring]
+      responses:
+        '200':
+          description: Tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      summary: Create Task
+      description: Create new development task with AI assistance
+      tags: [Task Management]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+            examples:
+              code_generation_task:
+                summary: Code Generation Task
+                value:
+                  name: "User Authentication API"
+                  description: "Generate REST API endpoints for user authentication with JWT tokens"
+                  task_type: "code_generation"
+                  priority: "high"
+                  timeout_seconds: 300
+                  dependencies: []
+                  ai_enabled: true
+                  config:
+                    language: "python"
+                    framework: "fastapi"
+                    include_tests: true
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{task_id}:
+    get:
+      summary: Get Task Details
+      description: Retrieve detailed information about a specific task
+      tags: [Task Management]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Task details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetails'
+
+  /tasks/{task_id}/execute:
+    post:
+      summary: Execute Task
+      description: Start task execution with AI assistance and monitoring
+      tags: [Task Management]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                execution_mode:
+                  type: string
+                  enum: [sequential, parallel, adaptive]
+                  default: adaptive
+                wait_for_dependencies:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Task execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskExecution'
+
+  # AI Integration Endpoints
+  /ai/code/generate:
+    post:
+      summary: Generate Code with AI
+      description: Generate code using Claude Code with validation and quality assurance
+      tags: [AI Integration]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt, language]
+              properties:
+                prompt:
+                  type: string
+                  minLength: 10
+                  maxLength: 2000
+                  description: Code generation prompt
+                language:
+                  type: string
+                  enum: [python, javascript, typescript, java, cpp, go, rust]
+                  description: Target programming language
+                context:
+                  type: object
+                  additionalProperties: true
+                  description: Additional context for generation
+                validate_response:
+                  type: boolean
+                  default: true
+                  description: Validate generated code
+                use_cache:
+                  type: boolean
+                  default: true
+                  description: Use response caching
+            examples:
+              python_function:
+                summary: Python Function Generation
+                value:
+                  prompt: "Create a function to validate email addresses with proper error handling"
+                  language: "python"
+                  context:
+                    framework: "fastapi"
+                    include_tests: true
+                  validate_response: true
+                  use_cache: true
+      responses:
+        '200':
+          description: Code generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeGenerationResult'
+
+  /ai/code/review:
+    post:
+      summary: AI Code Review
+      description: Review code for quality, security, and best practices
+      tags: [AI Integration]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, language]
+              properties:
+                code:
+                  type: string
+                  description: Code to review
+                language:
+                  type: string
+                  description: Programming language
+                review_criteria:
+                  type: object
+                  properties:
+                    check_security:
+                      type: boolean
+                      default: true
+                    check_performance:
+                      type: boolean
+                      default: true
+                    check_style:
+                      type: boolean
+                      default: true
+      responses:
+        '200':
+          description: Code review completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeReview'
+
+  # Workflow Orchestration Endpoints
+  /workflows:
+    get:
+      summary: List Workflows
+      description: Get available workflows and workflow templates
+      tags: [Workflows]
+      responses:
+        '200':
+          description: Workflows retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workflows:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Workflow'
+
+    post:
+      summary: Create Workflow
+      description: Create custom development workflow with multiple steps
+      tags: [Workflows]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowCreateRequest'
+      responses:
+        '201':
+          description: Workflow created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+
+  /workflows/{workflow_id}/execute:
+    post:
+      summary: Execute Workflow
+      description: Execute multi-step workflow with agent coordination
+      tags: [Workflows]
+      parameters:
+        - name: workflow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                variables:
+                  type: object
+                  additionalProperties: true
+                strategy:
+                  type: string
+                  enum: [parallel, sequential, adaptive]
+                  default: adaptive
+      responses:
+        '200':
+          description: Workflow execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowExecution'
+
+  # Analytics and Monitoring Endpoints
+  /analytics/dashboard:
+    get:
+      summary: Get Analytics Dashboard
+      description: Retrieve comprehensive analytics and metrics dashboard
+      tags: [Analytics]
+      parameters:
+        - name: time_range
+          in: query
+          description: Time range for analytics
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d, 90d]
+            default: 24h
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsDashboard'
+
+  /analytics/performance:
+    get:
+      summary: Get Performance Metrics
+      description: Retrieve system performance metrics and KPIs
+      tags: [Analytics, Performance]
+      responses:
+        '200':
+          description: Performance metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+
+  # WebSocket Endpoints (documented for reference)
+  /ws/projects/{project_id}/progress:
+    get:
+      summary: Project Progress WebSocket
+      description: Real-time project progress updates via WebSocket
+      tags: [WebSocket, Real-time]
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '101':
+          description: WebSocket connection established
+
+  /ws/tasks/{task_id}/status:
+    get:
+      summary: Task Status WebSocket
+      description: Real-time task status updates via WebSocket
+      tags: [WebSocket, Real-time]
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '101':
+          description: WebSocket connection established
+
+  # Community Platform Endpoints
+  /community/templates:
+    get:
+      summary: Browse Template Marketplace
+      description: Browse available project templates with ratings and reviews
+      tags: [Community]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, api, ml, game]
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [popular, recent, rating]
+            default: popular
+      responses:
+        '200':
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Template'
+
+    post:
+      summary: Upload Template
+      description: Upload new project template to marketplace
+      tags: [Community]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                template_file:
+                  type: string
+                  format: binary
+                metadata:
+                  type: string
+                  description: JSON metadata for template
+      responses:
+        '201':
+          description: Template uploaded successfully
+
+  # Health and Status Endpoints
+  /health:
+    get:
+      summary: Health Check
+      description: Basic health check endpoint
+      tags: [System]
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: number
+                    description: Uptime in seconds
+
+  /health/detailed:
+    get:
+      summary: Detailed Health Check
+      description: Comprehensive system health with component status
+      tags: [System]
+      responses:
+        '200':
+          description: Detailed health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedHealthCheck'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service communication
+
+  parameters:
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: Unique project identifier
+      schema:
+        type: string
+        pattern: '^proj-[a-zA-Z0-9]{10,}$'
+        example: "proj-abc123def456"
+
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      description: Unique task identifier
+      schema:
+        type: string
+        pattern: '^task-[a-zA-Z0-9]{10,}$'
+        example: "task-xyz789abc123"
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User email address
+        name:
+          type: string
+          description: Full name
+        role:
+          type: string
+          enum: [developer, admin, manager]
+          description: User role
+        company:
+          type: string
+          description: Company name
+        created_at:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        last_login:
+          type: string
+          format: date-time
+          description: Last login timestamp
+
+    Project:
+      type: object
+      properties:
+        project_id:
+          type: string
+          description: Unique project identifier
+        name:
+          type: string
+          description: Project name
+        type:
+          type: string
+          enum: [python, nodejs, react, vue, angular, flask, django, fastapi]
+          description: Project type
+        description:
+          type: string
+          description: Project description
+        path:
+          type: string
+          description: Project directory path
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        status:
+          type: string
+          enum: [active, archived, template]
+          description: Project status
+        health_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Project health score (0-1)
+        config:
+          type: object
+          additionalProperties: true
+          description: Project configuration
+
+    ProjectDetails:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            file_count:
+              type: integer
+              description: Number of files in project
+            size_mb:
+              type: number
+              description: Project size in megabytes
+            git_initialized:
+              type: boolean
+              description: Git repository status
+            last_modified:
+              type: string
+              format: date-time
+              description: Last modification timestamp
+            dependencies:
+              type: array
+              items:
+                type: string
+              description: Project dependencies
+            recent_activity:
+              type: array
+              items:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  activity:
+                    type: string
+                  user:
+                    type: string
+
+    ProjectCreateRequest:
+      type: object
+      required: [name, path, project_type]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Project name
+        path:
+          type: string
+          description: Project directory path
+        project_type:
+          type: string
+          enum: [python, nodejs, react, vue, angular, flask, django, fastapi]
+          description: Project type
+        template:
+          type: string
+          description: Template to use
+        description:
+          type: string
+          maxLength: 500
+          description: Project description
+        features:
+          type: array
+          items:
+            type: string
+          description: Features to include
+        initialize_git:
+          type: boolean
+          default: true
+          description: Initialize git repository
+        create_venv:
+          type: boolean
+          default: true
+          description: Create virtual environment
+        config:
+          type: object
+          additionalProperties: true
+          description: Additional configuration
+
+    Task:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: Unique task identifier
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        type:
+          type: string
+          enum: [code_generation, analysis, testing, deployment, refactoring]
+          description: Task type
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cancelled]
+          description: Task status
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          description: Task priority
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        started_at:
+          type: string
+          format: date-time
+          description: Start timestamp
+        completed_at:
+          type: string
+          format: date-time
+          description: Completion timestamp
+        execution_time:
+          type: number
+          description: Execution time in seconds
+        progress:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Task progress (0-1)
+
+    TaskDetails:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            dependencies:
+              type: array
+              items:
+                type: string
+              description: Task dependencies
+            result:
+              type: object
+              additionalProperties: true
+              description: Task execution result
+            error:
+              type: string
+              description: Error message if failed
+            logs:
+              type: array
+              items:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  level:
+                    type: string
+                    enum: [debug, info, warning, error]
+                  message:
+                    type: string
+
+    TaskCreateRequest:
+      type: object
+      required: [name, description, task_type]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Task name
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Task description
+        task_type:
+          type: string
+          enum: [code_generation, analysis, testing, deployment, refactoring]
+          description: Task type
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+          description: Task priority
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          maximum: 3600
+          description: Task timeout in seconds
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Task dependencies
+        ai_enabled:
+          type: boolean
+          default: true
+          description: Enable AI assistance
+        config:
+          type: object
+          additionalProperties: true
+          description: Task configuration
+
+    TaskExecution:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: Task identifier
+        execution_id:
+          type: string
+          description: Execution identifier
+        status:
+          type: string
+          enum: [started, running, completed, failed]
+          description: Execution status
+        started_at:
+          type: string
+          format: date-time
+          description: Execution start time
+        estimated_completion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+
+    ValidationReport:
+      type: object
+      properties:
+        project_id:
+          type: string
+          description: Project identifier
+        is_valid:
+          type: boolean
+          description: Overall validation result
+        overall_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall quality score
+        authenticity_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Code authenticity score
+        completeness_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Implementation completeness
+        quality_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Code quality score
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              file:
+                type: string
+                description: File path
+              line:
+                type: integer
+                description: Line number
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+                description: Issue severity
+              type:
+                type: string
+                enum: [placeholder, syntax, logic, security, performance]
+                description: Issue type
+              description:
+                type: string
+                description: Issue description
+              suggestion:
+                type: string
+                description: Fix suggestion
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Validation warnings
+        recommendations:
+          type: array
+          items:
+            type: string
+          description: Improvement recommendations
+        validated_at:
+          type: string
+          format: date-time
+          description: Validation timestamp
+
+    CodeGenerationResult:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Generated code
+        language:
+          type: string
+          description: Programming language
+        validation:
+          type: object
+          properties:
+            is_valid:
+              type: boolean
+            quality_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            issues:
+              type: array
+              items:
+                type: string
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Generation metadata
+        cached:
+          type: boolean
+          description: Whether result was cached
+        generated_at:
+          type: string
+          format: date-time
+          description: Generation timestamp
+
+    CodeReview:
+      type: object
+      properties:
+        review:
+          type: string
+          description: Detailed code review
+        overall_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall code quality score
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+              category:
+                type: string
+                enum: [style, performance, security, logic, maintainability]
+              description:
+                type: string
+              suggestion:
+                type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+          description: Improvement recommendations
+        reviewed_at:
+          type: string
+          format: date-time
+
+    Workflow:
+      type: object
+      properties:
+        workflow_id:
+          type: string
+          description: Workflow identifier
+        name:
+          type: string
+          description: Workflow name
+        description:
+          type: string
+          description: Workflow description
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              step_id:
+                type: string
+              name:
+                type: string
+              type:
+                type: string
+              dependencies:
+                type: array
+                items:
+                  type: string
+              config:
+                type: object
+                additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          description: Creator user ID
+
+    WorkflowCreateRequest:
+      type: object
+      required: [name, steps]
+      properties:
+        name:
+          type: string
+          description: Workflow name
+        description:
+          type: string
+          description: Workflow description
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              config:
+                type: object
+                additionalProperties: true
+              dependencies:
+                type: array
+                items:
+                  type: string
+
+    WorkflowExecution:
+      type: object
+      properties:
+        execution_id:
+          type: string
+          description: Execution identifier
+        workflow_id:
+          type: string
+          description: Workflow identifier
+        status:
+          type: string
+          enum: [running, completed, failed, cancelled]
+          description: Execution status
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        progress:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall progress
+        current_step:
+          type: string
+          description: Currently executing step
+
+    AnalyticsDashboard:
+      type: object
+      properties:
+        overview:
+          type: object
+          properties:
+            total_projects:
+              type: integer
+            active_tasks:
+              type: integer
+            success_rate:
+              type: number
+            avg_completion_time:
+              type: number
+        project_metrics:
+          type: object
+          properties:
+            created_today:
+              type: integer
+            health_distribution:
+              type: object
+              additionalProperties:
+                type: integer
+        task_metrics:
+          type: object
+          properties:
+            completed_today:
+              type: integer
+            avg_execution_time:
+              type: number
+            type_distribution:
+              type: object
+              additionalProperties:
+                type: integer
+        performance_trends:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              metric:
+                type: string
+              value:
+                type: number
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        system:
+          type: object
+          properties:
+            cpu_usage:
+              type: number
+              minimum: 0
+              maximum: 1
+            memory_usage:
+              type: number
+              minimum: 0
+              maximum: 1
+            disk_usage:
+              type: number
+              minimum: 0
+              maximum: 1
+        api:
+          type: object
+          properties:
+            requests_per_minute:
+              type: number
+            avg_response_time:
+              type: number
+            error_rate:
+              type: number
+              minimum: 0
+              maximum: 1
+        ai_services:
+          type: object
+          properties:
+            claude_code_available:
+              type: boolean
+            claude_flow_available:
+              type: boolean
+            cache_hit_rate:
+              type: number
+              minimum: 0
+              maximum: 1
+
+    Template:
+      type: object
+      properties:
+        template_id:
+          type: string
+          description: Template identifier
+        name:
+          type: string
+          description: Template name
+        description:
+          type: string
+          description: Template description
+        category:
+          type: string
+          enum: [web, mobile, api, ml, game]
+          description: Template category
+        language:
+          type: string
+          description: Primary programming language
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+          description: Average user rating
+        downloads:
+          type: integer
+          description: Download count
+        author:
+          type: string
+          description: Template author
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DetailedHealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          description: Overall system status
+        version:
+          type: string
+          description: Application version
+        uptime:
+          type: number
+          description: Uptime in seconds
+        components:
+          type: object
+          properties:
+            database:
+              $ref: '#/components/schemas/ComponentHealth'
+            redis:
+              $ref: '#/components/schemas/ComponentHealth'
+            ai_services:
+              $ref: '#/components/schemas/ComponentHealth'
+            file_system:
+              $ref: '#/components/schemas/ComponentHealth'
+        metrics:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        checked_at:
+          type: string
+          format: date-time
+
+    ComponentHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        response_time:
+          type: number
+          description: Response time in milliseconds
+        error_rate:
+          type: number
+          minimum: 0
+          maximum: 1
+        last_check:
+          type: string
+          format: date-time
+        details:
+          type: object
+          additionalProperties: true
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+        page_size:
+          type: integer
+          minimum: 1
+          description: Items per page
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of items
+        has_next:
+          type: boolean
+          description: Whether there are more pages
+        has_prev:
+          type: boolean
+          description: Whether there are previous pages
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        error_code:
+          type: string
+          description: Internal error code
+        status_code:
+          type: integer
+          description: HTTP status code
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          description: Request identifier for tracking
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Invalid request parameters"
+            error_code: "INVALID_INPUT"
+            status_code: 400
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Authentication required"
+            error_code: "UNAUTHORIZED"
+            status_code: 401
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Insufficient permissions"
+            error_code: "FORBIDDEN"
+            status_code: 403
+            timestamp: "2024-01-15T10:30:00Z"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Resource not found"
+            error_code: "NOT_FOUND"
+            status_code: 404
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Conflict:
+      description: Conflict - resource already exists or state conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Resource already exists"
+            error_code: "CONFLICT"
+            status_code: 409
+            timestamp: "2024-01-15T10:30:00Z"
+
+    ValidationError:
+      description: Validation error - request validation failed
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  validation_errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        message:
+                          type: string
+          example:
+            error: "Validation failed"
+            error_code: "VALIDATION_ERROR"
+            status_code: 422
+            validation_errors:
+              - field: "email"
+                message: "Invalid email format"
+              - field: "password"
+                message: "Password must be at least 8 characters"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  retry_after:
+                    type: integer
+                    description: Seconds to wait before retrying
+          example:
+            error: "Rate limit exceeded"
+            error_code: "RATE_LIMIT_EXCEEDED"
+            status_code: 429
+            retry_after: 60
+            timestamp: "2024-01-15T10:30:00Z"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
+            error_code: "INTERNAL_ERROR"
+            status_code: 500
+            timestamp: "2024-01-15T10:30:00Z"
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: Project Management
+    description: AI-powered project creation, management, and validation
+  - name: Task Management
+    description: Development task orchestration and execution
+  - name: AI Integration
+    description: Claude Code and Claude Flow integration endpoints
+  - name: Workflows
+    description: Multi-step workflow creation and orchestration
+  - name: Analytics
+    description: Performance metrics and analytics dashboard
+  - name: Performance
+    description: System performance monitoring and optimization
+  - name: WebSocket
+    description: Real-time communication endpoints
+  - name: Real-time
+    description: Live updates and notifications
+  - name: Community
+    description: Template marketplace and community features
+  - name: Validation
+    description: Anti-hallucination validation and quality assurance
+  - name: System
+    description: System health checks and status endpoints
+
+externalDocs:
+  description: Find more information about Claude-TIU
+  url: https://claude-tui.dev/docs

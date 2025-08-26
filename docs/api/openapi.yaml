@@ -1,0 +1,1006 @@
+openapi: 3.0.3
+info:
+  title: Claude TUI API Gateway
+  version: 1.0.0
+  description: |
+    Production-grade API Gateway for AI-powered development operations.
+    
+    ## Overview
+    
+    The Claude TUI API provides comprehensive endpoints for AI-powered development operations including:
+    
+    - **Project Management**: Create, manage, validate, backup, and restore projects
+    - **Task Orchestration**: Execute complex development tasks with AI assistance
+    - **Workflow Engine**: Advanced workflow orchestration with multi-agent coordination
+    - **AI Integration**: Seamless Claude Code and Claude Flow integration
+    - **Real-time Communication**: WebSocket support for live updates
+    - **Analytics & Monitoring**: Performance tracking and usage analytics
+    - **Community Features**: Template marketplace and collaborative development
+    
+    ## Authentication
+    
+    This API uses JWT Bearer token authentication. Include the token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+    
+    ## Rate Limiting
+    
+    API endpoints are rate limited to ensure fair usage:
+    - Default: 60 requests per minute per IP
+    - Burst limit: 10 requests per 10 seconds
+    - Rate limit headers are included in responses
+    
+    ## Error Handling
+    
+    The API returns standard HTTP status codes and JSON error responses:
+    ```json
+    {
+      "error": "Error description",
+      "status_code": 400,
+      "timestamp": "2023-01-01T00:00:00Z"
+    }
+    ```
+    
+    ## Pagination
+    
+    List endpoints support pagination with query parameters:
+    - `page`: Page number (default: 1)
+    - `limit`: Items per page (default: 20, max: 100)
+    
+    ## WebSocket Support
+    
+    Real-time updates are available via WebSocket connections at `/api/v1/ws/*` endpoints.
+    
+  contact:
+    name: Claude TUI API Support
+    url: https://github.com/claude-tui/api
+    email: support@claude-tui.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://claude-tui.com/terms
+
+servers:
+  - url: https://api.claude-tui.com
+    description: Production server
+  - url: https://staging-api.claude-tui.com
+    description: Staging server
+  - url: http://localhost:8000
+    description: Development server
+
+paths:
+  # Health and System Endpoints
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health check endpoint
+      description: Check API health status
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 1.0.0
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  # Authentication Endpoints
+  /api/v1/auth/token:
+    post:
+      tags:
+        - Authentication
+      summary: Obtain access token
+      description: Authenticate with username/password to get JWT token
+      operationId: getAccessToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username or email address
+                password:
+                  type: string
+                  format: password
+                  description: User password
+      responses:
+        '200':
+          description: Token generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Refresh expired JWT token
+      operationId: refreshToken
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Project Management Endpoints
+  /api/v1/projects:
+    get:
+      tags:
+        - Projects
+      summary: List projects
+      description: Retrieve a paginated list of user projects
+      operationId: listProjects
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          description: Search projects by name or description
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by project status
+          schema:
+            type: string
+            enum: [active, archived, deleted]
+      responses:
+        '200':
+          description: Projects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Projects
+      summary: Create new project
+      description: Create a new AI-powered development project
+      operationId: createProject
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/v1/projects/{project_id}:
+    get:
+      tags:
+        - Projects
+      summary: Get project details
+      description: Retrieve detailed information about a specific project
+      operationId: getProject
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      responses:
+        '200':
+          description: Project details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetails'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Projects
+      summary: Update project
+      description: Update project configuration and metadata
+      operationId: updateProject
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Projects
+      summary: Delete project
+      description: Delete a project and all associated data
+      operationId: deleteProject
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      responses:
+        '204':
+          description: Project deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # AI Advanced Services Endpoints
+  /api/v1/ai/advanced/swarm/init:
+    post:
+      tags:
+        - AI Advanced
+      summary: Initialize AI swarm
+      description: Initialize a new AI agent swarm for collaborative development
+      operationId: initializeSwarm
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwarmInitRequest'
+      responses:
+        '201':
+          description: Swarm initialized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwarmResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/ai/advanced/task/execute:
+    post:
+      tags:
+        - AI Advanced
+      summary: Execute AI task
+      description: Execute a complex development task using AI agents
+      operationId: executeTask
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskExecutionRequest'
+      responses:
+        '202':
+          description: Task execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # WebSocket Endpoints
+  /api/v1/ws/monitor:
+    get:
+      tags:
+        - WebSocket
+      summary: Real-time monitoring
+      description: WebSocket endpoint for real-time system monitoring
+      operationId: websocketMonitor
+      responses:
+        '101':
+          description: WebSocket connection established
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for API authentication
+
+  parameters:
+    ProjectIdParam:
+      name: project_id
+      in: path
+      required: true
+      description: Unique project identifier
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+    TaskIdParam:
+      name: task_id
+      in: path
+      required: true
+      description: Unique task identifier
+      schema:
+        type: string
+        example: "task-1234567890"
+
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+  schemas:
+    # Authentication Schemas
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          description: Token type
+          example: "bearer"
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+          example: 3600
+        refresh_token:
+          type: string
+          description: Refresh token for token renewal
+          example: "refresh_token_example"
+        user_id:
+          type: string
+          description: User identifier
+          example: "user-123"
+
+    # Project Schemas
+    Project:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique project identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: Project name
+          example: "My AI Project"
+        description:
+          type: string
+          description: Project description
+          example: "An AI-powered web application"
+        status:
+          type: string
+          enum: [active, archived, deleted]
+          description: Project status
+          example: "active"
+        technology_stack:
+          type: array
+          items:
+            type: string
+          description: Technologies used in project
+          example: ["Python", "FastAPI", "React"]
+        created_at:
+          type: string
+          format: date-time
+          description: Project creation timestamp
+          example: "2023-01-01T00:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Project last update timestamp
+          example: "2023-01-01T12:00:00Z"
+        owner_id:
+          type: string
+          description: Project owner identifier
+          example: "user-123"
+        settings:
+          type: object
+          description: Project-specific settings
+          additionalProperties: true
+
+    ProjectDetails:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProjectFile'
+            metrics:
+              $ref: '#/components/schemas/ProjectMetrics'
+            recent_activity:
+              type: array
+              items:
+                $ref: '#/components/schemas/ActivityItem'
+
+    ProjectFile:
+      type: object
+      required:
+        - path
+        - type
+        - size
+        - modified_at
+      properties:
+        path:
+          type: string
+          description: File path relative to project root
+          example: "src/main.py"
+        type:
+          type: string
+          enum: [file, directory]
+          description: File system object type
+          example: "file"
+        size:
+          type: integer
+          description: File size in bytes
+          example: 1024
+        modified_at:
+          type: string
+          format: date-time
+          description: Last modification timestamp
+          example: "2023-01-01T12:00:00Z"
+        content_type:
+          type: string
+          description: MIME type of file content
+          example: "text/x-python"
+
+    CreateProjectRequest:
+      type: object
+      required:
+        - name
+        - technology_stack
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Project name
+          example: "My AI Project"
+        description:
+          type: string
+          maxLength: 500
+          description: Project description
+          example: "An AI-powered web application"
+        technology_stack:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Technologies to use in project
+          example: ["Python", "FastAPI", "React"]
+        template_id:
+          type: string
+          description: Template to use for project initialization
+          example: "fastapi-react-template"
+        settings:
+          type: object
+          description: Project-specific settings
+          additionalProperties: true
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Project name
+          example: "Updated Project Name"
+        description:
+          type: string
+          maxLength: 500
+          description: Project description
+          example: "Updated project description"
+        status:
+          type: string
+          enum: [active, archived]
+          description: Project status
+          example: "active"
+        settings:
+          type: object
+          description: Project-specific settings
+          additionalProperties: true
+
+    # AI Advanced Schemas
+    SwarmInitRequest:
+      type: object
+      required:
+        - project_context
+      properties:
+        project_context:
+          type: object
+          description: Project context for swarm optimization
+          additionalProperties: true
+          example:
+            language: "Python"
+            framework: "FastAPI"
+            complexity: "medium"
+        preferred_topology:
+          type: string
+          enum: [mesh, hierarchical, star, ring]
+          description: Preferred swarm topology
+          example: "mesh"
+        max_agents:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 10
+          description: Maximum number of agents
+          example: 5
+        enable_auto_scaling:
+          type: boolean
+          default: true
+          description: Enable automatic scaling
+          example: true
+        specialization_focus:
+          type: string
+          description: Domain specialization focus
+          example: "web_development"
+
+    SwarmResponse:
+      type: object
+      required:
+        - swarm_id
+        - status
+        - message
+      properties:
+        swarm_id:
+          type: string
+          description: Unique swarm identifier
+          example: "swarm-123456"
+        status:
+          type: string
+          description: Swarm status
+          example: "initialized"
+        message:
+          type: string
+          description: Status message
+          example: "Swarm initialized with mesh topology"
+        topology:
+          type: string
+          description: Selected topology
+          example: "mesh"
+        agents_count:
+          type: integer
+          description: Number of active agents
+          example: 3
+        created_at:
+          type: string
+          format: date-time
+          description: Swarm creation timestamp
+          example: "2023-01-01T00:00:00Z"
+
+    TaskExecutionRequest:
+      type: object
+      required:
+        - description
+        - context_type
+      properties:
+        description:
+          type: string
+          minLength: 10
+          maxLength: 1000
+          description: Task description
+          example: "Implement user authentication with JWT tokens"
+        context_type:
+          type: string
+          enum: [development, testing, deployment, analysis]
+          description: Execution context type
+          example: "development"
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: "medium"
+          description: Task priority level
+          example: "high"
+        agent_requirements:
+          type: array
+          items:
+            type: string
+          description: Required agent capabilities
+          example: ["python", "security", "database"]
+        estimated_duration:
+          type: integer
+          minimum: 60
+          maximum: 7200
+          default: 300
+          description: Estimated duration in seconds
+          example: 1800
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Task dependencies
+          example: ["task-001", "task-002"]
+        context_data:
+          type: object
+          description: Task-specific context data
+          additionalProperties: true
+
+    TaskResponse:
+      type: object
+      required:
+        - task_id
+        - execution_id
+        - status
+        - message
+      properties:
+        task_id:
+          type: string
+          description: Unique task identifier
+          example: "task-123456"
+        execution_id:
+          type: string
+          description: Unique execution identifier
+          example: "exec-789012"
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cancelled]
+          description: Task status
+          example: "running"
+        message:
+          type: string
+          description: Status message
+          example: "Task execution started"
+        swarm_id:
+          type: string
+          description: Assigned swarm identifier
+          example: "swarm-123456"
+        estimated_completion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+          example: "2023-01-01T01:00:00Z"
+
+    # Utility Schemas
+    Pagination:
+      type: object
+      required:
+        - page
+        - limit
+        - total
+        - has_next
+        - has_previous
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 20
+        total:
+          type: integer
+          description: Total number of items
+          example: 150
+        has_next:
+          type: boolean
+          description: Whether there are more pages
+          example: true
+        has_previous:
+          type: boolean
+          description: Whether there are previous pages
+          example: false
+
+    ProjectMetrics:
+      type: object
+      properties:
+        lines_of_code:
+          type: integer
+          description: Total lines of code
+          example: 5000
+        files_count:
+          type: integer
+          description: Total number of files
+          example: 50
+        last_activity:
+          type: string
+          format: date-time
+          description: Last activity timestamp
+          example: "2023-01-01T12:00:00Z"
+        completion_percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Project completion percentage
+          example: 75.5
+
+    ActivityItem:
+      type: object
+      required:
+        - id
+        - type
+        - description
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: Activity identifier
+          example: "activity-123"
+        type:
+          type: string
+          enum: [file_created, file_modified, file_deleted, task_completed, build_success, build_failure]
+          description: Activity type
+          example: "file_created"
+        description:
+          type: string
+          description: Human-readable activity description
+          example: "Created new file: src/auth.py"
+        timestamp:
+          type: string
+          format: date-time
+          description: Activity timestamp
+          example: "2023-01-01T12:00:00Z"
+        metadata:
+          type: object
+          description: Additional activity metadata
+          additionalProperties: true
+
+    # Error Schemas
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - status_code
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Resource not found"
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 404
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2023-01-01T12:00:00Z"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+    ValidationError:
+      type: object
+      required:
+        - error
+        - status_code
+        - timestamp
+        - validation_errors
+      properties:
+        error:
+          type: string
+          description: General error message
+          example: "Validation failed"
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 422
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: "2023-01-01T12:00:00Z"
+        validation_errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field name with validation error
+                example: "name"
+              message:
+                type: string
+                description: Validation error message
+                example: "Field is required"
+              code:
+                type: string
+                description: Error code
+                example: "required"
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Authentication required"
+            status_code: 401
+            timestamp: "2023-01-01T12:00:00Z"
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Resource not found"
+            status_code: 404
+            timestamp: "2023-01-01T12:00:00Z"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per time window
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Time when the rate limit resets (Unix timestamp)
+          schema:
+            type: integer
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "Rate limit exceeded"
+            status_code: 429
+            timestamp: "2023-01-01T12:00:00Z"
+
+# API Gateway Extensions
+x-gateway-config:
+  rate_limiting:
+    global:
+      requests_per_minute: 1000
+      burst_limit: 100
+    endpoints:
+      "/api/v1/ai/advanced/*":
+        requests_per_minute: 100
+        burst_limit: 10
+      "/api/v1/projects":
+        requests_per_minute: 200
+        burst_limit: 20
+  
+  caching:
+    default_ttl: 300
+    endpoints:
+      "/api/v1/projects/*":
+        ttl: 600
+        vary_headers: ["Authorization"]
+      "/health":
+        ttl: 60
+
+  circuit_breaker:
+    failure_threshold: 10
+    timeout: 60
+    recovery_timeout: 30

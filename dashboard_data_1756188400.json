@@ -1,0 +1,150 @@
+{
+  "export_timestamp": "2025-08-26T06:06:40.322176",
+  "config": {
+    "refresh_interval_seconds": 2.0,
+    "history_retention_hours": 24,
+    "alert_cooldown_minutes": 5,
+    "performance_targets": {
+      "memory_mb": 100.0,
+      "cpu_percent": 10.0,
+      "startup_time_ms": 2000.0,
+      "response_time_ms": 200.0
+    }
+  },
+  "performance_summary": {
+    "current_status": {
+      "timestamp": 1756188398.7472672,
+      "memory_mb": 47.0703125,
+      "cpu_percent": 83.3,
+      "system_memory_percent": 47.8,
+      "gc_objects": 50051,
+      "modules": 657,
+      "threads": 2
+    },
+    "trends_last_20_snapshots": {
+      "memory_avg": 47.01953125,
+      "memory_max": 47.0703125,
+      "memory_min": 46.81640625,
+      "memory_std": 0.1135503269824112,
+      "cpu_avg": 96.66,
+      "cpu_max": 100.0
+    },
+    "performance_vs_targets": {
+      "memory_mb": {
+        "current": 47.0703125,
+        "target": 100.0,
+        "within_target": true
+      },
+      "cpu_percent": {
+        "current": 83.3,
+        "target": 10.0,
+        "within_target": false
+      }
+    },
+    "active_alerts": 1,
+    "total_snapshots": 5,
+    "monitoring_duration_hours": 0.0023428957329856026
+  },
+  "recent_snapshots": [
+    {
+      "timestamp": 1756188390.3128426,
+      "memory_mb": 46.81640625,
+      "cpu_percent": 100.0,
+      "system_memory_percent": 52.5,
+      "gc_objects": 50209,
+      "modules": 657,
+      "threads": 2
+    },
+    {
+      "timestamp": 1756188392.4259062,
+      "memory_mb": 47.0703125,
+      "cpu_percent": 100.0,
+      "system_memory_percent": 56.0,
+      "gc_objects": 50226,
+      "modules": 657,
+      "threads": 2
+    },
+    {
+      "timestamp": 1756188394.532482,
+      "memory_mb": 47.0703125,
+      "cpu_percent": 100.0,
+      "system_memory_percent": 48.2,
+      "gc_objects": 50232,
+      "modules": 657,
+      "threads": 2
+    },
+    {
+      "timestamp": 1756188396.639325,
+      "memory_mb": 47.0703125,
+      "cpu_percent": 100.0,
+      "system_memory_percent": 49.6,
+      "gc_objects": 50240,
+      "modules": 657,
+      "threads": 2
+    },
+    {
+      "timestamp": 1756188398.7472672,
+      "memory_mb": 47.0703125,
+      "cpu_percent": 83.3,
+      "system_memory_percent": 47.8,
+      "gc_objects": 50051,
+      "modules": 657,
+      "threads": 2
+    }
+  ],
+  "recent_alerts": [
+    {
+      "metric": "cpu_usage",
+      "value": 100.0,
+      "threshold": 80,
+      "severity": "CRITICAL",
+      "timestamp": 1756188390.4254932,
+      "message": "High CPU usage: 100.0%",
+      "acknowledged": false
+    }
+  ],
+  "metrics_history": {
+    "memory_mb": [
+      46.81640625,
+      47.0703125,
+      47.0703125,
+      47.0703125,
+      47.0703125
+    ],
+    "system_memory_percent": [
+      52.5,
+      56.0,
+      48.2,
+      49.6,
+      47.8
+    ],
+    "cpu_percent": [
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      83.3
+    ],
+    "gc_objects": [
+      50209,
+      50226,
+      50232,
+      50240,
+      50051
+    ],
+    "modules": [
+      657,
+      657,
+      657,
+      657,
+      657
+    ],
+    "threads": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  }
+}

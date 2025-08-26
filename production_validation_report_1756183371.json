@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 9,
+    "failed": 1,
+    "warnings": 0,
+    "skipped": 0,
+    "success_rate": "90.0%",
+    "duration_seconds": 2.37683
+  },
+  "details": [
+    {
+      "test": "Application Import",
+      "status": "PASS",
+      "details": "All core modules import successfully",
+      "timestamp": "2025-08-26T04:42:50.982233"
+    },
+    {
+      "test": "Integration Bridge",
+      "status": "PASS",
+      "details": "4/4 components initialized",
+      "timestamp": "2025-08-26T04:42:50.984868"
+    },
+    {
+      "test": "ConfigManager CRUD",
+      "status": "PASS",
+      "details": "Settings can be stored and retrieved",
+      "timestamp": "2025-08-26T04:42:51.004447"
+    },
+    {
+      "test": "ConfigManager Persistence",
+      "status": "PASS",
+      "details": "Configuration saved successfully",
+      "timestamp": "2025-08-26T04:42:51.011807"
+    },
+    {
+      "test": "Database CRUD",
+      "status": "PASS",
+      "details": "Database operations working correctly",
+      "timestamp": "2025-08-26T04:42:51.015868"
+    },
+    {
+      "test": "File System Operations",
+      "status": "PASS",
+      "details": "File I/O working correctly",
+      "timestamp": "2025-08-26T04:42:51.017704"
+    },
+    {
+      "test": "Memory Usage",
+      "status": "PASS",
+      "details": "Memory usage: 1.61MB",
+      "timestamp": "2025-08-26T04:42:51.018651"
+    },
+    {
+      "test": "Validation Systems",
+      "status": "FAIL",
+      "details": "Validation error: 'str' object has no attribute 'suffix'",
+      "timestamp": "2025-08-26T04:42:51.027399"
+    },
+    {
+      "test": "UI Components",
+      "status": "PASS",
+      "details": "UI components can be imported and instantiated",
+      "timestamp": "2025-08-26T04:42:51.027457"
+    },
+    {
+      "test": "Error Handling",
+      "status": "PASS",
+      "details": "Handles configuration initialization gracefully",
+      "timestamp": "2025-08-26T04:42:51.027886"
+    }
+  ],
+  "timestamp": "2025-08-26T04:42:51.028844",
+  "production_ready": false
+}

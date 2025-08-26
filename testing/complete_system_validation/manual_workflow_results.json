@@ -1,0 +1,46 @@
+{
+  "timestamp": 1756207908.06498,
+  "tests": {
+    "simple_calculator": {
+      "status": "PASSED",
+      "execution_time": 1.7567510604858398,
+      "files_generated": 3,
+      "tests_passed": true,
+      "test_output": "============================= test session starts ==============================\nplatform linux -- Python 3.10.12, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nhypothesis profile 'default'\nrootdir: /tmp/claude_tui_manual_test_l9nn7b3k/calculator_project\nplugins: Faker-37.5.3, mock-3.14.1, cov-6.2.1, asyncio-1.1.0, benchmark-5.1.0, timeout-2.4.0, xdist-3.8.0, hypothesis-6.138.3, anyio-4.10.0\nasyncio: mode=strict, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 4 items\n\ntest_calculator.py::test_add PASSED                                      [ 25%]\ntest_calculator.py::test_subtract PASSED                                 [ 50%]\ntest_calculator.py::test_multiply PASSED                                 [ 75%]\ntest_calculator.py::test_divide PASSED                                   [100%]\n\n============================== 4 passed in 0.27s ===============================\n",
+      "project_dir": "/tmp/claude_tui_manual_test_l9nn7b3k/calculator_project"
+    },
+    "web_api": {
+      "status": "PASSED",
+      "execution_time": 2.7038497924804688,
+      "files_generated": 3,
+      "tests_passed": true,
+      "test_output": "============================= test session starts ==============================\nplatform linux -- Python 3.10.12, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nhypothesis profile 'default'\nrootdir: /tmp/claude_tui_manual_test_l9nn7b3k/api_project\nplugins: Faker-37.5.3, mock-3.14.1, cov-6.2.1, asyncio-1.1.0, benchmark-5.1.0, timeout-2.4.0, xdist-3.8.0, hypothesis-6.138.3, anyio-4.10.0\nasyncio: mode=strict, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 5 items\n\ntest_api.py::test_health_check PASSED                                    [ 20%]\ntest_api.py::test_get_users PASSED                                       [ 40%]\ntest_api.py::test_get_user_by_id PASSED                                  [ 60%]\ntest_api.py::test_get_nonexistent_user PASSED                            [ 80%]\ntest_api.py::test_create_user PASSED                                     [100%]\n\n============================== 5 passed in 0.32s ===============================\n",
+      "project_dir": "/tmp/claude_tui_manual_test_l9nn7b3k/api_project"
+    },
+    "data_processing": {
+      "status": "PASSED",
+      "execution_time": 2.131464958190918,
+      "files_generated": 3,
+      "tests_passed": true,
+      "main_output": "Data processing completed successfully!\n",
+      "test_output": "============================= test session starts ==============================\nplatform linux -- Python 3.10.12, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nhypothesis profile 'default'\nrootdir: /tmp/claude_tui_manual_test_l9nn7b3k/data_project\nplugins: Faker-37.5.3, mock-3.14.1, cov-6.2.1, asyncio-1.1.0, benchmark-5.1.0, timeout-2.4.0, xdist-3.8.0, hypothesis-6.138.3, anyio-4.10.0\nasyncio: mode=strict, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 4 items\n\ntest_data_processor.py::TestDataProcessor::test_load_json PASSED         [ 25%]\ntest_data_processor.py::TestDataProcessor::test_filter_data PASSED       [ 50%]\ntest_data_processor.py::TestDataProcessor::test_aggregate_numeric PASSED [ 75%]\ntest_data_processor.py::TestDataProcessor::test_group_by PASSED          [100%]\n\n============================== 4 passed in 0.31s ===============================\n",
+      "project_dir": "/tmp/claude_tui_manual_test_l9nn7b3k/data_project"
+    },
+    "tui_component": {
+      "status": "FAILED",
+      "execution_time": 1.602381944656372,
+      "files_generated": 3,
+      "tests_passed": false,
+      "test_output": "============================= test session starts ==============================\nplatform linux -- Python 3.10.12, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nhypothesis profile 'default'\nrootdir: /tmp/claude_tui_manual_test_l9nn7b3k/tui_project\nplugins: Faker-37.5.3, mock-3.14.1, cov-6.2.1, asyncio-1.1.0, benchmark-5.1.0, timeout-2.4.0, xdist-3.8.0, hypothesis-6.138.3, anyio-4.10.0\nasyncio: mode=strict, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 8 items\n\ntest_tui_component.py::TestSimpleMenu::test_menu_initialization PASSED   [ 12%]\ntest_tui_component.py::TestSimpleMenu::test_menu_navigation PASSED       [ 25%]\ntest_tui_component.py::TestSimpleMenu::test_get_selected PASSED          [ 37%]\ntest_tui_component.py::TestTextInput::test_text_input_initialization PASSED [ 50%]\ntest_tui_component.py::TestTextInput::test_get_input FAILED              [ 62%]\ntest_tui_component.py::TestProgressBar::test_progress_bar_initialization PASSED [ 75%]\ntest_tui_component.py::TestProgressBar::test_progress_update PASSED      [ 87%]\ntest_tui_component.py::TestProgressBar::test_zero_total_handling PASSED  [100%]\n\n=================================== FAILURES ===================================\n_________________________ TestTextInput.test_get_input _________________________\n\nargs = (<test_tui_component.TestTextInput object at 0x7f719f317cd0>,)\nkeywargs = {}\nnewargs = (<test_tui_component.TestTextInput object at 0x7f719f317cd0>, <MagicMock name='input' id='140125979357776'>)\nnewkeywargs = {}\n\n    @wraps(func)\n    def patched(*args, **keywargs):\n        with self.decoration_helper(patched,\n                                    args,\n                                    keywargs) as (newargs, newkeywargs):\n>           return func(*newargs, **newkeywargs)\nE           TypeError: TestTextInput.test_get_input() takes 1 positional argument but 2 were given\n\n/usr/lib/python3.10/unittest/mock.py:1379: TypeError\n=========================== short test summary info ============================\nFAILED test_tui_component.py::TestTextInput::test_get_input - TypeError: Test...\n========================= 1 failed, 7 passed in 0.26s ==========================\n",
+      "project_dir": "/tmp/claude_tui_manual_test_l9nn7b3k/tui_project"
+    }
+  },
+  "overall_status": "COMPLETED",
+  "summary": {
+    "total_tests": 4,
+    "passed_tests": 3,
+    "failed_tests": 1,
+    "success_rate": 75.0,
+    "total_execution_time": 8.194595575332642
+  }
+}

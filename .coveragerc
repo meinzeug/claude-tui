@@ -1,0 +1,50 @@
+[run]
+source = src
+omit = 
+    */tests/*
+    */migrations/*
+    */__init__.py
+    */config.py
+    */conftest.py
+    */setup.py
+    */.venv/*
+    */venv/*
+    */node_modules/*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+sort = Cover
+
+# Fail under minimum coverage
+fail_under = 80
+
+# Exclude lines from coverage
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\(Protocol\):
+    @(abc\.)?abstractmethod
+    # Type checking imports
+    if TYPE_CHECKING:
+    # Defensive assertions
+    assert False
+    # Platform-specific code
+    if sys.platform
+
+[html]
+directory = htmlcov
+title = claude-tui Test Coverage Report
+
+[xml]
+output = coverage.xml
+
+[json]
+output = coverage.json

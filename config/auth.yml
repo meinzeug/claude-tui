@@ -1,0 +1,227 @@
+# Authentication Configuration
+# Configuration for JWT, Sessions, OAuth, and Security settings
+
+# JWT Configuration
+jwt:
+  secret_key: ${JWT_SECRET_KEY}  # Override via environment variable
+  algorithm: "HS256"
+  access_token_expire_minutes: 30
+  refresh_token_expire_days: 30
+  issuer: "claude-tui"
+  audience: "claude-tui-api"
+
+# Session Management Configuration
+session:
+  timeout_minutes: 480  # 8 hours
+  max_sessions_per_user: 5
+  cleanup_interval_minutes: 60
+  extend_on_activity: true
+
+# Redis Configuration for Sessions and Token Blacklist
+redis:
+  host: ${REDIS_HOST:-localhost}
+  port: ${REDIS_PORT:-6379}
+  password: ${REDIS_PASSWORD:-}
+  session_db: 1
+  blacklist_db: 0
+  connection_pool_max_connections: 20
+
+# Rate Limiting Configuration
+rate_limiting:
+  login_attempts: "5/minute"
+  registration_attempts: "3/minute"
+  password_reset_requests: "3/hour"
+  oauth_attempts: "10/minute"
+  token_refresh: "10/minute"
+  logout_attempts: "20/minute"
+
+# OAuth Providers Configuration
+oauth:
+  github:
+    client_id: ${GITHUB_CLIENT_ID}
+    client_secret: ${GITHUB_CLIENT_SECRET}
+    redirect_uri: ${BASE_URL}/api/v1/auth/oauth/github/callback
+    scopes:
+      - "user:email"
+      - "read:user"
+    additional_params:
+      allow_signup: "true"
+  
+  google:
+    client_id: ${GOOGLE_CLIENT_ID}
+    client_secret: ${GOOGLE_CLIENT_SECRET}
+    redirect_uri: ${BASE_URL}/api/v1/auth/oauth/google/callback
+    scopes:
+      - "https://www.googleapis.com/auth/userinfo.email"
+      - "https://www.googleapis.com/auth/userinfo.profile"
+      - "openid"
+    additional_params:
+      access_type: "offline"
+      prompt: "consent"
+      include_granted_scopes: "true"
+
+# Security Configuration
+security:
+  # Password Policy
+  password_policy:
+    min_length: 8
+    max_length: 128
+    require_uppercase: true
+    require_lowercase: true
+    require_numbers: true
+    require_special_chars: true
+    forbidden_passwords:
+      - "password"
+      - "123456"
+      - "admin"
+      - "claude-tui"
+  
+  # Account Lockout
+  account_lockout:
+    max_failed_attempts: 5
+    lockout_duration_minutes: 15
+    reset_attempts_after_minutes: 60
+  
+  # Audit Logging
+  audit_logging:
+    enabled: true
+    log_file: ${SECURITY_LOG_FILE:-logs/security.log}
+    log_level: "INFO"
+    max_file_size_mb: 100
+    backup_count: 10
+    alert_webhook: ${SECURITY_ALERT_WEBHOOK}
+    high_risk_threshold: 70
+  
+  # IP Security
+  ip_security:
+    block_suspicious_ips: true
+    max_sessions_per_ip: 10
+    geo_blocking_enabled: false
+    trusted_ip_ranges:
+      - "192.168.0.0/16"
+      - "10.0.0.0/8"
+      - "172.16.0.0/12"
+  
+  # Content Security Policy
+  csp:
+    default_src: "'self'"
+    script_src: "'self' 'unsafe-inline'"
+    style_src: "'self' 'unsafe-inline'"
+    img_src: "'self' data: https:"
+    connect_src: "'self'"
+    font_src: "'self'"
+    object_src: "'none'"
+    media_src: "'self'"
+    frame_src: "'none'"
+
+# RBAC Configuration
+rbac:
+  default_role: "developer"
+  role_hierarchy:
+    superuser:
+      inherits: ["admin"]
+      permissions: ["system:admin"]
+    admin:
+      inherits: ["project_manager", "community_moderator"]
+      permissions:
+        - "system:read"
+        - "system:write"
+        - "user:admin"
+        - "project:admin"
+        - "task:admin"
+        - "community:admin"
+        - "ai:admin"
+    project_manager:
+      inherits: ["developer"]
+      permissions:
+        - "project:admin"
+        - "task:admin"
+        - "user:read"
+    community_moderator:
+      inherits: ["developer"]
+      permissions:
+        - "community:moderate"
+        - "community:admin"
+    developer:
+      inherits: ["viewer"]
+      permissions:
+        - "user:write"
+        - "project:write"
+        - "task:write"
+        - "community:write"
+        - "ai:write"
+    viewer:
+      inherits: []
+      permissions:
+        - "user:read"
+        - "project:read"
+        - "task:read"
+        - "community:read"
+        - "ai:read"
+
+# Email Configuration for Password Reset
+email:
+  smtp_host: ${SMTP_HOST}
+  smtp_port: ${SMTP_PORT:-587}
+  smtp_username: ${SMTP_USERNAME}
+  smtp_password: ${SMTP_PASSWORD}
+  smtp_tls: true
+  from_email: "noreply@claude-tui.com"
+  from_name: "Claude-TUI Authentication"
+  
+  # Email Templates
+  templates:
+    password_reset:
+      subject: "Password Reset Request - Claude-TUI"
+      template_file: "templates/password_reset.html"
+    welcome:
+      subject: "Welcome to Claude-TUI"
+      template_file: "templates/welcome.html"
+    security_alert:
+      subject: "Security Alert - Claude-TUI"
+      template_file: "templates/security_alert.html"
+
+# Development/Testing Configuration
+development:
+  # Disable security features for development
+  disable_rate_limiting: false
+  disable_ip_restrictions: true
+  allow_weak_passwords: false
+  mock_oauth_responses: false
+  
+  # Test Users (only in development mode)
+  test_users:
+    - username: "admin"
+      email: "admin@claude-tui.dev"
+      password: "admin123456"
+      role: "admin"
+    - username: "developer"
+      email: "dev@claude-tui.dev"
+      password: "dev123456"
+      role: "developer"
+    - username: "viewer"
+      email: "viewer@claude-tui.dev"
+      password: "viewer123456"
+      role: "viewer"
+
+# Production Configuration Overrides
+production:
+  # Stricter settings for production
+  jwt:
+    access_token_expire_minutes: 15  # Shorter in production
+  
+  session:
+    timeout_minutes: 240  # 4 hours in production
+  
+  security:
+    password_policy:
+      min_length: 12
+      require_special_chars: true
+    
+    account_lockout:
+      max_failed_attempts: 3
+      lockout_duration_minutes: 30
+  
+  rate_limiting:
+    login_attempts: "3/minute"
+    registration_attempts: "2/minute"

@@ -1,0 +1,55 @@
+# {{ tutorial.title }}
+
+{{ tutorial.description }}
+
+{% for section in tutorial.sections %}
+## {{ section.title }}
+
+{{ section.content }}
+
+{% if section.code_example %}
+### Code Example
+
+```python
+{{ section.code_example }}
+```
+
+{% if section.expected_output %}
+### Expected Output
+
+```
+{{ section.expected_output }}
+```
+{% endif %}
+
+### Try it Yourself
+
+1. Copy the code example above
+2. Save it to a Python file (e.g., `example.py`)
+3. Run it with: `python example.py`
+4. Compare your output with the expected output
+
+{% endif %}
+
+{% if not loop.last %}
+
+---
+
+{% endif %}
+{% endfor %}
+
+## Next Steps
+
+- Explore more [tutorials](../tutorials/)
+- Read the [API documentation](../api-reference.md)
+- Check out the [developer guide](../developer-guide/)
+
+## Need Help?
+
+- Join our [Discord community](https://discord.gg/claude-tui)
+- Check the [FAQ](../troubleshooting-faq.md)
+- Open an issue on [GitHub](https://github.com/claude-tui/claude-tui)
+
+---
+
+*Generated on {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}*

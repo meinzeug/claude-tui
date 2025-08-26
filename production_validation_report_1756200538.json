@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed": 7,
+    "failed": 2,
+    "warnings": 0,
+    "skipped": 0,
+    "success_rate": "77.8%",
+    "duration_seconds": 1.1229
+  },
+  "details": [
+    {
+      "test": "Application Startup",
+      "status": "FAIL",
+      "details": "Import/init error: 'continue' not properly in loop (task_dashboard.py, line 568)",
+      "timestamp": "2025-08-26T09:28:57.655070"
+    },
+    {
+      "test": "ConfigManager CRUD",
+      "status": "PASS",
+      "details": "Settings can be stored and retrieved",
+      "timestamp": "2025-08-26T09:28:58.585499"
+    },
+    {
+      "test": "ConfigManager Persistence",
+      "status": "PASS",
+      "details": "Configuration saved successfully",
+      "timestamp": "2025-08-26T09:28:58.587605"
+    },
+    {
+      "test": "Database CRUD",
+      "status": "PASS",
+      "details": "Database operations working correctly",
+      "timestamp": "2025-08-26T09:28:58.591574"
+    },
+    {
+      "test": "File System Operations",
+      "status": "PASS",
+      "details": "File I/O working correctly",
+      "timestamp": "2025-08-26T09:28:58.593232"
+    },
+    {
+      "test": "Memory Usage",
+      "status": "PASS",
+      "details": "Memory usage: 1.03MB",
+      "timestamp": "2025-08-26T09:28:58.594025"
+    },
+    {
+      "test": "Validation Systems",
+      "status": "PASS",
+      "details": "Validation components loaded successfully",
+      "timestamp": "2025-08-26T09:28:58.597729"
+    },
+    {
+      "test": "UI Components",
+      "status": "FAIL",
+      "details": "UI component error: 'continue' not properly in loop (task_dashboard.py, line 568)",
+      "timestamp": "2025-08-26T09:28:58.600935"
+    },
+    {
+      "test": "Error Handling",
+      "status": "PASS",
+      "details": "Handles configuration initialization gracefully",
+      "timestamp": "2025-08-26T09:28:58.601435"
+    }
+  ],
+  "timestamp": "2025-08-26T09:28:58.601484",
+  "production_ready": false
+}

@@ -1,0 +1,441 @@
+{
+  "startup_time": 0.12802648544311523,
+  "memory_snapshots": [
+    {
+      "timestamp": 0.008823156356811523,
+      "rss": 36327424,
+      "vms": 45690880,
+      "percent": 1.8085642214650002,
+      "available": 726847488,
+      "peak_rss": 36327424,
+      "objects_count": 38364,
+      "gc_stats": {
+        "gen0": 3,
+        "gen1": 0,
+        "gen2": 38362,
+        "total_objects": 38364
+      }
+    },
+    {
+      "timestamp": 0.010758638381958008,
+      "rss": 36327424,
+      "vms": 129585152,
+      "percent": 1.8085642214650002,
+      "available": 726847488,
+      "peak_rss": 36327424,
+      "objects_count": 38423,
+      "gc_stats": {
+        "gen0": 62,
+        "gen1": 0,
+        "gen2": 38362,
+        "total_objects": 38423
+      }
+    },
+    {
+      "timestamp": 0.5143535137176514,
+      "rss": 36593664,
+      "vms": 272195584,
+      "percent": 1.8218190049124265,
+      "available": 726335488,
+      "peak_rss": 36593664,
+      "objects_count": 38451,
+      "gc_stats": {
+        "gen0": 91,
+        "gen1": 0,
+        "gen2": 38361,
+        "total_objects": 38451
+      }
+    },
+    {
+      "timestamp": 1.017906904220581,
+      "rss": 36593664,
+      "vms": 272195584,
+      "percent": 1.8218190049124265,
+      "available": 726335488,
+      "peak_rss": 36593664,
+      "objects_count": 38456,
+      "gc_stats": {
+        "gen0": 96,
+        "gen1": 0,
+        "gen2": 38361,
+        "total_objects": 38456
+      }
+    },
+    {
+      "timestamp": 1.5230143070220947,
+      "rss": 36593664,
+      "vms": 272195584,
+      "percent": 1.8218190049124265,
+      "available": 726335488,
+      "peak_rss": 36593664,
+      "objects_count": 38461,
+      "gc_stats": {
+        "gen0": 101,
+        "gen1": 0,
+        "gen2": 38361,
+        "total_objects": 38461
+      }
+    },
+    {
+      "timestamp": 2.0374197959899902,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 725053440,
+      "peak_rss": 37404672,
+      "objects_count": 38468,
+      "gc_stats": {
+        "gen0": 6,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38468
+      }
+    },
+    {
+      "timestamp": 2.5411407947540283,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 725053440,
+      "peak_rss": 37404672,
+      "objects_count": 38476,
+      "gc_stats": {
+        "gen0": 14,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38476
+      }
+    },
+    {
+      "timestamp": 3.045724868774414,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 724807680,
+      "peak_rss": 37404672,
+      "objects_count": 38481,
+      "gc_stats": {
+        "gen0": 19,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38481
+      }
+    },
+    {
+      "timestamp": 3.5505237579345703,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 707780608,
+      "peak_rss": 37404672,
+      "objects_count": 38486,
+      "gc_stats": {
+        "gen0": 24,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38486
+      }
+    },
+    {
+      "timestamp": 4.055210828781128,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 707780608,
+      "peak_rss": 37404672,
+      "objects_count": 38491,
+      "gc_stats": {
+        "gen0": 29,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38491
+      }
+    },
+    {
+      "timestamp": 4.5599894523620605,
+      "rss": 37404672,
+      "vms": 272429056,
+      "percent": 1.862195114490741,
+      "available": 707526656,
+      "peak_rss": 37404672,
+      "objects_count": 38496,
+      "gc_stats": {
+        "gen0": 34,
+        "gen1": 102,
+        "gen2": 38361,
+        "total_objects": 38496
+      }
+    }
+  ],
+  "cpu_metrics": [
+    {
+      "timestamp": 0.00018405914306640625,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.18,
+        "system": 0.01,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 0,
+      "threads": 1
+    },
+    {
+      "timestamp": 0.002324342727661133,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.18,
+        "system": 0.01,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 7,
+      "threads": 4
+    },
+    {
+      "timestamp": 0.5057034492492676,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.18,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 10,
+      "threads": 4
+    },
+    {
+      "timestamp": 1.0092554092407227,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.18,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 10,
+      "threads": 4
+    },
+    {
+      "timestamp": 1.5146253108978271,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.19,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 10,
+      "threads": 4
+    },
+    {
+      "timestamp": 2.0255255699157715,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.2,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 10,
+      "threads": 4
+    },
+    {
+      "timestamp": 2.5264997482299805,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.2,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    },
+    {
+      "timestamp": 3.0275332927703857,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.21,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    },
+    {
+      "timestamp": 3.5286035537719727,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.21,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    },
+    {
+      "timestamp": 4.02974271774292,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.22,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    },
+    {
+      "timestamp": 4.530574798583984,
+      "cpu_percent": 0.0,
+      "cpu_times": {
+        "user": 0.22,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    },
+    {
+      "timestamp": 5.031655788421631,
+      "cpu_percent": 2.0,
+      "cpu_times": {
+        "user": 0.23,
+        "system": 0.02,
+        "children_user": 0.0,
+        "children_system": 0.0,
+        "iowait": 0.0
+      },
+      "context_switches": 11,
+      "threads": 4
+    }
+  ],
+  "io_metrics": [
+    {
+      "timestamp": 6.29425048828125e-05,
+      "read_count": 781,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 0.002235889434814453,
+      "read_count": 796,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 0.5055646896362305,
+      "read_count": 811,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 1.0091311931610107,
+      "read_count": 826,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 1.5140044689178467,
+      "read_count": 832,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 2.028330087661743,
+      "read_count": 856,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 2.528940200805664,
+      "read_count": 867,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 3.0295984745025635,
+      "read_count": 882,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 3.5303220748901367,
+      "read_count": 897,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 4.030944585800171,
+      "read_count": 912,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    },
+    {
+      "timestamp": 4.531550168991089,
+      "read_count": 927,
+      "write_count": 0,
+      "read_bytes": 0,
+      "write_bytes": 0
+    }
+  ],
+  "peak_memory_mb": 35.671875,
+  "average_memory_mb": 35.27414772727273,
+  "peak_cpu_percent": 2.0,
+  "average_cpu_percent": 1.0,
+  "memory_leaks": [],
+  "bottlenecks": [],
+  "optimization_recommendations": [
+    "Implement virtual scrolling for large lists",
+    "Use batch updates for multiple UI changes",
+    "Cache frequently accessed data",
+    "Profile individual widget render times",
+    "Consider using C extensions for performance-critical code"
+  ],
+  "test_results": {
+    "large_dataset": {
+      "tasks_1000": {
+        "creation_time": 0.005413055419921875,
+        "processing_time": 0.0004439353942871094,
+        "tasks_per_second": 170736.1393796304
+      },
+      "files_1000": {
+        "tree_creation_time": 0.0038802623748779297,
+        "traversal_time": 0.0004012584686279297,
+        "files_per_second": 233561.8665775699,
+        "total_size": 50974000,
+        "total_lines": 99500
+      },
+      "widgets_100": {
+        "creation_time": 0.00021886825561523438,
+        "update_time": 4.124641418457031e-05,
+        "widgets_per_second": 384445.82951420714
+      }
+    }
+  }
+}

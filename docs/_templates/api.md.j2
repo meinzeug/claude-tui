@@ -1,0 +1,231 @@
+# API Reference
+
+{% if api.info %}
+## {{ api.info.title }}
+
+**Version:** {{ api.info.version }}
+
+{{ api.info.description }}
+
+{% if api.info.contact %}
+**Contact:**
+- **Name:** {{ api.info.contact.name }}
+- **Email:** {{ api.info.contact.email }}
+- **URL:** {{ api.info.contact.url }}
+{% endif %}
+
+{% if api.info.license %}
+**License:** [{{ api.info.license.name }}]({{ api.info.license.url }})
+{% endif %}
+
+{% endif %}
+
+{% if api.servers %}
+## Servers
+
+{% for server in api.servers %}
+- **{{ server.description }}:** `{{ server.url }}`
+{% endfor %}
+
+{% endif %}
+
+{% if api.security %}
+## Authentication
+
+{% for security_scheme in api.security %}
+{% for scheme_name, scopes in security_scheme.items() %}
+### {{ scheme_name }}
+
+{% if api.components.securitySchemes and api.components.securitySchemes[scheme_name] %}
+{% set scheme = api.components.securitySchemes[scheme_name] %}
+**Type:** {{ scheme.type }}
+
+{% if scheme.description %}
+{{ scheme.description }}
+{% endif %}
+
+{% if scheme.type == "http" %}
+**Scheme:** {{ scheme.scheme }}
+{% endif %}
+
+{% if scheme.type == "apiKey" %}
+**Parameter Name:** {{ scheme.name }}
+**Location:** {{ scheme.in }}
+{% endif %}
+
+{% if scheme.type == "oauth2" %}
+**Flows:** {{ scheme.flows.keys() | list | join(', ') }}
+{% endif %}
+
+{% endif %}
+
+{% if scopes %}
+**Required Scopes:** {{ scopes | join(', ') }}
+{% endif %}
+
+{% endfor %}
+{% endfor %}
+
+{% endif %}
+
+{% if api.paths %}
+## Endpoints
+
+{% for path, methods in api.paths.items() %}
+### {{ path }}
+
+{% for method, details in methods.items() %}
+#### {{ method }} {{ path }}
+
+{% if details.summary %}
+**{{ details.summary }}**
+{% endif %}
+
+{% if details.description %}
+{{ details.description }}
+{% endif %}
+
+{% if details.tags %}
+**Tags:** {{ details.tags | join(', ') }}
+{% endif %}
+
+{% if details.parameters %}
+##### Parameters
+
+{% for param in details.parameters %}
+- **{{ param.name }}** ({{ param.in }}) - {{ param.schema.type if param.schema else 'string' }}
+  {% if param.required %} - **Required**{% endif %}
+  {% if param.description %} - {{ param.description }}{% endif %}
+  {% if param.schema and param.schema.example %} - Example: `{{ param.schema.example }}`{% endif %}
+{% endfor %}
+
+{% endif %}
+
+{% if details.requestBody %}
+##### Request Body
+
+**Content Type:** {{ details.requestBody.content.keys() | list | join(', ') }}
+
+{% if details.requestBody.description %}
+{{ details.requestBody.description }}
+{% endif %}
+
+{% for content_type, content in details.requestBody.content.items() %}
+**{{ content_type }}:**
+
+{% if content.schema %}
+```json
+{{ content.schema | tojsonpretty }}
+```
+{% endif %}
+
+{% if content.examples %}
+**Examples:**
+
+{% for example_name, example in content.examples.items() %}
+**{{ example_name }}:**
+```json
+{{ example.value | tojsonpretty }}
+```
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
+{% if details.responses %}
+##### Responses
+
+{% for status_code, response in details.responses.items() %}
+**{{ status_code }}** - {{ response.description }}
+
+{% if response.content %}
+{% for content_type, content in response.content.items() %}
+**{{ content_type }}:**
+
+{% if content.schema %}
+```json
+{{ content.schema | tojsonpretty }}
+```
+{% endif %}
+
+{% if content.examples %}
+**Examples:**
+
+{% for example_name, example in content.examples.items() %}
+**{{ example_name }}:**
+```json
+{{ example.value | tojsonpretty }}
+```
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
+##### Example Request
+
+```bash
+curl -X {{ method }} "{{ api.servers[0].url if api.servers else 'https://api.claude-tui.dev/v1' }}{{ path }}" \
+{% if details.security %}
+  -H "Authorization: Bearer YOUR_TOKEN" \
+{% endif %}
+  -H "Content-Type: application/json"
+{% if details.requestBody and details.requestBody.content['application/json'].examples %}
+{% set example = details.requestBody.content['application/json'].examples.values() | first %}
+  -d '{{ example.value | tojson }}'
+{% endif %}
+```
+
+---
+
+{% endfor %}
+
+{% endfor %}
+
+{% endif %}
+
+{% if api.components and api.components.schemas %}
+## Data Models
+
+{% for schema_name, schema in api.components.schemas.items() %}
+### {{ schema_name }}
+
+{% if schema.description %}
+{{ schema.description }}
+{% endif %}
+
+{% if schema.type == "object" and schema.properties %}
+**Properties:**
+
+{% for prop_name, prop in schema.properties.items() %}
+- **{{ prop_name }}** ({{ prop.type }})
+  {% if schema.required and prop_name in schema.required %} - **Required**{% endif %}
+  {% if prop.description %} - {{ prop.description }}{% endif %}
+  {% if prop.example %} - Example: `{{ prop.example }}`{% endif %}
+{% endfor %}
+
+{% endif %}
+
+**JSON Schema:**
+```json
+{{ schema | tojsonpretty }}
+```
+
+{% if not loop.last %}
+
+---
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+---
+
+*Generated on {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}*

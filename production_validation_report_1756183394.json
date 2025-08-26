@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 9,
+    "failed": 1,
+    "warnings": 0,
+    "skipped": 0,
+    "success_rate": "90.0%",
+    "duration_seconds": 1.569592
+  },
+  "details": [
+    {
+      "test": "Application Import",
+      "status": "PASS",
+      "details": "All core modules import successfully",
+      "timestamp": "2025-08-26T04:43:14.427478"
+    },
+    {
+      "test": "Integration Bridge",
+      "status": "PASS",
+      "details": "4/4 components initialized",
+      "timestamp": "2025-08-26T04:43:14.431390"
+    },
+    {
+      "test": "ConfigManager CRUD",
+      "status": "PASS",
+      "details": "Settings can be stored and retrieved",
+      "timestamp": "2025-08-26T04:43:14.452698"
+    },
+    {
+      "test": "ConfigManager Persistence",
+      "status": "PASS",
+      "details": "Configuration saved successfully",
+      "timestamp": "2025-08-26T04:43:14.455317"
+    },
+    {
+      "test": "Database CRUD",
+      "status": "PASS",
+      "details": "Database operations working correctly",
+      "timestamp": "2025-08-26T04:43:14.462135"
+    },
+    {
+      "test": "File System Operations",
+      "status": "PASS",
+      "details": "File I/O working correctly",
+      "timestamp": "2025-08-26T04:43:14.464743"
+    },
+    {
+      "test": "Memory Usage",
+      "status": "PASS",
+      "details": "Memory usage: 1.61MB",
+      "timestamp": "2025-08-26T04:43:14.465618"
+    },
+    {
+      "test": "Placeholder Detection",
+      "status": "FAIL",
+      "details": "Only detected 0 placeholders",
+      "timestamp": "2025-08-26T04:43:14.472317"
+    },
+    {
+      "test": "UI Components",
+      "status": "PASS",
+      "details": "UI components can be imported and instantiated",
+      "timestamp": "2025-08-26T04:43:14.472428"
+    },
+    {
+      "test": "Error Handling",
+      "status": "PASS",
+      "details": "Handles configuration initialization gracefully",
+      "timestamp": "2025-08-26T04:43:14.473202"
+    }
+  ],
+  "timestamp": "2025-08-26T04:43:14.473302",
+  "production_ready": false
+}

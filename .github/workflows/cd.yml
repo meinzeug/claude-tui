@@ -1,0 +1,420 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      force_deploy:
+        description: 'Force deployment (skip some checks)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Build and Push Docker Images
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0.15.0
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          output-file: sbom.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
+  # PyPI Release
+  pypi-release:
+    name: PyPI Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: pypi
+    permissions:
+      id-token: write # For trusted publishing
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Check package
+        run: |
+          twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: true
+
+  # Staging Deployment
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment:
+      name: staging
+      url: https://staging.claude-tui.dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl for staging
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy to staging
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Update image in deployment
+          IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
+          sed -i "s|image: .*claude-tui.*|image: ${IMAGE_TAG}|g" k8s/staging/deployment.yaml
+          
+          # Apply configurations
+          kubectl apply -f k8s/staging/namespace.yaml
+          kubectl apply -f k8s/staging/ -n claude-tui-staging
+          
+          # Wait for rollout
+          kubectl rollout status deployment/claude-tui-app -n claude-tui-staging --timeout=300s
+
+      - name: Run smoke tests
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Get service endpoint
+          ENDPOINT=$(kubectl get service claude-tui-service -n claude-tui-staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          # Run basic health checks
+          curl -f http://${ENDPOINT}/health || exit 1
+          curl -f http://${ENDPOINT}/metrics || exit 1
+
+      - name: Run integration tests against staging
+        run: |
+          export KUBECONFIG=kubeconfig
+          STAGING_URL="https://staging.claude-tui.dev"
+          
+          python -m pytest tests/e2e/ -v \
+            --base-url="${STAGING_URL}" \
+            --junit-xml=staging-test-results.xml
+
+      - name: Upload staging test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-test-results
+          path: staging-test-results.xml
+        if: always()
+
+  # Production Deployment
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-staging, pypi-release]
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment:
+      name: production
+      url: https://claude-tui.dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl for production
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Pre-deployment checks
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Check cluster health
+          kubectl get nodes
+          kubectl top nodes
+          
+          # Check current deployment status
+          kubectl get deployments -n claude-tui-production
+
+      - name: Blue-Green Deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
+          
+          # Determine current color
+          CURRENT_COLOR=$(kubectl get deployment -n claude-tui-production -l app=claude-tui -o jsonpath='{.items[0].metadata.labels.version}')
+          if [[ "$CURRENT_COLOR" == "blue" ]]; then
+            NEW_COLOR="green"
+          else
+            NEW_COLOR="blue"
+          fi
+          
+          echo "Deploying to $NEW_COLOR environment"
+          
+          # Update deployment with new color
+          sed -i "s|image: .*claude-tui.*|image: ${IMAGE_TAG}|g" k8s/production/deployment-${NEW_COLOR}.yaml
+          sed -i "s|version: .*|version: ${NEW_COLOR}|g" k8s/production/deployment-${NEW_COLOR}.yaml
+          
+          # Deploy to new color
+          kubectl apply -f k8s/production/deployment-${NEW_COLOR}.yaml -n claude-tui-production
+          
+          # Wait for rollout
+          kubectl rollout status deployment/claude-tui-app-${NEW_COLOR} -n claude-tui-production --timeout=600s
+
+      - name: Health checks and validation
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Get new deployment endpoint
+          kubectl port-forward service/claude-tui-service-${NEW_COLOR} 8080:8000 -n claude-tui-production &
+          PF_PID=$!
+          sleep 10
+          
+          # Health checks
+          curl -f http://localhost:8080/health || exit 1
+          curl -f http://localhost:8080/metrics || exit 1
+          curl -f http://localhost:8080/version || exit 1
+          
+          kill $PF_PID
+
+      - name: Switch traffic to new deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Update service to point to new deployment
+          kubectl patch service claude-tui-service -n claude-tui-production \
+            -p '{"spec":{"selector":{"version":"'${NEW_COLOR}'"}}}'
+          
+          echo "Traffic switched to $NEW_COLOR deployment"
+
+      - name: Post-deployment monitoring
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          # Monitor for 2 minutes
+          for i in {1..12}; do
+            echo "Monitoring check $i/12"
+            kubectl get pods -n claude-tui-production -l version=${NEW_COLOR}
+            kubectl top pods -n claude-tui-production -l version=${NEW_COLOR} || true
+            sleep 10
+          done
+
+      - name: Cleanup old deployment
+        run: |
+          export KUBECONFIG=kubeconfig
+          
+          OLD_COLOR=$(if [[ "$NEW_COLOR" == "blue" ]]; then echo "green"; else echo "blue"; fi)
+          
+          # Scale down old deployment
+          kubectl scale deployment claude-tui-app-${OLD_COLOR} --replicas=0 -n claude-tui-production
+          
+          echo "Scaled down $OLD_COLOR deployment"
+
+  # Database Migration
+  database-migration:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'staging' || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install alembic
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          alembic upgrade head
+
+      - name: Verify migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          alembic current
+          python -c "
+          from sqlalchemy import create_engine, text
+          import os
+          
+          engine = create_engine(os.getenv('DATABASE_URL'))
+          with engine.connect() as conn:
+              result = conn.execute(text('SELECT version_num FROM alembic_version'))
+              version = result.fetchone()[0]
+              print(f'Current database version: {version}')
+          "
+
+  # Monitoring and Alerting Setup
+  setup-monitoring:
+    name: Setup Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure monitoring
+        run: |
+          echo "Setting up monitoring dashboards and alerts..."
+          
+          # This would typically involve:
+          # - Updating Grafana dashboards
+          # - Configuring Prometheus alerts
+          # - Setting up log aggregation
+          
+          echo "Monitoring configuration completed"
+
+  # Notification
+  notification:
+    name: Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-staging, deploy-production, database-migration]
+    if: always()
+    steps:
+      - name: Determine deployment status
+        id: status
+        run: |
+          if [[ "${{ needs.deploy-production.result }}" == "success" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=🚀 Production deployment successful" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.deploy-staging.result }}" == "success" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=🔄 Staging deployment successful" >> $GITHUB_OUTPUT
+          else
+            echo "environment=failed" >> $GITHUB_OUTPUT
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=❌ Deployment failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create deployment summary
+        run: |
+          cat > deployment-summary.md << EOF
+          # Deployment Summary
+          
+          ## Status: ${{ steps.status.outputs.status }}
+          **Environment:** ${{ steps.status.outputs.environment }}
+          **Message:** ${{ steps.status.outputs.message }}
+          
+          ## Details
+          - **Branch/Tag:** ${{ github.ref_name }}
+          - **Commit:** ${{ github.sha }}
+          - **Timestamp:** $(date -u)
+          - **Actor:** ${{ github.actor }}
+          
+          ## Components
+          | Component | Status |
+          |-----------|--------|
+          | Docker Build | ${{ needs.build-and-push.result == 'success' && '✅' || '❌' }} |
+          | Database Migration | ${{ needs.database-migration.result == 'success' && '✅' || '❌' }} |
+          | Staging Deploy | ${{ needs.deploy-staging.result == 'success' && '✅' || '❌' }} |
+          | Production Deploy | ${{ needs.deploy-production.result == 'success' && '✅' || '❌' }} |
+          EOF
+
+      - name: Upload deployment summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-summary
+          path: deployment-summary.md

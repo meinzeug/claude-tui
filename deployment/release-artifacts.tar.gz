@@ -1,0 +1,35 @@
+#!/bin/bash
+# Release Artifacts Package Script
+# This script creates a comprehensive release package
+
+echo "🚀 Creating Claude-TUI Production Release Artifacts Package"
+
+# Create release directory structure
+mkdir -p /tmp/claude-tui-release/{docker,kubernetes,config,docs,scripts}
+
+# Copy Docker artifacts
+cp Dockerfile /tmp/claude-tui-release/docker/
+cp docker-compose.production.yml /tmp/claude-tui-release/docker/
+cp .env.production /tmp/claude-tui-release/config/
+
+# Copy Kubernetes manifests  
+cp k8s/claude-tui-production.yaml /tmp/claude-tui-release/kubernetes/
+cp -r k8s/production/* /tmp/claude-tui-release/kubernetes/
+
+# Copy configuration files
+cp config/* /tmp/claude-tui-release/config/ 2>/dev/null || true
+
+# Copy documentation
+cp docs/PRODUCTION_DEPLOYMENT_GUIDE.md /tmp/claude-tui-release/docs/
+cp README.md /tmp/claude-tui-release/
+cp CHANGELOG.md /tmp/claude-tui-release/
+
+# Copy scripts
+cp scripts/production_load_test.py /tmp/claude-tui-release/scripts/
+cp scripts/production_validation.py /tmp/claude-tui-release/scripts/
+cp deployment/scripts/* /tmp/claude-tui-release/scripts/
+
+# Create tarball
+cd /tmp && tar -czf claude-tui-release.tar.gz claude-tui-release/
+
+echo "✅ Release artifacts package created: claude-tui-release.tar.gz"

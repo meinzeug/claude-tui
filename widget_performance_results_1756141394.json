@@ -1,0 +1,141 @@
+{
+  "timestamp": 1756141394.7358913,
+  "baseline_memory_mb": 21.48828125,
+  "widget_metrics": [
+    {
+      "widget_type": "button",
+      "creation_time": 0.0020723342895507812,
+      "update_time": 8.797645568847656e-05,
+      "memory_usage_mb": 0.59765625,
+      "render_count": 100,
+      "widgets_per_second": 48254.763000460196,
+      "memory_per_widget_bytes": 6266.88
+    },
+    {
+      "widget_type": "label",
+      "creation_time": 0.0018930435180664062,
+      "update_time": 7.939338684082031e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 52824.987405541564,
+      "memory_per_widget_bytes": 0.0
+    },
+    {
+      "widget_type": "input",
+      "creation_time": 0.0018608570098876953,
+      "update_time": 8.130073547363281e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 53738.680333119795,
+      "memory_per_widget_bytes": 0.0
+    },
+    {
+      "widget_type": "list",
+      "creation_time": 0.0018694400787353516,
+      "update_time": 7.963180541992188e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 53491.9525570718,
+      "memory_per_widget_bytes": 0.0
+    },
+    {
+      "widget_type": "tree",
+      "creation_time": 0.0018427371978759766,
+      "update_time": 8.153915405273438e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 54267.09794281278,
+      "memory_per_widget_bytes": 0.0
+    },
+    {
+      "widget_type": "static",
+      "creation_time": 0.0019385814666748047,
+      "update_time": 8.487701416015625e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 51584.1101955479,
+      "memory_per_widget_bytes": 0.0
+    },
+    {
+      "widget_type": "log",
+      "creation_time": 0.0018815994262695312,
+      "update_time": 8.511543273925781e-05,
+      "memory_usage_mb": 0.0,
+      "render_count": 100,
+      "widgets_per_second": 53146.27470856564,
+      "memory_per_widget_bytes": 0.0
+    }
+  ],
+  "render_cycles": [
+    {
+      "cycle_id": 0,
+      "total_widgets": 50,
+      "render_time": 0.0026121139526367188,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    },
+    {
+      "cycle_id": 1,
+      "total_widgets": 50,
+      "render_time": 0.0010285377502441406,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 246.05
+    },
+    {
+      "cycle_id": 2,
+      "total_widgets": 50,
+      "render_time": 0.0010502338409423828,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    },
+    {
+      "cycle_id": 3,
+      "total_widgets": 50,
+      "render_time": 0.0010075569152832031,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    },
+    {
+      "cycle_id": 4,
+      "total_widgets": 50,
+      "render_time": 0.001005411148071289,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 247.8
+    },
+    {
+      "cycle_id": 5,
+      "total_widgets": 50,
+      "render_time": 0.0010104179382324219,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    },
+    {
+      "cycle_id": 6,
+      "total_widgets": 50,
+      "render_time": 0.0010223388671875,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 217.5
+    },
+    {
+      "cycle_id": 7,
+      "total_widgets": 50,
+      "render_time": 0.0010578632354736328,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    },
+    {
+      "cycle_id": 8,
+      "total_widgets": 50,
+      "render_time": 0.0010073184967041016,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 450.15
+    },
+    {
+      "cycle_id": 9,
+      "total_widgets": 50,
+      "render_time": 0.0010025501251220703,
+      "memory_growth_mb": 0.0,
+      "cpu_percent": 0.0
+    }
+  ]
+}

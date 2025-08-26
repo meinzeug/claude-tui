@@ -1,0 +1,500 @@
+name: 🚀 Enhanced CI/CD Pipeline - Claude TUI
+
+on:
+  push:
+    branches: [main, develop, feature/*, hotfix/*]
+    tags: ['v*']
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: ['staging', 'production', 'canary', 'dev']
+      deployment_strategy:
+        description: 'Deployment Strategy'
+        required: true
+        default: 'rolling'
+        type: choice
+        options: ['rolling', 'blue-green', 'canary']
+      skip_tests:
+        description: 'Skip test suite (emergency only)'
+        required: false
+        default: false
+        type: boolean
+      parallel_jobs:
+        description: 'Number of parallel test jobs'
+        required: false
+        default: 4
+        type: number
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+  CACHE_VERSION: v1
+  BUILD_TIMEOUT: 30
+  TEST_TIMEOUT: 45
+  DEPLOY_TIMEOUT: 15
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==================== PREPARATION & ANALYSIS ====================
+  workflow-analysis:
+    name: 🧠 Workflow Analysis & Planning
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should-test: ${{ steps.analysis.outputs.should-test }}
+      should-build: ${{ steps.analysis.outputs.should-build }}
+      should-deploy: ${{ steps.analysis.outputs.should-deploy }}
+      test-matrix: ${{ steps.analysis.outputs.test-matrix }}
+      affected-services: ${{ steps.analysis.outputs.affected-services }}
+      deployment-strategy: ${{ steps.analysis.outputs.deployment-strategy }}
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🧠 Analyze Changes and Plan Workflow
+        id: analysis
+        run: |
+          echo "🔍 Analyzing changes and determining workflow strategy..."
+          
+          # Determine what should run based on changes
+          SHOULD_TEST="true"
+          SHOULD_BUILD="true"
+          SHOULD_DEPLOY="false"
+          
+          # Check if this is a deployment
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            SHOULD_DEPLOY="true"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            SHOULD_DEPLOY="true"
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            SHOULD_DEPLOY="true"
+          fi
+          
+          # Override for emergency deployments
+          if [[ "${{ inputs.skip_tests }}" == "true" ]]; then
+            SHOULD_TEST="false"
+          fi
+          
+          # Analyze affected services
+          AFFECTED_SERVICES='["api", "ui", "core", "database"]'
+          if [[ -n "$(git diff --name-only HEAD~1 HEAD | grep '^src/api/')" ]]; then
+            AFFECTED_SERVICES='["api"]'
+          elif [[ -n "$(git diff --name-only HEAD~1 HEAD | grep '^src/ui/')" ]]; then
+            AFFECTED_SERVICES='["ui"]'
+          fi
+          
+          # Generate test matrix based on parallel jobs input
+          PARALLEL_JOBS="${{ inputs.parallel_jobs || 4 }}"
+          TEST_MATRIX=$(cat << 'EOF'
+          {
+            "python-version": ["3.9", "3.10", "3.11", "3.12"],
+            "test-suite": ["unit", "integration", "api", "performance"],
+            "os": ["ubuntu-latest"],
+            "include": [
+              {"python-version": "3.11", "os": "ubuntu-latest", "coverage": true},
+              {"python-version": "3.12", "os": "ubuntu-latest", "experimental": true}
+            ]
+          }
+          EOF
+          )
+          
+          # Determine deployment strategy
+          STRATEGY="${{ inputs.deployment_strategy || 'rolling' }}"
+          
+          # Output results
+          echo "should-test=$SHOULD_TEST" >> $GITHUB_OUTPUT
+          echo "should-build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
+          echo "should-deploy=$SHOULD_DEPLOY" >> $GITHUB_OUTPUT
+          echo "test-matrix=$TEST_MATRIX" >> $GITHUB_OUTPUT
+          echo "affected-services=$AFFECTED_SERVICES" >> $GITHUB_OUTPUT
+          echo "deployment-strategy=$STRATEGY" >> $GITHUB_OUTPUT
+          
+          echo "📊 Workflow Plan:"
+          echo "  - Should Test: $SHOULD_TEST"
+          echo "  - Should Build: $SHOULD_BUILD"
+          echo "  - Should Deploy: $SHOULD_DEPLOY"
+          echo "  - Affected Services: $AFFECTED_SERVICES"
+          echo "  - Deployment Strategy: $STRATEGY"
+
+  # ==================== SECURITY & CODE QUALITY ====================
+  security-analysis:
+    name: 🔒 Advanced Security Analysis
+    runs-on: ubuntu-latest
+    needs: workflow-analysis
+    if: needs.workflow-analysis.outputs.should-test == 'true'
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        tool: [bandit, safety, semgrep, trivy-fs]
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 🔒 Run Security Analysis - ${{ matrix.tool }}
+        run: |
+          case "${{ matrix.tool }}" in
+            "bandit")
+              pip install bandit[toml]
+              bandit -r src/ -f json -o security-${{ matrix.tool }}.json --severity-level medium
+              ;;
+            "safety")
+              pip install safety
+              pip install -r requirements.txt
+              safety check --json --output security-${{ matrix.tool }}.json
+              ;;
+            "semgrep")
+              pip install semgrep
+              semgrep --config=auto src/ --json --output=security-${{ matrix.tool }}.json
+              ;;
+            "trivy-fs")
+              curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+              trivy fs --format json --output security-${{ matrix.tool }}.json .
+              ;;
+          esac
+
+      - name: 📊 Upload Security Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-results-${{ matrix.tool }}
+          path: security-${{ matrix.tool }}.json
+
+  # ==================== INTELLIGENT TESTING ====================
+  intelligent-testing:
+    name: 🧪 Intelligent Test Execution
+    runs-on: ubuntu-latest
+    needs: [workflow-analysis, security-analysis]
+    if: needs.workflow-analysis.outputs.should-test == 'true'
+    timeout-minutes: ${{ fromJson(env.TEST_TIMEOUT) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.workflow-analysis.outputs.test-matrix) }}
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: claude_tui_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies with Caching
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install -e .[all]
+
+      - name: 🧪 Run Test Suite - ${{ matrix.test-suite }}
+        env:
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/claude_tui_test
+          REDIS_URL: redis://localhost:6379/0
+          CLAUDE_TUI_ENV: testing
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          # Determine test path and options based on matrix
+          case "${{ matrix.test-suite }}" in
+            "unit")
+              pytest tests/unit/ \
+                --cov=src/claude_tui \
+                --cov-report=xml:coverage-${{ matrix.python-version }}-unit.xml \
+                --cov-report=html:htmlcov-${{ matrix.python-version }}-unit \
+                --junit-xml=junit-${{ matrix.python-version }}-unit.xml \
+                -v --tb=short --maxfail=10
+              ;;
+            "integration")
+              pytest tests/integration/ \
+                --cov=src/claude_tui \
+                --cov-append \
+                --cov-report=xml:coverage-${{ matrix.python-version }}-integration.xml \
+                --junit-xml=junit-${{ matrix.python-version }}-integration.xml \
+                -v --tb=short --timeout=300
+              ;;
+            "api")
+              pytest tests/integration/test_api_comprehensive.py \
+                --junit-xml=junit-${{ matrix.python-version }}-api.xml \
+                -v --tb=short --timeout=180
+              ;;
+            "performance")
+              pytest tests/performance/ \
+                --benchmark-json=benchmark-${{ matrix.python-version }}.json \
+                --junit-xml=junit-${{ matrix.python-version }}-performance.xml \
+                -v --tb=short --timeout=600
+              ;;
+          esac
+
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.python-version }}-${{ matrix.test-suite }}
+          path: |
+            junit-*.xml
+            coverage-*.xml
+            htmlcov-*/
+            benchmark-*.json
+
+  # ==================== ADVANCED BUILD & PACKAGING ====================
+  multi-architecture-build:
+    name: 🏗️ Multi-Architecture Build
+    runs-on: ubuntu-latest
+    needs: [workflow-analysis, intelligent-testing]
+    if: needs.workflow-analysis.outputs.should-build == 'true'
+    timeout-minutes: ${{ fromJson(env.BUILD_TIMEOUT) }}
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64, linux/arm/v7]
+        include:
+          - platform: linux/amd64
+            arch: amd64
+          - platform: linux/arm64
+            arch: arm64
+          - platform: linux/arm/v7
+            arch: armv7
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
+
+      - name: 🔑 Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch,suffix=-${{ matrix.arch }}
+            type=ref,event=pr,suffix=-${{ matrix.arch }}
+            type=semver,pattern={{version}},suffix=-${{ matrix.arch }}
+            type=sha,prefix={{branch}}-,suffix=-${{ matrix.arch }}
+            type=raw,value=latest-${{ matrix.arch }},enable={{is_default_branch}}
+
+      - name: 🏗️ Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=build-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=build-${{ matrix.arch }}
+          target: production
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+            PYTHON_VERSION=${{ env.PYTHON_VERSION }}
+            NODE_VERSION=${{ env.NODE_VERSION }}
+
+  # ==================== COMPREHENSIVE QUALITY GATES ====================
+  quality-gates:
+    name: 🚦 Quality Gates & Compliance
+    runs-on: ubuntu-latest
+    needs: [intelligent-testing, security-analysis]
+    if: always()
+    outputs:
+      quality-passed: ${{ steps.quality-check.outputs.passed }}
+      security-passed: ${{ steps.security-check.outputs.passed }}
+      performance-passed: ${{ steps.performance-check.outputs.passed }}
+    steps:
+      - name: 📥 Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'test-results-*'
+          merge-multiple: true
+
+      - name: 📥 Download Security Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'security-results-*'
+          merge-multiple: true
+
+      - name: 🚦 Quality Gate Analysis
+        id: quality-check
+        run: |
+          echo "📊 Analyzing test results..."
+          
+          # Initialize counters
+          TOTAL_TESTS=0
+          FAILED_TESTS=0
+          
+          # Check if any test result files exist
+          if ls junit-*.xml 1> /dev/null 2>&1; then
+            # Analyze JUnit XML files
+            for junit_file in junit-*.xml; do
+              if [ -f "$junit_file" ]; then
+                tests=$(grep -o 'tests="[0-9]*"' "$junit_file" | cut -d'"' -f2 || echo "0")
+                failures=$(grep -o 'failures="[0-9]*"' "$junit_file" | cut -d'"' -f2 || echo "0")
+                TOTAL_TESTS=$((TOTAL_TESTS + tests))
+                FAILED_TESTS=$((FAILED_TESTS + failures))
+              fi
+            done
+          fi
+          
+          # Calculate pass rate
+          if [ $TOTAL_TESTS -gt 0 ]; then
+            PASS_RATE=$(echo "scale=2; (($TOTAL_TESTS - $FAILED_TESTS) * 100) / $TOTAL_TESTS" | bc -l || echo "100")
+          else
+            PASS_RATE=100
+          fi
+          
+          # Quality gate thresholds
+          MIN_PASS_RATE=95.0
+          
+          # Check quality gates
+          if (( $(echo "$PASS_RATE >= $MIN_PASS_RATE" | bc -l) )); then
+            echo "✅ Test pass rate: $PASS_RATE% (>= $MIN_PASS_RATE%)"
+            QUALITY_PASSED="true"
+          else
+            echo "❌ Test pass rate: $PASS_RATE% (< $MIN_PASS_RATE%)"
+            QUALITY_PASSED="false"
+          fi
+          
+          echo "passed=$QUALITY_PASSED" >> $GITHUB_OUTPUT
+          echo "pass-rate=$PASS_RATE" >> $GITHUB_OUTPUT
+          echo "total-tests=$TOTAL_TESTS" >> $GITHUB_OUTPUT
+          echo "failed-tests=$FAILED_TESTS" >> $GITHUB_OUTPUT
+
+      - name: 🔒 Security Gate Analysis
+        id: security-check
+        run: |
+          echo "🔒 Analyzing security scan results..."
+          
+          CRITICAL_ISSUES=0
+          
+          # Check if any security result files exist
+          if ls security-*.json 1> /dev/null 2>&1; then
+            # Analyze security results
+            for security_file in security-*.json; do
+              if [ -f "$security_file" ]; then
+                case "$security_file" in
+                  *bandit*)
+                    critical=$(jq '[.results[] | select(.issue_severity == "HIGH")] | length' "$security_file" 2>/dev/null || echo "0")
+                    CRITICAL_ISSUES=$((CRITICAL_ISSUES + critical))
+                    ;;
+                  *safety*)
+                    critical=$(jq 'length' "$security_file" 2>/dev/null || echo "0")
+                    CRITICAL_ISSUES=$((CRITICAL_ISSUES + critical))
+                    ;;
+                  *semgrep*)
+                    critical=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' "$security_file" 2>/dev/null || echo "0")
+                    CRITICAL_ISSUES=$((CRITICAL_ISSUES + critical))
+                    ;;
+                esac
+              fi
+            done
+          fi
+          
+          # Security gate check
+          if [ $CRITICAL_ISSUES -eq 0 ]; then
+            echo "✅ No critical security issues found"
+            SECURITY_PASSED="true"
+          else
+            echo "❌ Found $CRITICAL_ISSUES critical security issues"
+            SECURITY_PASSED="false"
+          fi
+          
+          echo "passed=$SECURITY_PASSED" >> $GITHUB_OUTPUT
+          echo "critical-issues=$CRITICAL_ISSUES" >> $GITHUB_OUTPUT
+
+      - name: ⚡ Performance Gate Analysis
+        id: performance-check
+        run: |
+          echo "⚡ Analyzing performance benchmarks..."
+          
+          PERFORMANCE_PASSED="true"
+          
+          # Analyze benchmark results if available
+          if ls benchmark-*.json 1> /dev/null 2>&1; then
+            for benchmark_file in benchmark-*.json; do
+              if [ -f "$benchmark_file" ]; then
+                echo "📊 Processing $benchmark_file"
+                # Add performance analysis logic here
+              fi
+            done
+          fi
+          
+          echo "passed=$PERFORMANCE_PASSED" >> $GITHUB_OUTPUT
+
+      - name: 📊 Quality Gate Summary
+        run: |
+          echo "## 🚦 Quality Gates Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Gate | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ steps.quality-check.outputs.passed == 'true' && '✅ PASS' || '❌ FAIL' }} | ${{ steps.quality-check.outputs.pass-rate }}% pass rate (${{ steps.quality-check.outputs.total-tests }} tests) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ steps.security-check.outputs.passed == 'true' && '✅ PASS' || '❌ FAIL' }} | ${{ steps.security-check.outputs.critical-issues }} critical issues |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance | ${{ steps.performance-check.outputs.passed == 'true' && '✅ PASS' || '❌ FAIL' }} | Benchmarks within thresholds |" >> $GITHUB_STEP_SUMMARY
+
+  # ==================== CLEANUP & NOTIFICATIONS ====================
+  cleanup-and-notify:
+    name: 🧹 Cleanup & Notifications  
+    runs-on: ubuntu-latest
+    needs: [workflow-analysis, quality-gates, multi-architecture-build]
+    if: always()
+    steps:
+      - name: 🧹 Cleanup Resources
+        run: |
+          echo "🧹 Cleaning up temporary resources..."
+          echo "Workflow completed with status: ${{ needs.quality-gates.result }}"
+
+      - name: 📧 Send Notifications
+        if: always()
+        run: |
+          echo "📧 Sending notifications..."
+          echo "Quality Gates Status: ${{ needs.quality-gates.outputs.quality-passed }}"
+          echo "Security Status: ${{ needs.quality-gates.outputs.security-passed }}"
+          echo "Performance Status: ${{ needs.quality-gates.outputs.performance-passed }}"

@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 0,
+    "success_rate": "100.0%",
+    "duration_seconds": 1.914596
+  },
+  "details": [
+    {
+      "test": "Application Import",
+      "status": "PASS",
+      "details": "All core modules import successfully",
+      "timestamp": "2025-08-26T04:43:42.149235"
+    },
+    {
+      "test": "Integration Bridge",
+      "status": "PASS",
+      "details": "4/4 components initialized",
+      "timestamp": "2025-08-26T04:43:42.152934"
+    },
+    {
+      "test": "ConfigManager CRUD",
+      "status": "PASS",
+      "details": "Settings can be stored and retrieved",
+      "timestamp": "2025-08-26T04:43:42.160943"
+    },
+    {
+      "test": "ConfigManager Persistence",
+      "status": "PASS",
+      "details": "Configuration saved successfully",
+      "timestamp": "2025-08-26T04:43:42.163409"
+    },
+    {
+      "test": "Database CRUD",
+      "status": "PASS",
+      "details": "Database operations working correctly",
+      "timestamp": "2025-08-26T04:43:42.167190"
+    },
+    {
+      "test": "File System Operations",
+      "status": "PASS",
+      "details": "File I/O working correctly",
+      "timestamp": "2025-08-26T04:43:42.169121"
+    },
+    {
+      "test": "Memory Usage",
+      "status": "PASS",
+      "details": "Memory usage: 1.60MB",
+      "timestamp": "2025-08-26T04:43:42.169989"
+    },
+    {
+      "test": "Validation Systems",
+      "status": "PASS",
+      "details": "Validation components loaded successfully",
+      "timestamp": "2025-08-26T04:43:42.174269"
+    },
+    {
+      "test": "UI Components",
+      "status": "PASS",
+      "details": "UI components can be imported and instantiated",
+      "timestamp": "2025-08-26T04:43:42.174376"
+    },
+    {
+      "test": "Error Handling",
+      "status": "PASS",
+      "details": "Handles configuration initialization gracefully",
+      "timestamp": "2025-08-26T04:43:42.175181"
+    }
+  ],
+  "timestamp": "2025-08-26T04:43:42.175302",
+  "production_ready": true
+}

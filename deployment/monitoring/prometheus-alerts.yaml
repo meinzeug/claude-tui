@@ -1,0 +1,285 @@
+groups:
+- name: claude-tui-alerts
+  rules:
+  # Application Health Alerts
+  - alert: ClaudeTuiDown
+    expr: up{job="claude-tui"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI service is down"
+      description: "Claude TUI service has been down for more than 1 minute"
+      runbook_url: "https://runbooks.example.com/claude-tui-down"
+      
+  - alert: ClaudeTuiHighErrorRate
+    expr: rate(http_requests_total{job="claude-tui",status=~"5.."}[5m]) / rate(http_requests_total{job="claude-tui"}[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "High error rate detected in Claude TUI"
+      description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+      
+  - alert: ClaudeTuiHighLatency
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="claude-tui"}[5m])) > 2
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "High latency detected in Claude TUI"
+      description: "95th percentile latency is {{ $value }}s over the last 5 minutes"
+      
+  # Resource Usage Alerts
+  - alert: ClaudeTuiHighMemoryUsage
+    expr: (container_memory_usage_bytes{container="claude-tui"} / container_spec_memory_limit_bytes{container="claude-tui"}) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "High memory usage in Claude TUI"
+      description: "Memory usage is {{ $value | humanizePercentage }} of limit"
+      
+  - alert: ClaudeTuiHighCPUUsage
+    expr: rate(container_cpu_usage_seconds_total{container="claude-tui"}[5m]) * 100 > 80
+    for: 10m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "High CPU usage in Claude TUI"
+      description: "CPU usage is {{ $value | humanizePercentage }} over the last 10 minutes"
+      
+  # Pod Health Alerts
+  - alert: ClaudeTuiPodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total{container="claude-tui"}[15m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI pod is crash looping"
+      description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last 15 minutes"
+      
+  - alert: ClaudeTuiPodNotReady
+    expr: kube_pod_status_ready{condition="false", pod=~"claude-tui-.*"} == 1
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI pod not ready"
+      description: "Pod {{ $labels.pod }} has been not ready for more than 5 minutes"
+      
+  # Database Connectivity Alerts
+  - alert: ClaudeTuiDatabaseConnectionFailure
+    expr: claude_tui_database_connections_failed_total > 0
+    for: 2m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Database connection failures detected"
+      description: "{{ $value }} database connection failures in the last 2 minutes"
+      
+  - alert: ClaudeTuiDatabaseSlowQueries
+    expr: claude_tui_database_query_duration_seconds{quantile="0.95"} > 5
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Slow database queries detected"
+      description: "95th percentile query time is {{ $value }}s"
+      
+  # Redis Connectivity Alerts
+  - alert: ClaudeTuiRedisConnectionFailure
+    expr: claude_tui_redis_connections_failed_total > 0
+    for: 2m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Redis connection failures detected"
+      description: "{{ $value }} Redis connection failures in the last 2 minutes"
+      
+  # API Rate Limiting Alerts
+  - alert: ClaudeTuiHighRateLimitHits
+    expr: rate(claude_tui_rate_limit_hits_total[5m]) > 100
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "High rate limit hits detected"
+      description: "Rate limit is being hit {{ $value }} times per second"
+      
+  # External API Alerts
+  - alert: ClaudeTuiClaudeAPIFailure
+    expr: claude_tui_external_api_failures_total{api="claude"} > 0
+    for: 3m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude API failures detected"
+      description: "{{ $value }} Claude API failures in the last 3 minutes"
+      
+  - alert: ClaudeTuiClaudeFlowAPIFailure
+    expr: claude_tui_external_api_failures_total{api="claude-flow"} > 0
+    for: 3m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude Flow API failures detected"
+      description: "{{ $value }} Claude Flow API failures in the last 3 minutes"
+      
+  # Deployment Alerts
+  - alert: ClaudeTuiDeploymentFailed
+    expr: kube_deployment_status_replicas_unavailable{deployment=~"claude-tui.*"} > 0
+    for: 10m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI deployment has unavailable replicas"
+      description: "Deployment {{ $labels.deployment }} has {{ $value }} unavailable replicas"
+      
+  - alert: ClaudeTuiOldImageRunning
+    expr: time() - kube_pod_created{pod=~"claude-tui-.*"} > 86400 * 7  # 7 days
+    for: 1h
+    labels:
+      severity: info
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI pod running old image"
+      description: "Pod {{ $labels.pod }} has been running for more than 7 days"
+      
+  # Security Alerts
+  - alert: ClaudeTuiUnauthorizedAccess
+    expr: rate(http_requests_total{job="claude-tui",status="401"}[5m]) > 10
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: security
+    annotations:
+      summary: "High unauthorized access attempts"
+      description: "{{ $value }} unauthorized access attempts per second"
+      
+  - alert: ClaudeTuiSuspiciousTraffic
+    expr: rate(http_requests_total{job="claude-tui"}[1m]) > 1000
+    for: 2m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: security
+    annotations:
+      summary: "Suspicious traffic pattern detected"
+      description: "{{ $value }} requests per second, which is unusually high"
+      
+  # Business Logic Alerts
+  - alert: ClaudeTuiLowUserActivity
+    expr: rate(claude_tui_user_actions_total[1h]) < 10
+    for: 30m
+    labels:
+      severity: info
+      service: claude-tui
+      team: product
+    annotations:
+      summary: "Low user activity detected"
+      description: "Only {{ $value }} user actions per second in the last hour"
+      
+  - alert: ClaudeTuiHighUserErrorRate
+    expr: rate(claude_tui_user_errors_total[5m]) / rate(claude_tui_user_actions_total[5m]) > 0.1
+    for: 10m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: product
+    annotations:
+      summary: "High user error rate detected"
+      description: "User error rate is {{ $value | humanizePercentage }}"
+      
+- name: claude-tui-infrastructure-alerts
+  rules:
+  # Kubernetes Infrastructure Alerts
+  - alert: KubernetesNodeDown
+    expr: up{job="kubernetes-nodes"} == 0
+    for: 5m
+    labels:
+      severity: critical
+      service: kubernetes
+      team: infrastructure
+    annotations:
+      summary: "Kubernetes node is down"
+      description: "Node {{ $labels.instance }} has been down for more than 5 minutes"
+      
+  - alert: KubernetesPodOOMKilled
+    expr: increase(kube_pod_container_status_terminated_reason{reason="OOMKilled",container="claude-tui"}[1h]) > 0
+    for: 1m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+    annotations:
+      summary: "Claude TUI pod killed due to OOM"
+      description: "Pod {{ $labels.pod }} was killed due to out of memory"
+      
+  - alert: KubernetesPVCSpaceLow
+    expr: kubelet_volume_stats_available_bytes{persistentvolumeclaim=~"claude-tui.*"} / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"claude-tui.*"} < 0.1
+    for: 5m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: infrastructure
+    annotations:
+      summary: "PVC space running low"
+      description: "PVC {{ $labels.persistentvolumeclaim }} has less than 10% free space"
+      
+- name: claude-tui-sla-alerts
+  rules:
+  # SLA Alerts
+  - alert: ClaudeTuiSLAViolation99
+    expr: (sum(rate(http_requests_total{job="claude-tui",status!~"5.."}[5m])) / sum(rate(http_requests_total{job="claude-tui"}[5m]))) < 0.99
+    for: 5m
+    labels:
+      severity: critical
+      service: claude-tui
+      team: platform
+      sla: "99%"
+    annotations:
+      summary: "SLA violation: Availability below 99%"
+      description: "Availability is {{ $value | humanizePercentage }}, below 99% SLA"
+      
+  - alert: ClaudeTuiSLAViolation95
+    expr: (sum(rate(http_requests_total{job="claude-tui",status!~"5.."}[5m])) / sum(rate(http_requests_total{job="claude-tui"}[5m]))) < 0.95
+    for: 1m
+    labels:
+      severity: warning
+      service: claude-tui
+      team: platform
+      sla: "95%"
+    annotations:
+      summary: "SLA warning: Availability below 95%"
+      description: "Availability is {{ $value | humanizePercentage }}, below 95% threshold"

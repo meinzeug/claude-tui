@@ -1,0 +1,371 @@
+# Performance Monitoring and Alerting Configuration
+# Claude TUI System - Production Ready
+
+# Global alert configuration
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@claude-tui.local'
+  slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+  resolve_timeout: 5m
+
+# Alert routing rules
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'performance-team'
+  routes:
+  - match:
+      severity: critical
+    receiver: 'critical-alerts'
+    group_wait: 10s
+    repeat_interval: 5m
+  - match:
+      severity: warning
+    receiver: 'warning-alerts'
+    repeat_interval: 30m
+
+# Alert receivers
+receivers:
+- name: 'performance-team'
+  email_configs:
+  - to: 'performance-team@claude-tui.local'
+    subject: '[Claude TUI] {{ .GroupLabels.alertname }}'
+    body: |
+      {{ range .Alerts }}
+      Alert: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      {{ end }}
+
+- name: 'critical-alerts'
+  slack_configs:
+  - channel: '#critical-alerts'
+    title: 'Critical Alert: {{ .GroupLabels.alertname }}'
+    text: |
+      {{ range .Alerts }}
+      🚨 CRITICAL: {{ .Annotations.summary }}
+      
+      Description: {{ .Annotations.description }}
+      Severity: {{ .Labels.severity }}
+      Instance: {{ .Labels.instance }}
+      Time: {{ .StartsAt }}
+      {{ end }}
+  email_configs:
+  - to: 'oncall@claude-tui.local'
+    subject: '🚨 CRITICAL: [Claude TUI] {{ .GroupLabels.alertname }}'
+
+- name: 'warning-alerts'
+  slack_configs:
+  - channel: '#performance-warnings'
+    title: 'Warning: {{ .GroupLabels.alertname }}'
+    text: |
+      {{ range .Alerts }}
+      ⚠️  WARNING: {{ .Annotations.summary }}
+      
+      Description: {{ .Annotations.description }}
+      Instance: {{ .Labels.instance }}
+      {{ end }}
+
+# Alert rules
+groups:
+- name: system_performance
+  rules:
+  # High CPU usage
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+    for: 5m
+    labels:
+      severity: warning
+      component: system
+    annotations:
+      summary: "High CPU usage detected on {{ $labels.instance }}"
+      description: "CPU usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-cpu"
+
+  - alert: CriticalCPUUsage
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+    for: 2m
+    labels:
+      severity: critical
+      component: system
+    annotations:
+      summary: "Critical CPU usage on {{ $labels.instance }}"
+      description: "CPU usage is above 95% for more than 2 minutes. Immediate attention required. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-cpu"
+
+  # High Memory usage
+  - alert: HighMemoryUsage
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+      component: system
+    annotations:
+      summary: "High memory usage on {{ $labels.instance }}"
+      description: "Memory usage is above 85% for more than 5 minutes. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-memory"
+
+  - alert: CriticalMemoryUsage
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+    for: 2m
+    labels:
+      severity: critical
+      component: system
+    annotations:
+      summary: "Critical memory usage on {{ $labels.instance }}"
+      description: "Memory usage is above 95% for more than 2 minutes. System may become unresponsive. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-memory"
+
+  # Disk space
+  - alert: LowDiskSpace
+    expr: (1 - (node_filesystem_free_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes)) * 100 > 80
+    for: 10m
+    labels:
+      severity: warning
+      component: system
+    annotations:
+      summary: "Low disk space on {{ $labels.instance }}:{{ $labels.mountpoint }}"
+      description: "Disk usage is above 80% for more than 10 minutes. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-disk-space"
+
+  - alert: CriticalDiskSpace
+    expr: (1 - (node_filesystem_free_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes)) * 100 > 90
+    for: 5m
+    labels:
+      severity: critical
+      component: system
+    annotations:
+      summary: "Critical disk space on {{ $labels.instance }}:{{ $labels.mountpoint }}"
+      description: "Disk usage is above 90%. System may fail soon. Current value: {{ $value }}%"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-disk-space"
+
+- name: application_performance
+  rules:
+  # High response time
+  - alert: HighResponseTime
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+      component: application
+    annotations:
+      summary: "High response time detected"
+      description: "95th percentile response time is above 500ms for more than 5 minutes. Current value: {{ $value }}s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-response-time"
+
+  - alert: CriticalResponseTime
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2.0
+    for: 2m
+    labels:
+      severity: critical
+      component: application
+    annotations:
+      summary: "Critical response time detected"
+      description: "95th percentile response time is above 2 seconds. User experience severely impacted. Current value: {{ $value }}s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-response-time"
+
+  # High error rate
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+    for: 3m
+    labels:
+      severity: warning
+      component: application
+    annotations:
+      summary: "High error rate detected"
+      description: "Error rate is above 5% for more than 3 minutes. Current value: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-error-rate"
+
+  - alert: CriticalErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.20
+    for: 1m
+    labels:
+      severity: critical
+      component: application
+    annotations:
+      summary: "Critical error rate detected"
+      description: "Error rate is above 20%. Service is severely degraded. Current value: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-error-rate"
+
+  # Low throughput
+  - alert: LowThroughput
+    expr: rate(http_requests_total[5m]) < 10
+    for: 10m
+    labels:
+      severity: warning
+      component: application
+    annotations:
+      summary: "Low throughput detected"
+      description: "Request rate is below 10 requests/second for more than 10 minutes. Current value: {{ $value }} req/s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-throughput"
+
+  # Task queue depth
+  - alert: HighTaskQueueDepth
+    expr: claude_tui_task_queue_depth > 100
+    for: 5m
+    labels:
+      severity: warning
+      component: application
+    annotations:
+      summary: "High task queue depth"
+      description: "Task queue depth is above 100 for more than 5 minutes. System may be overloaded. Current value: {{ $value }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-queue-depth"
+
+  - alert: CriticalTaskQueueDepth
+    expr: claude_tui_task_queue_depth > 500
+    for: 2m
+    labels:
+      severity: critical
+      component: application
+    annotations:
+      summary: "Critical task queue depth"
+      description: "Task queue depth is above 500. System is severely overloaded. Current value: {{ $value }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/critical-queue-depth"
+
+- name: database_performance
+  rules:
+  # Database connection pool exhaustion
+  - alert: DatabaseConnectionPoolHigh
+    expr: (database_connections_active / database_connections_max) > 0.8
+    for: 5m
+    labels:
+      severity: warning
+      component: database
+    annotations:
+      summary: "Database connection pool usage high"
+      description: "Database connection pool is above 80% utilization. Current: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/db-connection-pool"
+
+  - alert: DatabaseConnectionPoolCritical
+    expr: (database_connections_active / database_connections_max) > 0.95
+    for: 2m
+    labels:
+      severity: critical
+      component: database
+    annotations:
+      summary: "Database connection pool near exhaustion"
+      description: "Database connection pool is above 95% utilization. New connections may be rejected. Current: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/db-connection-pool-critical"
+
+  # Slow queries
+  - alert: DatabaseSlowQueries
+    expr: rate(database_slow_queries_total[5m]) > 1
+    for: 3m
+    labels:
+      severity: warning
+      component: database
+    annotations:
+      summary: "High number of slow database queries"
+      description: "Slow query rate is above 1 query/second. Performance may be degraded. Current rate: {{ $value }} queries/s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/slow-queries"
+
+  # Database replication lag
+  - alert: DatabaseReplicationLag
+    expr: database_replica_lag_seconds > 30
+    for: 5m
+    labels:
+      severity: warning
+      component: database
+    annotations:
+      summary: "High database replication lag"
+      description: "Database replica lag is above 30 seconds. Read queries may return stale data. Current lag: {{ $value }}s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/replication-lag"
+
+- name: cache_performance
+  rules:
+  # Low cache hit rate
+  - alert: LowCacheHitRate
+    expr: (cache_hits_total / (cache_hits_total + cache_misses_total)) < 0.7
+    for: 10m
+    labels:
+      severity: warning
+      component: cache
+    annotations:
+      summary: "Low cache hit rate"
+      description: "Cache hit rate is below 70% for more than 10 minutes. Performance may be impacted. Current rate: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/low-cache-hit-rate"
+
+  # High cache memory usage
+  - alert: HighCacheMemoryUsage
+    expr: (cache_memory_used_bytes / cache_memory_max_bytes) > 0.9
+    for: 5m
+    labels:
+      severity: warning
+      component: cache
+    annotations:
+      summary: "High cache memory usage"
+      description: "Cache memory usage is above 90%. Cache evictions may increase. Current usage: {{ $value | humanizePercentage }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/high-cache-memory"
+
+- name: scaling_performance
+  rules:
+  # Auto-scaling lag
+  - alert: SlowAutoScaling
+    expr: increase(kubernetes_hpa_scale_events_total[10m]) > 0 and (time() - kubernetes_hpa_last_scale_time) > 300
+    for: 5m
+    labels:
+      severity: warning
+      component: scaling
+    annotations:
+      summary: "Slow auto-scaling response"
+      description: "Auto-scaling event detected but scaling is taking longer than 5 minutes to complete"
+      runbook_url: "https://docs.claude-tui.local/runbooks/slow-autoscaling"
+
+  # Frequent scaling events
+  - alert: FrequentScalingEvents
+    expr: increase(kubernetes_hpa_scale_events_total[30m]) > 10
+    for: 5m
+    labels:
+      severity: warning
+      component: scaling
+    annotations:
+      summary: "Frequent auto-scaling events"
+      description: "More than 10 scaling events in the last 30 minutes. System may be oscillating. Events: {{ $value }}"
+      runbook_url: "https://docs.claude-tui.local/runbooks/frequent-scaling"
+
+- name: sla_compliance
+  rules:
+  # SLA availability breach
+  - alert: SLAAvailabilityBreach
+    expr: (up == 0) * 100 > 0.1  # More than 0.1% downtime
+    for: 1m
+    labels:
+      severity: critical
+      component: sla
+    annotations:
+      summary: "SLA availability breach detected"
+      description: "Service availability has dropped below 99.9% SLA target. Immediate attention required."
+      runbook_url: "https://docs.claude-tui.local/runbooks/sla-availability-breach"
+
+  # SLA response time breach
+  - alert: SLAResponseTimeBreach
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.1  # 100ms SLA
+    for: 5m
+    labels:
+      severity: warning
+      component: sla
+    annotations:
+      summary: "SLA response time breach"
+      description: "95th percentile response time exceeds 100ms SLA target for more than 5 minutes. Current: {{ $value }}s"
+      runbook_url: "https://docs.claude-tui.local/runbooks/sla-response-time-breach"
+
+# Inhibition rules (suppress alerts when other more specific alerts are firing)
+inhibit_rules:
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'warning'
+  equal: ['alertname', 'instance']
+
+- source_match:
+    alertname: 'CriticalMemoryUsage'
+  target_match:
+    alertname: 'HighCPUUsage'
+  equal: ['instance']  # Suppress CPU alerts when memory is critical
+
+- source_match:
+    alertname: 'DatabaseConnectionPoolCritical'
+  target_match:
+    alertname: 'HighResponseTime'
+  equal: ['instance']  # Response time issues often caused by DB issues

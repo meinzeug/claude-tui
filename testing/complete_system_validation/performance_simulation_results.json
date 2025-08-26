@@ -1,0 +1,23 @@
+{
+  "small_project": {
+    "files": 3,
+    "complexity": "low",
+    "execution_time": 0.2503085136413574,
+    "memory_usage_mb": 7.5,
+    "status": "PASSED"
+  },
+  "medium_project": {
+    "files": 10,
+    "complexity": "medium",
+    "execution_time": 0.9009699821472168,
+    "memory_usage_mb": 25.0,
+    "status": "PASSED"
+  },
+  "large_project": {
+    "files": 25,
+    "complexity": "high",
+    "execution_time": 2.7008564472198486,
+    "memory_usage_mb": 62.5,
+    "status": "PASSED"
+  }
+}

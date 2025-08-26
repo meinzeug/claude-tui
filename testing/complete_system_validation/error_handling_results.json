@@ -1,0 +1,22 @@
+{
+  "invalid_requirement": {
+    "error_occurred": true,
+    "recovered": true,
+    "status": "HANDLED"
+  },
+  "network_timeout": {
+    "error_occurred": true,
+    "recovered": true,
+    "status": "HANDLED"
+  },
+  "resource_limit": {
+    "error_occurred": true,
+    "recovered": true,
+    "status": "HANDLED"
+  },
+  "syntax_error": {
+    "error_occurred": true,
+    "recovered": true,
+    "status": "HANDLED"
+  }
+}

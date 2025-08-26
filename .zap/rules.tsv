@@ -1,0 +1,52 @@
+# ZAP Security Scanning Rules for Claude TIU
+# Format: RULE_ID	THRESHOLD	ACTION	DESCRIPTION
+
+# Ignore rules that might cause false positives
+10021	OFF		# X-Content-Type-Options header missing (handled by reverse proxy)
+10020	OFF		# X-Frame-Options header missing (not applicable for API)
+10016	OFF		# Web Browser XSS Protection Not Enabled (not applicable for API)
+
+# Information Disclosure rules
+10024	WARN		# Information Disclosure - Debug Error Messages
+10025	WARN		# Information Disclosure - Database Error Messages
+10023	WARN		# Information Disclosure - Sensitive Information in URL
+10017	WARN		# Cross-Domain JavaScript Source File Inclusion
+
+# Authentication and Session Management
+10013	HIGH		# Weak Authentication Method
+10027	HIGH		# Information Disclosure - Suspicious Comments
+10015	MEDIUM		# Incomplete or No Cache-control and Pragma HTTP Header Set
+
+# Input Validation
+40012	HIGH		# Cross Site Scripting (Reflected)
+40014	HIGH		# Cross Site Scripting (Persistent)
+40016	HIGH		# Cross Site Scripting (Persistent) - Prime
+40017	HIGH		# Cross Site Scripting (Persistent) - Spider
+40018	HIGH		# SQL Injection
+40019	HIGH		# SQL Injection - MySQL
+40020	HIGH		# SQL Injection - Hypersonic SQL
+40021	HIGH		# SQL Injection - Oracle
+40022	HIGH		# SQL Injection - PostgreSQL
+
+# Security Misconfigurations
+90020	MEDIUM		# Remote OS Command Injection
+90019	HIGH		# Code Injection
+90011	HIGH		# Charset Mismatch
+90023	MEDIUM		# XML External Entity Attack
+
+# Sensitive Data Exposure
+10040	HIGH		# Secure Cookie Flag Checks
+10041	MEDIUM		# HTTP to HTTPS Insecure Transition in Form Post
+10042	MEDIUM		# HTTPS to HTTP Insecure Transition in Form Post
+10043	HIGH		# User Agent Fuzzer
+
+# Custom rules for Claude TIU API endpoints
+# Allow specific endpoints that are expected to be public
+/health		IGNORE		# Health check endpoint
+/metrics	IGNORE		# Prometheus metrics endpoint
+/api/v1/health	IGNORE		# API health check
+
+# Strict rules for sensitive endpoints
+/api/v1/auth/*	HIGH		# Authentication endpoints
+/api/v1/admin/*	HIGH		# Admin endpoints
+/api/v1/users/me	HIGH		# User profile endpoint

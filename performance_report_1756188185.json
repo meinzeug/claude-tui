@@ -1,0 +1,80 @@
+{
+  "report_generated": "2025-08-26T06:03:05.540722",
+  "performance_baseline": {
+    "baseline_created": "2025-08-26T06:03:05.540414",
+    "system_info": {
+      "platform": "linux",
+      "python_version": "3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]",
+      "cpu_count": 2,
+      "total_memory_gb": 1.8706855773925781,
+      "python_files": 320
+    },
+    "current_performance": {
+      "process_memory_mb": 18.22265625,
+      "system_memory_percent": 44.2,
+      "cpu_percent": 10.0,
+      "gc_objects": 15819,
+      "modules_loaded": 139,
+      "threads": 1
+    },
+    "startup_performance": {
+      "total_import_time_ms": 1.1322498321533203,
+      "avg_import_time_ms": 0,
+      "max_import_time_ms": 0,
+      "file_scan_time_ms": 7.697582244873047,
+      "files_scanned": 320,
+      "memory_ops_time_ms": 0.453948974609375,
+      "gc_time_ms": 9.088754653930664
+    },
+    "runtime_performance": {
+      "workload_time_ms": 14.976739883422852,
+      "workload_memory_mb": 0.04652881622314453,
+      "workload_peak_mb": 0.7424802780151367
+    },
+    "targets": {
+      "memory_mb": 100.0,
+      "startup_time_ms": 2000.0,
+      "import_time_ms": 200.0,
+      "file_scan_ms": 10.0,
+      "gc_time_ms": 20.0,
+      "cpu_percent": 10.0,
+      "system_memory_percent": 50.0
+    },
+    "thresholds": {
+      "memory_mb": 200.0,
+      "startup_time_ms": 5000.0,
+      "import_time_ms": 500.0,
+      "file_scan_ms": 50.0,
+      "gc_time_ms": 100.0,
+      "cpu_percent": 80.0,
+      "system_memory_percent": 80.0
+    }
+  },
+  "optimization_roadmap": {
+    "roadmap_generated": "2025-08-26T06:03:05.540686",
+    "quick_wins": [],
+    "major_projects": [],
+    "maintenance_tasks": [],
+    "total_optimizations": 0,
+    "estimated_total_improvement": "70-90% overall performance improvement possible"
+  },
+  "identified_bottlenecks": [],
+  "recent_snapshots": [
+    {
+      "timestamp": 1756188185.2782366,
+      "process_memory_mb": 16.0234375,
+      "system_memory_percent": 44.2,
+      "cpu_percent": 9.5,
+      "gc_objects": 15947,
+      "modules": 139
+    },
+    {
+      "timestamp": 1756188185.4045615,
+      "process_memory_mb": 18.22265625,
+      "system_memory_percent": 44.2,
+      "cpu_percent": 10.0,
+      "gc_objects": 15819,
+      "modules": 139
+    }
+  ]
+}

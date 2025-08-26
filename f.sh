@@ -1,0 +1,1 @@
+npx claude-flow@alpha hive-mind spawn 'du bist die led queen. spawne mehrere schwärme von experten. führe das tool run_tui.py direkt aus: "python3 run_tui.py" und behebe auftretende fehler. mach das so lange bis tool zu 100% läuft.' --claude --auto-spawn

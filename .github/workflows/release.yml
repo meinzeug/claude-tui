@@ -1,0 +1,398 @@
+name: 🚢 Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a pre-release?'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: read
+
+jobs:
+  # Version Validation
+  validate-version:
+    name: 🔍 Validate Release Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Extract Version Information
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/}
+            # Check if version contains alpha, beta, rc
+            if [[ $VERSION =~ (alpha|beta|rc) ]]; then
+              IS_PRERELEASE=true
+            else
+              IS_PRERELEASE=false
+            fi
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          
+          echo "📋 Release Version: $VERSION"
+          echo "📋 Pre-release: $IS_PRERELEASE"
+
+      - name: ✅ Validate Version Format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[0-9]+)?)?$ ]]; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: vX.Y.Z or vX.Y.Z-prerelease"
+            exit 1
+          fi
+          echo "✅ Version format is valid"
+
+  # Run Tests Before Release
+  test-suite:
+    name: 🧪 Pre-Release Test Suite
+    runs-on: ubuntu-latest
+    needs: validate-version
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: claude_tui_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev,test,performance]
+
+      - name: 🧪 Run Complete Test Suite
+        run: |
+          pytest --cov=src/claude_tui --cov-report=term --cov-report=xml --cov-fail-under=80
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/claude_tui_test
+          REDIS_URL: redis://localhost:6379/0
+
+      - name: 🔒 Security Scan
+        run: |
+          bandit -r src/ -f text
+          safety check
+
+  # Build Release Assets
+  build-assets:
+    name: 🏗️ Build Release Assets
+    runs-on: ubuntu-latest
+    needs: [validate-version, test-suite]
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install Build Dependencies
+        run: |
+          python -m pip install --upgrade pip build twine
+
+      - name: 🏗️ Build Python Package
+        run: |
+          python -m build
+
+      - name: ✅ Validate Package
+        run: |
+          python -m twine check dist/*
+
+      - name: 📤 Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package
+          path: dist/
+
+  # Build and Push Docker Images
+  docker-release:
+    name: 🐳 Docker Release Build
+    runs-on: ubuntu-latest
+    needs: [validate-version, test-suite]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔑 Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.validate-version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.validate-version.outputs.version }}
+            type=semver,pattern={{major}},value=${{ needs.validate-version.outputs.version }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🏗️ Build and Push Docker Images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          target: production
+
+      - name: 🔍 Security Scan Release Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}
+          format: 'table'
+
+  # Generate Release Notes
+  generate-changelog:
+    name: 📝 Generate Release Notes
+    runs-on: ubuntu-latest
+    needs: validate-version
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📝 Generate Changelog
+        id: changelog
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          PREV_TAG=$(git tag --sort=-version:refname | head -2 | tail -1)
+          
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          
+          echo "📋 Generating changelog from $PREV_TAG to $VERSION"
+          
+          # Generate changelog
+          cat > changelog.md << 'EOF'
+          ## 🚀 What's New in ${{ needs.validate-version.outputs.version }}
+          
+          ### ✨ Features
+          EOF
+          
+          git log --pretty=format:"- %s (%h)" --grep="feat:" --grep="feature:" $PREV_TAG..HEAD >> changelog.md
+          
+          cat >> changelog.md << 'EOF'
+          
+          ### 🐛 Bug Fixes
+          EOF
+          
+          git log --pretty=format:"- %s (%h)" --grep="fix:" --grep="bug:" $PREV_TAG..HEAD >> changelog.md
+          
+          cat >> changelog.md << 'EOF'
+          
+          ### 📚 Documentation
+          EOF
+          
+          git log --pretty=format:"- %s (%h)" --grep="docs:" $PREV_TAG..HEAD >> changelog.md
+          
+          cat >> changelog.md << 'EOF'
+          
+          ### 🔧 Technical Changes
+          EOF
+          
+          git log --pretty=format:"- %s (%h)" --grep="chore:" --grep="refactor:" --grep="perf:" $PREV_TAG..HEAD >> changelog.md
+          
+          cat >> changelog.md << 'EOF'
+          
+          ### 📊 Statistics
+          - **Commits**: $(git rev-list --count $PREV_TAG..HEAD)
+          - **Contributors**: $(git shortlog -sn $PREV_TAG..HEAD | wc -l)
+          - **Files Changed**: $(git diff --name-only $PREV_TAG..HEAD | wc -l)
+          
+          ### 🔗 Links
+          - **Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREV_TAG...${{ needs.validate-version.outputs.version }}
+          - **Docker Image**: `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}`
+          
+          ### 📦 Installation
+          ```bash
+          # PyPI
+          pip install claude-tui==${{ needs.validate-version.outputs.version }}
+          
+          # Docker
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}
+          ```
+          EOF
+          
+          # Set output
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload Changelog
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: changelog.md
+
+  # Create GitHub Release
+  create-release:
+    name: 🎉 Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-version, test-suite, build-assets, docker-release, generate-changelog]
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package
+          path: dist/
+
+      - name: 🎉 Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.validate-version.outputs.version }}
+          name: 'Release ${{ needs.validate-version.outputs.version }}'
+          body: ${{ needs.generate-changelog.outputs.changelog }}
+          artifacts: "dist/*"
+          draft: false
+          prerelease: ${{ needs.validate-version.outputs.is_prerelease }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Publish to PyPI
+  publish-pypi:
+    name: 📦 Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [create-release]
+    environment: pypi-release
+    if: ${{ !fromJson(needs.validate-version.outputs.is_prerelease) }}
+    steps:
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package
+          path: dist/
+
+      - name: 📦 Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+  # Update Documentation
+  update-docs:
+    name: 📚 Update Documentation
+    runs-on: ubuntu-latest
+    needs: [create-release]
+    if: ${{ !fromJson(needs.validate-version.outputs.is_prerelease) }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📚 Update Version in Documentation
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          # Update version references in docs
+          find docs/ -name "*.md" -exec sed -i "s/version: .*/version: $VERSION/g" {} \;
+          
+          # Update installation commands
+          sed -i "s/claude-tui==[0-9.]*/claude-tui==$VERSION/g" docs/installation.md || true
+
+      - name: 📤 Commit Documentation Updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/
+          git diff --staged --quiet || git commit -m "📚 Update documentation for ${{ needs.validate-version.outputs.version }}"
+          git push
+
+  # Deployment Notification
+  notify-deployment:
+    name: 📢 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [validate-version, create-release, publish-pypi, update-docs]
+    if: always()
+    steps:
+      - name: 📢 Send Release Notification
+        run: |
+          echo "🎉 Release ${{ needs.validate-version.outputs.version }} completed!"
+          echo "📦 PyPI: https://pypi.org/project/claude-tui/${{ needs.validate-version.outputs.version }}/"
+          echo "🐳 Docker: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-version.outputs.version }}"
+          echo "📋 Release Notes: https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-version.outputs.version }}"
+
+  # Cleanup
+  cleanup:
+    name: 🧹 Post-Release Cleanup
+    runs-on: ubuntu-latest
+    needs: [notify-deployment]
+    if: always()
+    steps:
+      - name: 🧹 Cleanup Temporary Resources
+        run: |
+          echo "🧹 Cleaning up release artifacts and temporary resources..."
+          # Add any cleanup logic here

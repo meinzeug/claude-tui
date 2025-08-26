@@ -1,0 +1,72 @@
+{
+  "mcpTests": [
+    {
+      "name": "MCP Server Connection",
+      "passed": true,
+      "duration": 1100,
+      "error": null
+    },
+    {
+      "name": "Error Recovery",
+      "passed": false,
+      "duration": 2207,
+      "error": "System did not recover from error"
+    },
+    {
+      "name": "Concurrent Operations",
+      "passed": true,
+      "duration": 3743,
+      "error": null
+    }
+  ],
+  "agentTests": [
+    {
+      "name": "Swarm Initialization",
+      "passed": false,
+      "duration": 1701,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    },
+    {
+      "name": "Agent Spawning",
+      "passed": false,
+      "duration": 1301,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    },
+    {
+      "name": "Agent Communication",
+      "passed": false,
+      "duration": 1276,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    },
+    {
+      "name": "Task Orchestration",
+      "passed": false,
+      "duration": 1200,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    }
+  ],
+  "memoryTests": [
+    {
+      "name": "Memory Operations",
+      "passed": false,
+      "duration": 1367,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    }
+  ],
+  "performanceTests": [
+    {
+      "name": "Performance Reporting",
+      "passed": false,
+      "duration": 1330,
+      "error": "Unexpected token '\ud83d', \"🔧 Claude-\"... is not valid JSON"
+    }
+  ],
+  "startTime": "2025-08-26T01:21:24.037Z",
+  "endTime": "2025-08-26T01:21:39.265Z",
+  "summary": {
+    "totalTests": 9,
+    "passedTests": 2,
+    "failedTests": 7,
+    "successRate": "22.22"
+  }
+}

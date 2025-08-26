@@ -1,0 +1,325 @@
+version: '3.8'
+
+services:
+  # Main Claude TUI Application - Production Ready
+  claude-tui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: claude-tui:latest
+    container_name: claude-tui-app
+    ports:
+      - "8000:8000"
+    environment:
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - CLAUDE_FLOW_API_KEY=${CLAUDE_FLOW_API_KEY:-}
+      - DATABASE_URL=postgresql://claude_user:${POSTGRES_PASSWORD:-claude_secure_pass}@db:5432/${POSTGRES_DB:-claude_tui}
+      - REDIS_URL=redis://cache:6379/0
+      - CLAUDE_TUI_ENV=production
+      - PYTHONPATH=/app/src
+      - LOG_LEVEL=INFO
+      - MAX_WORKERS=4
+    volumes:
+      - claude-data:/app/data
+      - claude-logs:/app/logs
+      - claude-backups:/app/backups
+      - claude-config:/app/config
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - claude-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import claude_tui; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # PostgreSQL Database with optimizations
+  db:
+    image: postgres:15-alpine
+    container_name: claude-tui-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-claude_tui}
+      - POSTGRES_USER=${POSTGRES_USER:-claude_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-claude_secure_pass}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+      - POSTGRES_HOST_AUTH_METHOD=scram-sha-256
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/devops/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - "5432:5432"
+    networks:
+      - claude-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-claude_user} -d ${POSTGRES_DB:-claude_tui}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+    command: [
+      "postgres",
+      "-c", "shared_preload_libraries=pg_stat_statements",
+      "-c", "max_connections=200",
+      "-c", "shared_buffers=256MB",
+      "-c", "effective_cache_size=1GB",
+      "-c", "maintenance_work_mem=64MB",
+      "-c", "checkpoint_completion_target=0.9",
+      "-c", "wal_buffers=16MB",
+      "-c", "default_statistics_target=100"
+    ]
+
+  # Redis Cache with persistence and optimization
+  cache:
+    image: redis:7-alpine
+    container_name: claude-tui-redis
+    volumes:
+      - redis-data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - claude-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    command: [
+      "redis-server",
+      "--appendonly", "yes",
+      "--maxmemory", "256mb",
+      "--maxmemory-policy", "allkeys-lru",
+      "--save", "900", "1",
+      "--save", "300", "10",
+      "--save", "60", "10000",
+      "--tcp-keepalive", "300",
+      "--timeout", "30"
+    ]
+
+  # Development Environment with Hot Reload
+  claude-tui-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: claude-tui-dev
+    ports:
+      - "8001:8000"
+    environment:
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - CLAUDE_FLOW_API_KEY=${CLAUDE_FLOW_API_KEY:-}
+      - DATABASE_URL=postgresql://claude_user:${POSTGRES_PASSWORD:-claude_secure_pass}@db:5432/${POSTGRES_DB:-claude_tui}_dev
+      - REDIS_URL=redis://cache:6379/1
+      - CLAUDE_TUI_ENV=development
+      - PYTHONPATH=/app/src
+      - LOG_LEVEL=DEBUG
+      - DEVELOPMENT_MODE=true
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./docs:/app/docs
+      - ./tests:/app/tests
+      - ./scripts:/app/scripts
+      - claude-dev-data:/app/data
+      - claude-logs:/app/logs
+      - claude-dev-cache:/home/claude/.cache
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - claude-network
+    profiles:
+      - dev
+    stdin_open: true
+    tty: true
+    command: python -m claude_tui.main --dev --reload
+
+  # Nginx Reverse Proxy for Production
+  nginx:
+    image: nginx:alpine
+    container_name: claude-tui-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - claude-tui
+    networks:
+      - claude-network
+    restart: unless-stopped
+    profiles:
+      - production
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: claude-tui-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/monitoring/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    networks:
+      - claude-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+    depends_on:
+      - claude-tui
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: claude-tui-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/monitoring/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - claude-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+  # Log Aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: claude-tui-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/monitoring/loki.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - claude-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+  # Testing Service
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    container_name: claude-tui-test
+    environment:
+      - DATABASE_URL=postgresql://claude_user:${POSTGRES_PASSWORD:-claude_secure_pass}@db:5432/${POSTGRES_DB:-claude_tui}_test
+      - REDIS_URL=redis://cache:6379/2
+      - CLAUDE_TUI_ENV=testing
+    volumes:
+      - ./tests:/app/tests
+      - ./src:/app/src
+      - test-reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - claude-network
+    profiles:
+      - testing
+    command: python -m pytest tests/ -v --cov=claude_tui --cov-report=html:/app/reports/coverage
+
+volumes:
+  # Application Data
+  claude-data:
+    driver: local
+  claude-dev-data:
+    driver: local
+  claude-logs:
+    driver: local
+  claude-backups:
+    driver: local
+  claude-config:
+    driver: local
+  claude-dev-cache:
+    driver: local
+  
+  # Database
+  postgres-data:
+    driver: local
+  
+  # Cache
+  redis-data:
+    driver: local
+  
+  # Monitoring
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  loki-data:
+    driver: local
+  
+  # Testing
+  test-reports:
+    driver: local
+
+networks:
+  claude-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+    driver_opts:
+      com.docker.network.bridge.name: claude-bridge
+      com.docker.network.driver.mtu: 1500

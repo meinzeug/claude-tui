@@ -1,0 +1,115 @@
+{
+  "timestamp": "2025-08-25T13:26:58.353277",
+  "system_info": {
+    "python_version": "3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]",
+    "cpu_count": 2,
+    "total_memory_mb": 1915.58203125,
+    "available_memory_mb": 182.97265625,
+    "platform": "linux",
+    "performance_modules_available": false
+  },
+  "baseline_metrics": {
+    "baseline_memory_mb": 32.546875,
+    "current_memory_mb": 32.546875,
+    "memory_target_mb": 200,
+    "api_target_ms": 200,
+    "scalability_target_files": 10000
+  },
+  "test_results": [
+    {
+      "test_name": "memory_profiler_basic",
+      "passed": false,
+      "duration": 7.152557373046875e-07,
+      "memory_usage": null,
+      "details": {},
+      "error_message": "Performance modules not available"
+    },
+    {
+      "test_name": "emergency_memory_check",
+      "passed": false,
+      "duration": 2.384185791015625e-07,
+      "memory_usage": null,
+      "details": {},
+      "error_message": "Performance modules not available"
+    },
+    {
+      "test_name": "memory_load_recovery",
+      "passed": false,
+      "duration": 0.0024137496948242188,
+      "memory_usage": 32.546875,
+      "details": {
+        "initial_memory": 32.546875,
+        "peak_memory": 32.546875,
+        "final_memory": 32.546875,
+        "memory_recovered": false
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "api_optimizer_init",
+      "passed": false,
+      "duration": 2.384185791015625e-07,
+      "memory_usage": null,
+      "details": {},
+      "error_message": "Performance modules not available"
+    },
+    {
+      "test_name": "api_response_time",
+      "passed": true,
+      "duration": 0.050855159759521484,
+      "memory_usage": 32.546875,
+      "details": {
+        "avg_response_time_ms": 5.083465576171875,
+        "max_response_time_ms": 5.101919174194336,
+        "total_calls": 10
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "scalability_file_processing",
+      "passed": true,
+      "duration": 0.0006849765777587891,
+      "memory_usage": 32.546875,
+      "details": {
+        "files_processed": 10000,
+        "target_files": 10000,
+        "processing_rate": 14599039.331709014
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "async_concurrent_processing",
+      "passed": true,
+      "duration": 0.0039310455322265625,
+      "memory_usage": 32.546875,
+      "details": {
+        "tasks_completed": 100,
+        "concurrency": 100
+      },
+      "error_message": null
+    },
+    {
+      "test_name": "memory_regression_check",
+      "passed": true,
+      "duration": 0.00023365020751953125,
+      "memory_usage": 32.546875,
+      "details": {
+        "operations_completed": 100,
+        "memory_threshold": 240.0
+      },
+      "error_message": null
+    }
+  ],
+  "optimization_status": {
+    "memory_optimization": false,
+    "api_optimization": false,
+    "scalability_optimization": true,
+    "async_optimization": true,
+    "regression_free": true
+  },
+  "recommendations": [
+    "Memory optimization needs attention - consider implementing lazy loading and object pooling",
+    "API response times exceed target - implement caching and request optimization"
+  ],
+  "overall_status": "NEEDS_IMPROVEMENT"
+}

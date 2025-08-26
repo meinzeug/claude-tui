@@ -1,0 +1,127 @@
+{
+  "timestamp": 1756207871.9602456,
+  "total_tests": 4,
+  "passed_tests": 1,
+  "failed_tests": 3,
+  "success_rate": 25.0,
+  "all_results": {
+    "pipeline_test_results": {
+      "test": "automatic_programming_pipeline_mock",
+      "status": "PASSED",
+      "files_generated": 5,
+      "project_dir": "/tmp/claude_tui_test_hoy3bodb/calculator_test",
+      "timestamp": 1756207867.0028257
+    },
+    "workflow_simulation_results": {
+      "requirement_analysis": {
+        "status": "PASSED",
+        "execution_time": 0.10014820098876953,
+        "result": {
+          "requirements_parsed": true,
+          "complexity": "medium",
+          "estimated_files": 5
+        }
+      },
+      "architecture_design": {
+        "status": "PASSED",
+        "execution_time": 0.20025897026062012,
+        "result": {
+          "architecture_created": true,
+          "components": [
+            "calculator",
+            "cli",
+            "tests"
+          ],
+          "patterns": [
+            "modular",
+            "testable"
+          ]
+        }
+      },
+      "code_generation": {
+        "status": "PASSED",
+        "execution_time": 0.3003358840942383,
+        "result": {
+          "files_generated": 5,
+          "lines_of_code": 150,
+          "functions_created": 8
+        }
+      },
+      "test_generation": {
+        "status": "PASSED",
+        "execution_time": 0.2002406120300293,
+        "result": {
+          "tests_generated": 10,
+          "coverage_target": 95,
+          "test_types": [
+            "unit",
+            "integration"
+          ]
+        }
+      },
+      "validation": {
+        "status": "PASSED",
+        "execution_time": 0.10016155242919922,
+        "result": {
+          "syntax_valid": true,
+          "tests_pass": true,
+          "quality_score": 92
+        }
+      },
+      "integration": {
+        "status": "PASSED",
+        "execution_time": 0.10019779205322266,
+        "result": {
+          "integrated": true,
+          "deployable": true,
+          "documentation_complete": true
+        }
+      }
+    },
+    "error_handling_results": {
+      "invalid_requirement": {
+        "error_occurred": true,
+        "recovered": true,
+        "status": "HANDLED"
+      },
+      "network_timeout": {
+        "error_occurred": true,
+        "recovered": true,
+        "status": "HANDLED"
+      },
+      "resource_limit": {
+        "error_occurred": true,
+        "recovered": true,
+        "status": "HANDLED"
+      },
+      "syntax_error": {
+        "error_occurred": true,
+        "recovered": true,
+        "status": "HANDLED"
+      }
+    },
+    "performance_simulation_results": {
+      "small_project": {
+        "files": 3,
+        "complexity": "low",
+        "execution_time": 0.2503085136413574,
+        "memory_usage_mb": 7.5,
+        "status": "PASSED"
+      },
+      "medium_project": {
+        "files": 10,
+        "complexity": "medium",
+        "execution_time": 0.9009699821472168,
+        "memory_usage_mb": 25.0,
+        "status": "PASSED"
+      },
+      "large_project": {
+        "files": 25,
+        "complexity": "high",
+        "execution_time": 2.7008564472198486,
+        "memory_usage_mb": 62.5,
+        "status": "PASSED"
+      }
+    }
+  }
+}

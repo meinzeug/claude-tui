@@ -1,0 +1,33 @@
+{
+  "validation_report": {
+    "timestamp": "2025-08-26T15:38:57+00:00",
+    "total_errors": 1,
+    "status": "partial_failure",
+    "categories": {
+      "scripts": {
+        "status": "passed",
+        "errors": 0
+      },
+      "workflows": {
+        "status": "passed",
+        "errors": 0
+      },
+      "kubernetes": {
+        "status": "failed",
+        "errors": 1
+      },
+      "monitoring": {
+        "status": "passed",
+        "errors": 0
+      },
+      "security": {
+        "status": "passed",
+        "errors": 0
+      },
+      "documentation": {
+        "status": "passed",
+        "errors": 0
+      }
+    }
+  }
+}

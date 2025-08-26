@@ -1,0 +1,429 @@
+name: Test Workflow CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+
+env:
+  PYTHON_VERSION: "3.9"
+  NODE_VERSION: "18"
+  TEST_TIMEOUT: "30m"
+
+jobs:
+  # Pre-flight checks
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          
+      - name: Run linting
+        run: |
+          flake8 test-workflow/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 test-workflow/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+          
+      - name: Run type checking
+        run: |
+          mypy test-workflow/ --ignore-missing-imports
+          
+      - name: Check code formatting
+        run: |
+          black --check test-workflow/
+          isort --check-only test-workflow/
+
+  # Security scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install security tools
+        run: |
+          pip install bandit safety
+          
+      - name: Run Bandit security scan
+        run: |
+          bandit -r test-workflow/ -f json -o bandit-report.json
+          
+      - name: Run Safety dependency check
+        run: |
+          safety check --json --output safety-report.json
+          
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+
+  # Unit tests
+  unit-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -e .
+          
+      - name: Run unit tests
+        timeout-minutes: 15
+        run: |
+          python -m pytest tests/unit/ \
+            --cov=test_workflow \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term \
+            --junitxml=junit-${{ matrix.os }}-${{ matrix.python-version }}.xml \
+            --html=report-${{ matrix.os }}-${{ matrix.python-version }}.html \
+            --self-contained-html \
+            -v
+            
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            junit-*.xml
+            report-*.html
+            htmlcov/
+            coverage.xml
+
+  # Integration tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, security-scan]
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -e .
+          
+      - name: Wait for services
+        run: |
+          sleep 10
+          
+      - name: Run integration tests
+        timeout-minutes: 20
+        env:
+          DATABASE_URL: postgresql://postgres:testpass@localhost:5432/testdb
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          python -m pytest tests/integration/ \
+            --cov=test_workflow \
+            --cov-append \
+            --junitxml=integration-junit.xml \
+            --html=integration-report.html \
+            --self-contained-html \
+            -v --tb=short
+            
+      - name: Upload integration results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            integration-junit.xml
+            integration-report.html
+
+  # Performance tests
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: [unit-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -e .
+          pip install pytest-benchmark
+          
+      - name: Run performance benchmarks
+        run: |
+          python -m pytest tests/performance/ \
+            --benchmark-json=benchmark-results.json \
+            --benchmark-histogram=benchmark-histogram \
+            -v
+            
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: |
+            benchmark-results.json
+            benchmark-histogram.svg
+
+  # End-to-end tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -e .
+          npm install -g @playwright/test
+          playwright install
+          
+      - name: Start test application
+        run: |
+          python -m test_workflow.examples.demo_app &
+          sleep 10
+          
+      - name: Run E2E tests
+        run: |
+          python -m pytest tests/e2e/ \
+            --junitxml=e2e-junit.xml \
+            --html=e2e-report.html \
+            --self-contained-html \
+            -v
+            
+      - name: Upload E2E results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            e2e-junit.xml
+            e2e-report.html
+            screenshots/
+            videos/
+
+  # Build and test package
+  build-package:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install build tools
+        run: |
+          pip install build twine
+          
+      - name: Build package
+        run: |
+          python -m build
+          
+      - name: Check package
+        run: |
+          python -m twine check dist/*
+          
+      - name: Test package installation
+        run: |
+          pip install dist/*.whl
+          python -c "import test_workflow; print(test_workflow.__version__)"
+          
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package
+          path: dist/
+
+  # Generate coverage report
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install coverage tools
+        run: |
+          pip install coverage[toml] codecov
+          
+      - name: Combine coverage reports
+        run: |
+          coverage combine test-results-*/.coverage*
+          coverage xml
+          coverage html
+          
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
+          
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            htmlcov/
+
+  # Release (only on main branch)
+  release:
+    runs-on: ubuntu-latest
+    needs: [build-package, coverage, performance-tests, e2e-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Download package artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package
+          path: dist/
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*
+          generate_release_notes: true
+          
+      - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pip install twine
+          python -m twine upload dist/*
+
+  # Notification
+  notify:
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: always()
+    
+    steps:
+      - name: Notify on success
+        if: ${{ needs.release.result == 'success' }}
+        run: |
+          echo "✅ All tests passed and package released successfully!"
+          
+      - name: Notify on failure
+        if: ${{ needs.release.result == 'failure' || needs.release.result == 'cancelled' }}
+        run: |
+          echo "❌ Pipeline failed or was cancelled"
+          exit 1

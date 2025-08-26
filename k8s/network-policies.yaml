@@ -1,0 +1,297 @@
+# Network Policies for Claude-TUI Production Security
+# Implements micro-segmentation and zero-trust network architecture
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: claude-tui-prod
+  labels:
+    name: claude-tui-prod
+    environment: production
+    security.policy: strict
+---
+# Default Deny All Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: claude-tui-prod
+  labels:
+    security.policy: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+# Allow ingress from ingress controller only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-controller
+  namespace: claude-tui-prod
+  labels:
+    security.policy: ingress-allow
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+      tier: frontend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 8443
+---
+# Allow frontend to backend communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: claude-tui-prod
+  labels:
+    security.policy: frontend-backend
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+      tier: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: claude-tui
+          tier: frontend
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 9000
+---
+# Allow backend to database communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-to-database
+  namespace: claude-tui-prod
+  labels:
+    security.policy: backend-database
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+      tier: database
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: claude-tui
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+# Allow backend to Redis communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-to-redis
+  namespace: claude-tui-prod
+  labels:
+    security.policy: backend-redis
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+      tier: cache
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: claude-tui
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 6379
+---
+# Allow DNS resolution for all pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: claude-tui-prod
+  labels:
+    security.policy: dns-allow
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+---
+# Allow HTTPS egress for external API calls (Claude, GitHub, etc.)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-external-https
+  namespace: claude-tui-prod
+  labels:
+    security.policy: external-https
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+      tier: backend
+  policyTypes:
+  - Egress
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+---
+# Allow monitoring and metrics collection
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring
+  namespace: claude-tui-prod
+  labels:
+    security.policy: monitoring-allow
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    - namespaceSelector:
+        matchLabels:
+          name: prometheus
+    - namespaceSelector:
+        matchLabels:
+          name: grafana
+    ports:
+    - protocol: TCP
+      port: 9090  # Prometheus metrics
+    - protocol: TCP
+      port: 8080  # Health checks
+---
+# Network Policy for Admin Access (restricted)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-admin-access
+  namespace: claude-tui-prod
+  labels:
+    security.policy: admin-access
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+      component: admin
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    # Only allow from admin subnet
+    - ipBlock:
+        cidr: 10.0.1.0/24  # Admin subnet
+    # Only from bastion host
+    - ipBlock:
+        cidr: 10.0.0.100/32  # Bastion host IP
+    ports:
+    - protocol: TCP
+      port: 8443  # Admin HTTPS port
+---
+# Allow inter-pod communication for Claude-Flow coordination
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-claude-flow-coordination
+  namespace: claude-tui-prod
+  labels:
+    security.policy: claude-flow-coordination
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: claude-tui
+    ports:
+    - protocol: TCP
+      port: 3000  # Claude-Flow coordination port
+    - protocol: TCP
+      port: 3001  # MCP server port
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: claude-tui
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3001
+---
+# Security Policy for backup operations
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backup-egress
+  namespace: claude-tui-prod
+  labels:
+    security.policy: backup-egress
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-tui
+      component: backup
+  policyTypes:
+  - Egress
+  egress:
+  # Allow S3 backup egress
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow database backup
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432

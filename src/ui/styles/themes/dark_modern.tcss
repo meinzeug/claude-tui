@@ -1,0 +1,1019 @@
+/* Claude-TUI Modern Dark Theme */
+/* Professional dark theme with blue accents and smooth gradients */
+
+/* Color Variables */
+$primary: #0ea5e9;
+$primary-light: #38bdf8;
+$primary-dark: #0284c7;
+$primary-alpha-50: #0ea5e980;
+$primary-alpha-20: #0ea5e933;
+
+$secondary: #8b5cf6;
+$secondary-light: #a78bfa;
+$secondary-dark: #7c3aed;
+$secondary-alpha-50: #8b5cf680;
+$secondary-alpha-20: #8b5cf633;
+
+$success: #10b981;
+$success-light: #34d399;
+$success-dark: #059669;
+$success-alpha-50: #10b98180;
+$success-alpha-20: #10b98133;
+
+$warning: #f59e0b;
+$warning-light: #fbbf24;
+$warning-dark: #d97706;
+$warning-alpha-50: #f59e0b80;
+$warning-alpha-20: #f59e0b33;
+
+$error: #ef4444;
+$error-light: #f87171;
+$error-dark: #dc2626;
+$error-alpha-50: #ef444480;
+$error-alpha-20: #ef444433;
+
+$info: #3b82f6;
+$info-light: #60a5fa;
+$info-dark: #2563eb;
+$info-alpha-50: #3b82f680;
+$info-alpha-20: #3b82f633;
+
+/* Background Colors */
+$background: #0f172a;
+$background-light: #1e293b;
+$surface: #334155;
+$surface-light: #475569;
+$surface-variant: #64748b;
+
+/* Text Colors */
+$text: #f8fafc;
+$text-dim: #cbd5e1;
+$text-muted: #94a3b8;
+$on-primary: #ffffff;
+$on-secondary: #ffffff;
+$on-surface: #f8fafc;
+$on-background: #f8fafc;
+
+/* Border and Outline */
+$border: #475569;
+$border-light: #64748b;
+$outline: #64748b;
+$outline-variant: #475569;
+
+/* Special States */
+$disabled: #64748b;
+$shadow: #000000;
+$highlight: #fbbf24;
+$accent: #8b5cf6;
+
+/* Global Application Styles */
+Screen {
+    background: $background;
+    color: $text;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+    scrollbar-color-hover: $primary-light;
+}
+
+/* Layout Containers */
+.main-container {
+    background: $background;
+    color: $text;
+}
+
+.sidebar {
+    width: 25%;
+    min-width: 20;
+    background: $surface;
+    border-right: wide $border;
+    padding: 1;
+}
+
+.main-content {
+    width: 1fr;
+    background: $background;
+    padding: 1;
+}
+
+.right-panel {
+    width: 30%;
+    min-width: 25;
+    background: $surface;
+    border-left: wide $border;
+    padding: 1;
+}
+
+.bottom-panel {
+    height: 15;
+    background: $surface;
+    border-top: wide $border;
+    padding: 1;
+    dock: bottom;
+}
+
+/* Header Styles */
+Header {
+    background: $surface-light;
+    color: $text;
+    height: 3;
+    padding: 0 1;
+    border-bottom: wide $border;
+    text-style: bold;
+}
+
+.header {
+    background: $primary;
+    color: $on-primary;
+    height: 3;
+    padding: 1;
+    text-align: center;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.section-header {
+    text-style: bold;
+    color: $primary;
+    margin: 1 0;
+    padding: 0 1;
+    background: $surface-variant 30%;
+    border-radius: 1;
+}
+
+.subsection-header {
+    text-style: bold;
+    color: $secondary;
+    margin: 1 0;
+}
+
+/* Footer and Status */
+Footer {
+    background: $surface;
+    color: $text-dim;
+    height: 3;
+    padding: 0 1;
+    border-top: wide $border;
+}
+
+.status-bar {
+    background: $surface-variant;
+    color: $text-dim;
+    height: 1;
+    padding: 0 1;
+    dock: bottom;
+}
+
+/* Button Styles */
+Button {
+    background: $surface;
+    color: $text;
+    border: round $border;
+    padding: 0 2;
+    margin: 0 1;
+    min-width: 10;
+    height: 3;
+    text-align: center;
+}
+
+Button:hover {
+    background: $surface-light;
+    border: round $border-light;
+    color: $text;
+}
+
+Button:focus {
+    background: $primary;
+    color: $on-primary;
+    border: round $primary-dark;
+}
+
+Button.primary {
+    background: $primary;
+    color: $on-primary;
+    border: round $primary-dark;
+}
+
+Button.primary:hover {
+    background: $primary-light;
+    border: round $primary;
+}
+
+Button.success {
+    background: $success;
+    color: $on-primary;
+    border: round $success-dark;
+}
+
+Button.success:hover {
+    background: $success-light;
+}
+
+Button.error {
+    background: $error;
+    color: $on-primary;
+    border: round $error-dark;
+}
+
+Button.error:hover {
+    background: $error-light;
+}
+
+Button.warning {
+    background: $warning;
+    color: $on-primary;
+    border: round $warning-dark;
+}
+
+Button.warning:hover {
+    background: $warning-light;
+}
+
+Button.disabled {
+    background: $disabled;
+    color: $text-muted;
+    border: round $disabled;
+    opacity: 0.6;
+}
+
+/* Input and Form Styles */
+Input {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    padding: 0 1;
+    height: 3;
+}
+
+Input:focus {
+    border: round $primary;
+    background: $surface;
+    color: $text;
+}
+
+Input > .input--placeholder {
+    color: $text-muted;
+}
+
+TextArea {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    padding: 1;
+}
+
+TextArea:focus {
+    border: round $primary;
+    background: $surface;
+}
+
+Select {
+    background: $surface;
+    color: $text;
+    border: round $border;
+    height: 3;
+}
+
+Select:focus {
+    border: round $primary;
+    background: $surface-light;
+}
+
+Select > SelectCurrent {
+    background: $surface;
+    color: $text;
+}
+
+Select > SelectOverlay {
+    background: $surface-light;
+    border: thick $border;
+}
+
+Checkbox {
+    background: transparent;
+    color: $text;
+    padding: 0 1;
+}
+
+Checkbox:focus {
+    background: $surface-variant 30%;
+}
+
+RadioButton {
+    background: transparent;
+    color: $text;
+    padding: 0 1;
+}
+
+RadioButton:focus {
+    background: $surface-variant 30%;
+}
+
+RadioSet:focus {
+    border: none;
+}
+
+Switch {
+    background: transparent;
+    color: $text;
+}
+
+Switch.-on {
+    color: $success;
+}
+
+/* Progress and Loading */
+ProgressBar {
+    background: $surface;
+    color: $primary;
+    border: round $border;
+}
+
+ProgressBar > .progress--bar {
+    color: $primary;
+}
+
+ProgressBar > .progress--percentage {
+    color: $text;
+    text-style: bold;
+}
+
+LoadingIndicator {
+    color: $primary;
+    background: $surface;
+}
+
+/* List and Data Styles */
+ListView {
+    background: $surface;
+    border: round $border;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+ListItem {
+    background: transparent;
+    color: $text;
+    padding: 1;
+}
+
+ListItem:hover {
+    background: $surface-light;
+}
+
+ListItem.-highlighted {
+    background: $primary-alpha-20;
+    color: $text;
+}
+
+ListItem > Label {
+    background: transparent;
+    color: inherit;
+}
+
+DataTable {
+    background: $surface;
+    color: $text;
+    border: round $border;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+DataTable > .datatable--header {
+    background: $surface-light;
+    color: $text;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: $primary;
+    color: $on-primary;
+}
+
+/* Tree and File Explorer */
+Tree {
+    background: $surface;
+    color: $text;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+DirectoryTree {
+    background: $surface;
+    color: $text;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+Tree > .tree--cursor {
+    background: $primary;
+    color: $on-primary;
+}
+
+DirectoryTree > .directory-tree--cursor {
+    background: $primary;
+    color: $on-primary;
+}
+
+DirectoryTree > .directory-tree--folder {
+    color: $warning;
+    text-style: bold;
+}
+
+DirectoryTree > .directory-tree--file {
+    color: $text;
+}
+
+/* Console and Log */
+RichLog {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+    padding: 1;
+}
+
+Log {
+    background: $background-light;
+    color: $text;
+    border: round $border;
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+}
+
+/* Tabs */
+TabbedContent {
+    background: $background;
+    border: round $border;
+}
+
+Tabs {
+    background: $surface;
+    color: $text;
+    border-bottom: wide $border;
+}
+
+Tab {
+    background: transparent;
+    color: $text-dim;
+    padding: 1 2;
+    margin: 0;
+    border-bottom: 2 transparent;
+}
+
+Tab:hover {
+    background: $surface-light;
+    color: $text;
+}
+
+Tab.-active {
+    background: transparent;
+    color: $primary;
+    border-bottom: 2 $primary;
+    text-style: bold;
+}
+
+TabPane {
+    background: $background;
+    color: $text;
+    padding: 1;
+}
+
+/* Modal and Dialog Styles */
+ModalScreen {
+    background: $background 80%;
+}
+
+ModalScreen > Container {
+    background: $surface;
+    border: thick $border;
+    padding: 2;
+    margin: 2;
+}
+
+.modal-header {
+    background: $surface-light;
+    color: $text;
+    height: 3;
+    padding: 1;
+    text-align: center;
+    text-style: bold;
+    border-bottom: wide $border;
+    margin-bottom: 1;
+}
+
+.modal-content {
+    background: $background;
+    padding: 1;
+    margin: 1 0;
+    border: round $border;
+    min-height: 10;
+}
+
+.modal-actions {
+    height: 4;
+    margin: 1 0;
+    align: center middle;
+}
+
+/* Widget-Specific Styles */
+
+/* Project Tree */
+.project-tree {
+    border: round $border;
+    background: $surface;
+}
+
+.file-status-validated {
+    color: $success;
+    text-style: bold;
+}
+
+.file-status-placeholder {
+    color: $warning;
+    text-style: bold;
+}
+
+.file-status-error {
+    color: $error;
+    text-style: bold;
+}
+
+.file-status-pending {
+    color: $text-muted;
+}
+
+/* Task Dashboard */
+.task-dashboard {
+    border: round $border;
+    background: $surface;
+}
+
+.task-header {
+    text-style: bold;
+    color: $primary;
+    background: $surface-variant 30%;
+    padding: 0 1;
+    margin-bottom: 1;
+}
+
+.task-status {
+    color: $text-dim;
+    padding: 0 1;
+}
+
+.task-eta {
+    color: $info;
+    padding: 0 1;
+}
+
+.progress-label {
+    color: $text-muted;
+    width: 10;
+    text-align: right;
+    padding-right: 1;
+}
+
+.filter-bar {
+    height: 4;
+    align: center middle;
+    margin: 1 0;
+    background: $surface-variant 20%;
+    padding: 0 1;
+}
+
+.control-bar {
+    height: 4;
+    align: center middle;
+    margin: 1 0;
+    background: $surface-variant 20%;
+    padding: 0 1;
+}
+
+/* Progress Intelligence */
+.progress-intelligence {
+    border: round $border;
+    background: $surface;
+}
+
+.eta-section {
+    margin: 1 0;
+    padding: 1;
+    background: $surface-light;
+    border: round $border;
+}
+
+.eta-label {
+    color: $info;
+    text-style: bold;
+}
+
+.authenticity-high {
+    color: $success;
+    text-style: bold;
+}
+
+.authenticity-medium {
+    color: $warning;
+    text-style: bold;
+}
+
+.authenticity-low {
+    color: $error;
+    text-style: bold;
+}
+
+/* Console Widget */
+.console-widget {
+    border: round $border;
+    background: $surface;
+}
+
+.input-area {
+    height: 4;
+    margin: 1 0;
+    padding: 0 1;
+    background: $surface-light;
+    border: round $border;
+}
+
+.input-area Input {
+    width: 1fr;
+    background: transparent;
+    border: none;
+}
+
+/* Alert and Validation Styles */
+.alert {
+    background: $warning-alpha-20;
+    color: $text;
+    padding: 1;
+    margin: 1;
+    border: round $warning;
+}
+
+.alert-critical {
+    background: $error-alpha-20;
+    border: round $error;
+    color: $text;
+}
+
+.alert-warning {
+    background: $warning-alpha-20;
+    border: round $warning;
+    color: $text;
+}
+
+.alert-success {
+    background: $success-alpha-20;
+    border: round $success;
+    color: $text;
+}
+
+.alert-info {
+    background: $info-alpha-20;
+    border: round $info;
+    color: $text;
+}
+
+.alert-header {
+    text-style: bold;
+    color: $error;
+    margin-bottom: 1;
+}
+
+.alert-actions {
+    height: 4;
+    align: center middle;
+    margin-top: 1;
+}
+
+/* Notification System */
+.notification-container {
+    dock: top-right;
+    width: 50;
+    height: auto;
+    margin: 1;
+    padding: 0;
+}
+
+.notification-toast {
+    background: $surface;
+    border: round $border;
+    margin: 1 0;
+    padding: 1;
+    animation: slide-in 300ms ease-out;
+}
+
+.notification-success {
+    border: round $success;
+    background: $success-alpha-20;
+}
+
+.notification-error {
+    border: round $error;
+    background: $error-alpha-20;
+}
+
+.notification-warning {
+    border: round $warning;
+    background: $warning-alpha-20;
+}
+
+.notification-info {
+    border: round $info;
+    background: $info-alpha-20;
+}
+
+.notification-header {
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.notification-message {
+    margin-bottom: 1;
+}
+
+.notification-actions {
+    height: 3;
+    align: center middle;
+}
+
+.dismiss-button {
+    width: 3;
+    height: 3;
+    background: transparent;
+    color: $text-muted;
+    border: none;
+}
+
+.dismiss-button:hover {
+    background: $error-alpha-20;
+    color: $error;
+}
+
+/* Metrics Dashboard */
+.metrics-grid {
+    layout: grid;
+    grid-size: 2 2;
+    grid-gutter: 1;
+    height: 1fr;
+}
+
+.productivity-grid {
+    layout: grid;
+    grid-size: 2 1;
+    grid-gutter: 1;
+    height: 1fr;
+}
+
+.dashboard-controls {
+    height: 4;
+    margin: 1 0;
+    align: center middle;
+    background: $surface-variant 20%;
+    padding: 0 1;
+}
+
+/* Form Styles */
+.form-section {
+    border: round $border;
+    padding: 1;
+    margin: 1;
+    background: $surface 50%;
+}
+
+.setting-group {
+    border: round $border;
+    padding: 1;
+    margin: 1;
+    background: $surface-variant 30%;
+}
+
+.help-text {
+    color: $text-muted;
+    text-style: italic;
+    margin-bottom: 1;
+}
+
+.warning-text {
+    color: $warning;
+    text-style: italic;
+    margin-bottom: 1;
+}
+
+/* Code Display */
+.code-snippet {
+    background: $background-light;
+    border: round $border;
+    padding: 1;
+    margin: 1 0;
+    font-family: monospace;
+}
+
+.code-snippet-plain {
+    background: $background-light;
+    color: $text-dim;
+    border: round $border;
+    padding: 1;
+    margin: 1 0;
+    font-family: monospace;
+}
+
+.suggestion {
+    color: $warning;
+    margin: 1 0;
+    padding: 1;
+    background: $warning-alpha-20;
+    border: round $warning;
+}
+
+/* Utility Classes */
+.success {
+    background: $success;
+    color: $on-primary;
+}
+
+.error {
+    background: $error;
+    color: $on-primary;
+}
+
+.warning {
+    background: $warning;
+    color: $on-primary;
+}
+
+.info {
+    background: $info;
+    color: $on-primary;
+}
+
+.coming-soon {
+    color: $text-muted;
+    text-align: center;
+    margin: 5 0;
+    text-style: italic;
+}
+
+/* Focus and Accessibility */
+*:focus {
+    outline: 2 $primary;
+}
+
+Input:focus, TextArea:focus, Select:focus {
+    outline: none;
+    border: round $primary;
+    background: $surface-light;
+}
+
+/* Enhanced Component Styles */
+EnhancedButton {
+    background: $surface;
+    color: $text;
+    border: round $border;
+    padding: 0 2;
+    margin: 0 1;
+    min-width: 10;
+    height: 3;
+    text-align: center;
+}
+
+EnhancedButton:hover {
+    background: $surface-light;
+    border: round $border-light;
+}
+
+EnhancedButton:focus {
+    border: thick $primary;
+}
+
+EnhancedButton.primary {
+    background: $primary;
+    color: $on-primary;
+}
+
+EnhancedButton.primary:hover {
+    background: $primary-light;
+}
+
+EnhancedButton.success {
+    background: $success;
+    color: $on-primary;
+}
+
+EnhancedButton.warning {
+    background: $warning;
+    color: $on-primary;
+}
+
+EnhancedButton.error {
+    background: $error;
+    color: $on-primary;
+}
+
+EnhancedButton.disabled {
+    background: $disabled;
+    color: $text-muted;
+    opacity: 0.6;
+}
+
+StatusCard {
+    border: round $border;
+    background: $surface;
+    padding: 1;
+    margin: 1;
+}
+
+StatusCard:hover {
+    border: round $primary;
+    background: $surface-light;
+}
+
+InteractiveChart {
+    border: round $border;
+    background: $surface;
+    padding: 1;
+}
+
+SmartDataTable {
+    border: round $border;
+    background: $surface;
+}
+
+.table-header {
+    background: $surface-light;
+    color: $text;
+    height: 3;
+    padding: 0 1;
+    text-style: bold;
+    border-bottom: wide $border;
+}
+
+.table-controls {
+    background: $surface-variant 30%;
+    height: 4;
+    padding: 0 1;
+    border-bottom: wide $border;
+}
+
+.table-footer {
+    background: $surface-variant 30%;
+    height: 4;
+    padding: 0 1;
+    border-top: wide $border;
+}
+
+CommandPalette {
+    background: $surface;
+    border: thick $primary;
+    color: $text;
+}
+
+.palette-input {
+    background: $background-light;
+    border-bottom: wide $border;
+    padding: 0 1;
+    height: 4;
+}
+
+.palette-results {
+    background: $surface;
+}
+
+/* Scrollbar Global Styles */
+* {
+    scrollbar-background: $surface-variant;
+    scrollbar-color: $primary;
+    scrollbar-color-hover: $primary-light;
+    scrollbar-color-active: $primary;
+    scrollbar-corner-color: $surface-variant;
+}
+
+/* Animation Classes (Textual has limited animation support) */
+.fade-in {
+    opacity: 1;
+}
+
+.slide-in {
+    offset-x: 0;
+}
+
+/* Responsive Design Classes */
+.compact {
+    padding: 0;
+    margin: 0;
+}
+
+.expanded {
+    padding: 2;
+    margin: 1;
+}
+
+.hide-on-small {
+    display: block;
+}
+
+.show-on-small {
+    display: none;
+}
