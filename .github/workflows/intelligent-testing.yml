@@ -54,7 +54,7 @@ jobs:
         echo "tests=tests/" >> $GITHUB_OUTPUT
     
     - name: Upload test metrics
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pyramid-metrics
         path: pyramid-metrics.json
@@ -101,7 +101,7 @@ jobs:
         CLAUDE_API_KEY: test-key
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: unit-test-results-${{ matrix.python-version }}
@@ -183,7 +183,7 @@ jobs:
         CLAUDE_TUI_ENV: integration_test
     
     - name: Upload integration test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: integration-test-results
@@ -224,7 +224,7 @@ jobs:
         safety check --json --output safety-results.json || true
     
     - name: Upload security results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-test-results

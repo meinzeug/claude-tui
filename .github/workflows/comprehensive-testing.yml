@@ -95,7 +95,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Upload Security Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -141,7 +141,7 @@ jobs:
             -m "unit and not slow"
 
       - name: 📊 Upload Unit Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: unit-test-results-py${{ matrix.python-version }}
@@ -230,7 +230,7 @@ jobs:
             -m "integration"
 
       - name: 📊 Upload Integration Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: integration-test-results
@@ -282,7 +282,7 @@ jobs:
             -m "api"
 
       - name: 📊 Upload API Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: api-test-results
@@ -334,7 +334,7 @@ jobs:
           echo "| Cross-Validation | ✅ | 95.8% | ≥95% |" >> $GITHUB_STEP_SUMMARY
 
       - name: 📊 Upload Validation Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: validation-test-results
@@ -386,7 +386,7 @@ jobs:
           echo "| API Response | <1.0s | <1.0s | ✅ |" >> $GITHUB_STEP_SUMMARY
 
       - name: 📊 Upload Performance Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: performance-test-results
@@ -447,7 +447,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
       - name: 📊 Upload Security Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-test-results
@@ -524,7 +524,7 @@ jobs:
           docker system prune -f
 
       - name: 📊 Upload E2E Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-test-results
@@ -569,7 +569,7 @@ jobs:
           coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
 
       - name: 📊 Upload Combined Coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-combined
           path: |
