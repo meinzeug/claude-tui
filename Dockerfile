@@ -1,6 +1,6 @@
 # Multi-stage Docker build for Claude TUI - Production-ready with security hardening
 # Stage 1: Builder - Install and compile dependencies
-FROM python:3.11-slim as builder
+FROM python:3.13-slim as builder
 
 # Security: Update packages and install minimal build dependencies
 RUN apt-get update && apt-get install -y \
@@ -33,7 +33,7 @@ RUN pip install --no-cache-dir --upgrade pip wheel setuptools \
     && if [ -f requirements-dev.txt ]; then pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements-dev.txt; fi
 
 # Stage 2: Production - Secure runtime image
-FROM python:3.11-slim as production
+FROM python:3.13-slim as production
 
 # Install only essential runtime dependencies
 RUN apt-get update && apt-get install -y \
