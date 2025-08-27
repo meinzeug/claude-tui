@@ -355,12 +355,12 @@ jobs:
     if: always()
     steps:
       - name: 📥 Download PR Analysis
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: pr-analysis
 
       - name: 📥 Download Test Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: 'test-results-pr-*'
           merge-multiple: true

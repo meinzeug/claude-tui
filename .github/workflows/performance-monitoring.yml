@@ -367,7 +367,7 @@ jobs:
     if: always() && contains(needs.performance-monitoring.outputs.*, 'true')
     steps:
       - name: 📥 Download Performance Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: 'performance-results-*'
           merge-multiple: true
@@ -442,7 +442,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 📥 Download Performance Results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: 'performance-results-*'
           merge-multiple: true
