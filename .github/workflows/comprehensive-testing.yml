@@ -152,7 +152,7 @@ jobs:
           retention-days: 30
 
       - name: 📈 Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: matrix.python-version == env.PYTHON_VERSION
         with:
           file: ./coverage-unit.xml
