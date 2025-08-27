@@ -25,7 +25,7 @@ jobs:
       test-matrix: ${{ steps.test-matrix.outputs.matrix }}
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -62,7 +62,7 @@ jobs:
     needs: setup
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -113,7 +113,7 @@ jobs:
         python-version: ['3.9', '3.10', '3.11']
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -190,7 +190,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -247,7 +247,7 @@ jobs:
     needs: [setup, integration-tests]
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -296,7 +296,7 @@ jobs:
     needs: [setup, unit-tests]
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -351,7 +351,7 @@ jobs:
     if: github.event_name == 'schedule' || contains(github.event.pull_request.labels.*.name, 'performance')
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -402,7 +402,7 @@ jobs:
     needs: [setup, code-quality]
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -465,7 +465,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -539,7 +539,7 @@ jobs:
     if: always()
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 📥 Download Coverage Reports
         uses: actions/download-artifact@v3

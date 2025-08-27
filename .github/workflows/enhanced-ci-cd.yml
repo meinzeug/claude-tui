@@ -61,7 +61,7 @@ jobs:
       deployment-strategy: ${{ steps.analysis.outputs.deployment-strategy }}
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -142,7 +142,7 @@ jobs:
         tool: [bandit, safety, semgrep, trivy-fs]
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v4
@@ -212,7 +212,7 @@ jobs:
           - 6379:6379
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -294,7 +294,7 @@ jobs:
             arch: armv7
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Set up QEMU
         uses: docker/setup-qemu-action@v3

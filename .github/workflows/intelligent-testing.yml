@@ -20,7 +20,7 @@ jobs:
       run-performance: ${{ steps.select.outputs.performance }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0  # Need full history for intelligent selection
     
@@ -69,7 +69,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -148,7 +148,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: Setup Python
       uses: actions/setup-python@v4
