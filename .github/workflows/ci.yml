@@ -321,7 +321,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v4
 
       - name: ✅ Validate Kubernetes Manifests
         run: |
